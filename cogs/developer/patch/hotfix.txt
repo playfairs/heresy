@@ -1,0 +1,11 @@
+## What's New
+- Diplo: Imported Diplo commands from Kybalion, along with XP.
+
+## Quick Fixes
+
+
+## Known Issues
+
+
+※※ Emergency hotfix for version 3.1.14
+※※ Report any issues to @playfairs

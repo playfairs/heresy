@@ -1,0 +1,215 @@
+import discord
+import os
+
+from discord.ext.commands import command, Cog, Context
+from main import Heresy
+from discord.ext.commands import has_permissions
+
+
+class Misc(Cog):
+    def __init__(self, bot: Heresy):
+        self.bot = bot
+        self.reports_dir = './Reports'
+        if not os.path.exists(self.reports_dir):
+            os.makedirs(self.reports_dir)
+        self.permanent_snipes = {}  # Separate dictionary for permanent snipes
+
+    @command(name="report", help="Report an issue with the bot.")
+    async def report(self, ctx, *, description: str = None):
+        """Allows users to report issues with the bot."""
+        if not description:
+            await ctx.send("Please describe the issue you want to report.")
+            return
+
+        existing_issues = [f for f in os.listdir(self.reports_dir) if f.startswith("Issue #")]
+        issue_number = len(existing_issues) + 1
+        issue_file = os.path.join(self.reports_dir, f"Issue #{issue_number}.txt")
+
+        with open(issue_file, 'w') as file:
+            file.write(f"Issue #{issue_number}\n")
+            file.write(f"Reported by: {ctx.author} (ID: {ctx.author.id})\n\n")
+            file.write(f"Description:\n{description}")
+
+        await ctx.send(f"Thank you for reporting! Your issue has been logged as `Issue #{issue_number}`.")
+
+    @command(name="issues", help="View all reported issues.")
+    async def issues(self, ctx: Context):
+        """Lists all reported issues in an embed."""
+        existing_issues = [f for f in os.listdir(self.reports_dir) if f.startswith("Issue #")]
+
+        if not existing_issues:
+            await ctx.send("No issues have been reported yet.")
+            return
+
+        embed = discord.Embed(title="Reported Issues", color=discord.Color.orange())
+        for issue in existing_issues:
+            embed.add_field(name=issue, value=f"`{issue}` logged in reports.", inline=False)
+
+        await ctx.send(embed=embed)
+
+    @command(name="rules")
+    @has_permissions(manage_guild=True)
+    async def rules(self, ctx):
+        """Posts the server rules in an embed"""
+        embed = discord.Embed(
+            title="Server Guides",
+            color=discord.Color.dark_theme()
+        )
+
+        rules_text = (
+            "## Rules\n\n"
+            "• Discord TOS and Guidelines must be followed, they can be found [here](https://discord.com/terms)\n\n"
+            "• No **DOXXING, PHISHING, EXTORTING, CATFISHING, OR STALKING**. This behavior is not welcome in our server.\n\n"
+            "• No arguing or starting drama, i prefer to keep this server as peaceful as possible.\n\n"
+            "• No gore, or NSFW. (however, we do have a channel for mild NSFW, no porn or like vile stuff though, <#1323765288608465078>)\n\n"
+            "• No spamming in general, there is a spam channel (<#1324214247408009298>), also pic spam is allowed in the media categories\n\n"
+            "• Anyone under the age of 13, per discord TOS will be hardbanned immediately (for the safety of the minors)\n\n"
+            "• Don't beg for perms (seriously, however for pic perms, just rep the vanity in status, the bot will automatically give you the role)\n\n"
+            "• For promoting your servers or partnering, read the partner guide in <#1324487443818221680>\n\n"
+            "## Directory\n"
+            "• <id:customize> : Roles and Channels\n"
+            "• <#1308728283910901760> : Announcements / Updates / Etc\n"
+            "• <#1303820239758295151> : Server AD\n"
+            "• <#1323587868614197300> : Main Chat\n\n"
+            "## Other\n"
+            "• Heresy is a Discord Bot created and managed by <@785042666475225109>, build for versatility and server managing, Heresy is an All-in-one bot.\n\n"
+            "• This server serves as a support server for Heresy, however it is not limited to just Heresy and is an actual community server.\n\n"
+            "• If you have any questions about Heresy, DM <@785042666475225109> for more information."
+        )
+
+        embed.description = rules_text
+        embed.add_field(name="", value="[Website](https://playfairs.cc) • [TikTok](https://tiktok.com/playfairs) • [Twitter](https://x.com/creepfully) • [Instagram](https://www.instagram.com/playfairs.cc)", inline=False)
+        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        await ctx.send(embed=embed)
+
+    @command(name="modrules")
+    @has_permissions(manage_messages=True)
+    async def modrules(self, ctx):
+        """Posts the moderator rules in an embed (Mod+ only)"""
+        embed = discord.Embed(
+            title="Moderation Rules",
+            color=discord.Color.dark_theme()
+        )
+
+        rules_text = (
+            "## Guidelines\n\n"
+            "• Don't get an ego and do your own thing because you have perms, I will easily take them away.\n\n"
+            "• Do not abuse your permissions or you will be demoted.\n\n"
+            "• All actions will probably be logged in logs, so don't worry about doing it manually.\n\n"
+            "• If unsure about something, either ask staff or just wait till it seems like it's needed.\n\n"
+            "• Do not mass ping everyone just because the server is dead, it's annoying, user revive pings for that.\n\n"
+            "## Warning Protocol (Users who are boosting will be role stripped, banned only if deemed necessary)\n"
+            "• 1st Warning: Verbal warning in chat\n"
+            "• 2nd Warning: Timeout (1 hour)\n"
+            "• 3rd Warning: Jail (24 hours)\n"
+            "• 4th Warning: Ban\n\n"
+            "## Important Channels\n"
+            "• <#1286292755693441076> :: All moderation actions\n"
+            "• <#1310911272392327199> :: Jail related actions\n"
+            "• <#1294421265448439901> :: Staff discussion\n"
+            "## Other\n"
+            "• Don't ban or timeout someone because you don't like them, this isn't kindergarten.\n"
+            "• If your not active in the server, you will be demoted to make room for active staff.\n"
+            "• When taking action, use the bot for it, don't do it manually.\n"
+            "• Discuss moderation with staff, don't just do it yourself with notifying admins.\n\n"
+            "-# For questions about moderation, please consult higher staff or admins."
+        )
+
+        embed.description = rules_text
+        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        await ctx.send(embed=embed)
+
+    @command(name="perks")
+    async def perks(self, ctx):
+        """Shows all server booster perks and information"""
+        embed = discord.Embed(
+            title="Booster Perks",
+            description="Thank you for considering boosting our server! Here are all the perks you receive:",
+            color=0xf47fff
+        )
+
+        perks_text = (
+            "## Perks\n\n"
+            "• Custom Role + Hoisted + Custom Hex\n"
+            "• Immunity to Jail, Ban, Kick, Mute, and Timeout\n"
+            "  *(Breaking rules will ignore this and result in a ban)*\n\n"
+            "## How to Claim\n"
+            "• DM or Ping Admins or staff to claim perks\n"
+            "• Or directly contact <@785042666475225109> to claim\n\n"
+            "## Additional Info\n"
+            "• Perks are active as long as your boost is active\n"
+            "• Custom roles must follow server guidelines\n"
+            "• Abuse of perks will result in removal and/or ban\n\n"
+            " Questions about perks? Feel free to ask staff!\n\n"
+            " More perks will be added as the server grows"
+        )
+
+        embed.description = perks_text
+        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        embed.set_footer(text="Boost the server to unlock perks")
+        await ctx.send(embed=embed)
+
+    @command(name="psg")
+    async def partnership_guidelines(self, ctx):
+        """Shows partnership requirements and guidelines"""
+        embed = discord.Embed(
+            title="Partnership Guidelines",
+            color=discord.Color.dark_theme()
+        )
+
+        guide_text = (
+            "## Requirements\n\n"
+            "• Server must be 2+ weeks old.\n"
+            "• Must have 350+ real members.\n"
+            "• Must have active staff team, and members.\n"
+            "• Must have proper moderation.\n"
+            "• Must follow Discord TOS.\n"
+            "• No NSFW content allowed.\n"
+            "• No raid/troll servers.\n\n"
+            "## Partnership Process\n\n"
+            "• DM a Partnership Manager or <@785042666475225109>.\n"
+            "• Provide server invite and ad (if applicable).\n"
+            "• Wait for review (24-48h).\n"
+            "• If approved, exchange ads.\n\n"
+            "## Advertisement Rules\n\n"
+            "• Must be SFW.\n"
+            "• No misleading content.\n"
+            "• No excessive emojis/pings.\n"
+            "• Must include server description.\n"
+            "• Must have permanent invite (vanity, requires level 3 boost).\n\n"
+            "• By default, we do mutual ping, however if you don't want to ping, let us know.\n\n"
+            "For partnership inquiries, please contact <@785042666475225109>."
+        )
+
+        embed.description = guide_text
+        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        await ctx.send(embed=embed)
+
+    @command(name="pingrules")
+    async def ping_rules(self, ctx):
+        """Shows rules for pinging roles and staff"""
+        embed = discord.Embed(
+            title="Ping Guidelines",
+            color=0xffffff
+        )
+
+        guide_text = (
+            "## Mass Pings\n\n"
+            "• Do not ping @everyone unless it's for major announcements.\n"
+            "• Pinging @here is fine in some cases, but not always, ask Admin before doing so.\n"
+            "• Do not mass ping members to get their attention, it's annoying.\n"
+            "• Do not ping the owner for no reason, or unless your one of my friends. :D\n\n"
+            "## Role Pings\n\n"
+            "• <@&1277925825731366934> :: Server announcements only.\n"
+            "• <@&1303515392890769459> :: Bot updates.\n"
+            "• <@&1306296960248057946> :: Datamining announcements (This is for Discord Updates and Possible Updates, this is automatic through a third party bot/webhook)\n"
+            "• <@&1277925913207767050> :: Chat revival (2 hour cooldown)\n\n"
+            "## Consequences\n\n"
+            "• Unnecessary pings = Warning.\n"
+            "• Mass pinging = Timeout.\n"
+            "• Repeated offenses = Jail/Staff Strip."
+        )
+
+        embed.description = guide_text
+        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        await ctx.send(embed=embed)
