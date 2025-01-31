@@ -585,6 +585,14 @@ class Moderation(commands.Cog):
         try:
             await member.kick(reason=f"Kicked by {ctx.author}")
             await ctx.send(f"👍")
+
+            # Create the embed for the kicked user
+            embed = discord.Embed(title="Bye bye", description=f"You were kicked in {ctx.guild.name} by {ctx.author.mention} for no reason", color=0xFF0000)
+            # Send the embed as a DM to the kicked member
+            await member.send(embed=embed)
+        except discord.HTTPException: 
+            await ctx.send("FUCK YOU! I could not pm user")
+
         except discord.Forbidden:
             await ctx.send("I do not have permission to kick this user.")
         except discord.HTTPException:
@@ -935,6 +943,7 @@ class Moderation(commands.Cog):
                     return
 
                 await interaction.response.send_message("Nuke cancelled.", ephemeral=True)
+                await interaction.message.delete()
 
         # Send the confirmation message with an embed
         embed = discord.Embed(
@@ -1981,23 +1990,28 @@ class Moderation(commands.Cog):
 
     @channel_group.command(name="sync")
     @commands.has_permissions(manage_channels=True)
-    async def channel_sync(self, ctx, category: discord.CategoryChannel = None):
-        """Sync channel permissions with a category"""
-        try:
-            # Use current channel's category if no category specified
-            channel = ctx.channel
-            category = category or channel.category
-
-            if not category:
-                return await ctx.send("No category specified or found.")
-
-            # Sync permissions
-            await channel.edit(sync_permissions=True)
-            await ctx.send(f"Channel permissions synced with category {category.name}")
-        except discord.Forbidden:
-            await ctx.send("I don't have permission to edit this channel.")
-        except discord.HTTPException as e:
-            await ctx.send(f"Failed to sync channel permissions: {str(e)}")
+    async def channel_sync(self, ctx, category: str = None):
+        """Syncs channel permissions with the specified category or all channels if 'all' is specified."""
+        if category is None:
+            await ctx.send("Please provide a category or 'all'.")
+            return
+        
+        if category.lower() == 'all':
+            for channel in ctx.guild.channels:
+                if isinstance(channel, discord.TextChannel) and channel.category:
+                    # Sync permissions with the corresponding category as if pressing the sync button
+                    await channel.edit(sync_permissions=True)
+            await ctx.send("👍")  # Send thumbs up when done
+        else:
+            # Fetch the category by name
+            category = discord.utils.get(ctx.guild.categories, name=category)
+            if category:
+                for channel in ctx.guild.channels:
+                    if isinstance(channel, discord.TextChannel) and channel.category == category:
+                        await channel.edit(sync_permissions=True)
+                await ctx.send("👍")  # Send thumbs up when done
+            else:
+                await ctx.send("Category not found.")
 
     @Cog.listener()
     async def on_message(self, message):
@@ -2030,3 +2044,30 @@ class Moderation(commands.Cog):
             self.sniped_reactions[reaction.message.channel.id] = []
         
         self.sniped_reactions[reaction.message.channel.id].append((reaction, user))
+
+    async def get_member(self, ctx, member: discord.Member = None, user_id: int = None):
+        """
+        Helper method to get a member either by direct mention or by user ID.
+        
+        Args:
+            ctx (Context): The command context
+            member (discord.Member, optional): The member mentioned directly
+            user_id (int, optional): The user ID to fetch
+
+        Returns:
+            discord.Member or None: The resolved member, or None if not found
+        """
+        if member:
+            return member
+        
+        if user_id:
+            try:
+                return await ctx.guild.fetch_member(user_id)
+            except discord.NotFound:
+                await ctx.send(f"Could not find a member with ID {user_id} in this server.")
+                return None
+            except discord.HTTPException:
+                await ctx.send("Failed to fetch the member.")
+                return None
+        
+        return None

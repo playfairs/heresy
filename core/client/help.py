@@ -64,13 +64,14 @@ class HerseyHelp(MinimalHelpCommand):
         embed.add_field(
             name="Resources",
             value="**[invite](https://discordapp.com/oauth2/authorize?client_id=1284037026672279635&scope=bot+applications.commands&permissions=8)**  • "
-            "**[support](https://discord.gg/heresy)**  ",
+            "**[server](https://discord.gg/heresy)**  • "
+            "**[website](https://playfairs.cc/heresy)**  ",
             inline=False,
         )
 
         embed.set_author(
             name=f"{ctx.bot.user.name}",
-            icon_url=ctx.bot.user.display_avatar.url,
+            icon_url="https://playfairs.cc/heresy.png",
             # url=config.CLIENT.SUPPORT_URL,
         )
         embed.set_footer(text="Select a category from the dropdown menu below")
@@ -78,7 +79,7 @@ class HerseyHelp(MinimalHelpCommand):
         return embed
 
     async def send_default_help_message(self, command: Command):
-        await self.initialize_bot_user()
+        await self.initialize_bot_user()         
 
         embed = Embed(
             title=f"Command: {command.qualified_name}",
@@ -88,7 +89,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed.set_author(
             name=f"{self.context.bot.user.name} Command Help",
-            icon_url=self.context.bot.user.display_avatar.url,
+            icon_url="https://playfairs.cc/heresy.png",
         )
 
         syntax = self._format_syntax(command)
@@ -222,7 +223,7 @@ class HerseyHelp(MinimalHelpCommand):
 
             embed.set_author(
                 name=f"{bot.user.name}",
-                icon_url=bot.user.display_avatar.url
+                icon_url="https://playfairs.cc/heresy.png"
             )
 
             embed.set_footer(
@@ -258,7 +259,7 @@ class HerseyHelp(MinimalHelpCommand):
         
         main_embed.set_author(
             name=f"{bot.user.name} Command Help",
-            icon_url=bot.user.display_avatar.url
+            icon_url="https://playfairs.cc/heresy.png"
         )
 
         # Main command syntax
@@ -321,7 +322,7 @@ class HerseyHelp(MinimalHelpCommand):
             
             cmd_embed.set_author(
                 name=f"{bot.user.name} Command Help",
-                icon_url=bot.user.display_avatar.url
+                icon_url="https://playfairs.cc/heresy.png"
             )
 
             # Subcommand syntax
@@ -391,7 +392,7 @@ class HerseyHelp(MinimalHelpCommand):
             )
             overview.set_author(
                 name=f"{bot.user.name} Developer Tools",
-                icon_url=bot.user.display_avatar.url
+                icon_url="https://playfairs.cc/heresy.png"
             )
             overview.set_footer(
                 text=f"Page 1/{len(cog.get_commands()) + 1}",
@@ -409,10 +410,10 @@ class HerseyHelp(MinimalHelpCommand):
                 
                 embed.set_author(
                     name=f"{bot.user.name} Developer Tools",
-                    icon_url=bot.user.display_avatar.url
+                    icon_url="https://playfairs.cc/heresy.png"
                 )
 
-                # Add command syntax
+                # Command syntax
                 syntax = self._format_syntax(cmd)
                 embed.add_field(
                     name="Syntax",
@@ -451,7 +452,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed.set_author(
             name=f"{bot.user.name} Command Help",
-            icon_url=bot.user.display_avatar.url
+            icon_url="https://playfairs.cc/heresy.png"
         )
 
         embed.set_footer(
@@ -493,7 +494,7 @@ class HerseyHelp(MinimalHelpCommand):
                     
                     embed.set_author(
                         name=f"{bot.user.name} Command Help",
-                        icon_url=bot.user.display_avatar.url
+                        icon_url="https://playfairs.cc/heresy.png"
                     )
 
                     # Command name and description
@@ -605,7 +606,7 @@ class HerseyHelp(MinimalHelpCommand):
         
         embed.set_author(
             name=f"{bot.user.name} Command Help",
-            icon_url=bot.user.display_avatar.url
+            icon_url="https://playfairs.cc/heresy.png"
         )
 
         # Command syntax
@@ -696,6 +697,9 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed = Embed(description=error_message)
         await self.context.send(embed=embed)
+
+        # React to the original message with a question mark
+        await self.context.message.add_reaction('❓')
 
     async def subcommand_not_found(self, command: str, subcommand: str):
 

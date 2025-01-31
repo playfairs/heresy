@@ -79,8 +79,14 @@ class Heresy(commands.AutoShardedBot):
         print(f'Shard ID: {self.shard_id} of {self.shard_count} shards')
         print("Heresy v2.1.0")
         
-        await self.tree.sync()
-        print("Synced global commands successfully.")
+        # Sync commands for each guild individually
+        for guild in self.guilds:
+            try:
+                await self.tree.sync(guild=guild)
+                print(f"Synced commands for guild {guild.name}")
+            except Exception as e:
+                print(f"Failed to sync commands for guild {guild.name}: {e}")
+        
         print("Bot is ready and connected.")
 
     async def get_context(self, message, *, cls=commands.Context):
@@ -131,6 +137,10 @@ class Heresy(commands.AutoShardedBot):
         
         # Call the original invoke method
         await super().invoke(ctx)
+
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            await ctx.message.add_reaction('❓')
 
 if __name__ == "__main__":
     bot = Heresy()

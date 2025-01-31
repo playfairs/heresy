@@ -138,3 +138,11 @@ class Listeners(Cog):
 
         # If command not found
         await message.channel.send(f"Could not find a command named `{command_name}`.")
+
+    @Cog.listener('on_message')
+    async def greet(self, message):
+        if message.author == self.bot.user:
+            return
+
+        if message.content.lower() == "hi heresy":
+            await message.channel.send(f"Hi, {message.author.mention}")

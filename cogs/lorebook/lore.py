@@ -391,3 +391,21 @@ class Lore(commands.Cog):
 
         # Send the embed
         await ctx.send(embed=embed)
+
+    @lore.command(name='glb')
+    async def get_lorebook(self, ctx):
+        """Fetches the user's lorebook in JSON format."""
+        user_id = ctx.author.id
+        lorebook_path = self.get_lorebook_path(user_id)
+
+        if os.path.exists(lorebook_path):
+            with open(lorebook_path, 'r') as f:
+                lore_data = json.load(f)
+
+            # Send the lorebook as a JSON file
+            file_name = f"{ctx.author.name}_lorebook.json"
+            with open(file_name, 'w') as json_file:
+                json.dump(lore_data, json_file, indent=4)
+            await ctx.author.send(file=discord.File(file_name))
+        else:
+            await ctx.send("You do not have a lorebook.")

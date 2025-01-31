@@ -1,2 +1,2 @@
 # Tracking users for continuous Last.fm tracking
-TRACKING_USERS = {0: 'pdwk', 757355424621133914: 'cryzfrm829', 812606857742647298: 'a_ngel_dust', 1252011606687350805: 'novs_luvs_yu', 818507782911164487: 'sk3letka'}
+TRACKING_USERS = {0: 'pdwk', 757355424621133914: 'cryzfrm829', 812606857742647298: 'a_ngel_dust', 785042666475225109: 'sk3letka', 818507782911164487: 'sk3letka'}

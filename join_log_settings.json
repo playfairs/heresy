@@ -28,5 +28,10 @@
         "channel_id": 1315554324595871754,
         "welcome_message": "hi",
         "leave_message": "bye"
+    },
+    "1271976967381712989": {
+        "channel_id": 1333059678137221210,
+        "welcome_message": "hi",
+        "leave_message": "bye"
     }
 }

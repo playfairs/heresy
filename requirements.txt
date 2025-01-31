@@ -9,6 +9,7 @@ discord.py
 Flask
 frozenlist
 fuzzywuzzy
+Jishaku
 PyNaCl
 pytz
 requests
@@ -19,3 +20,10 @@ yarl
 zipp
 pyfiglet
 python-dateutil
+googleapi-python-client
+googleapiclient
+pylast
+psutil
+pyperclip
+python-dotenv
+setuptools

@@ -6,6 +6,7 @@ import asyncio
 import platform
 import os
 import psutil
+import subprocess
 
 from datetime import datetime, timezone
 from discord import Embed, Color
@@ -177,7 +178,7 @@ class Information(Cog):
             await ctx.send("**Error**: Something went wrong.")
             raise e
     
-    @commands.command(name="whois", aliases=['userinfo', 'ui', 'info'], help="Show detailed information about a user.")
+    @commands.command(name="whois", aliases=['userinfo', 'ui', 'info', 'whoami'], help="Show detailed information about a user.")
     async def whois(self, ctx, member: discord.Member = None):
         """
         Displays detailed user information with badges, activity, and roles.
@@ -447,7 +448,7 @@ class Information(Cog):
         """
         command = self.bot.get_command(command_name)
         if not command:
-            await ctx.send(f"❌ Command `{command_name}` not found.")
+            await ctx.send(f"Command `{command_name}` not found.")
             return
 
         cog = command.cog
@@ -598,9 +599,10 @@ class Information(Cog):
                     total_files += 1
                     with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
                         content = f.read()
-                        total_lines += len(content.splitlines())
-                        total_imports += len([line for line in content.splitlines() if line.strip().startswith(('import ', 'from '))])
-                        total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
+                        
+                    total_lines += len(content.splitlines())
+                    total_imports += len([line for line in content.splitlines() if line.strip().startswith(('import ', 'from '))])
+                    total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
 
         embed = discord.Embed(
             description=f"Developed and maintained by <@{self.developer_id}>\n`{total_commands}` commands | `{total_cogs}` cogs",

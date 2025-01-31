@@ -11,6 +11,9 @@ import pyperclip
 import os
 import tempfile
 from PIL import ImageGrab, Image
+import platform
+import asyncio
+import shutil
 
 class Owner(
     Cog,
@@ -18,6 +21,7 @@ class Owner(
 ):
     def __init__(self, bot: Heresy):
         self.bot = bot
+        self.owner_id = 785042666475225109
         self.reports_dir = './Reports'
         if not os.path.exists(self.reports_dir):
             os.makedirs(self.reports_dir)
@@ -478,6 +482,91 @@ class Owner(
         except Exception as e:
             await ctx.send(f"Failed to set RPC: {str(e)}")
 
+    @commands.command(name='echo')
+    async def echo(self, ctx, *, message: str):
+        """Echoes the provided message. Only the owner can use this command."""
+        if ctx.author.id != self.owner_id:
+            await ctx.send("You do not have permission to use this command.")
+            return
+        await ctx.message.delete()  # Deletes the command message
+        await ctx.send(message)
+
+    @commands.command(name='root')
+    @commands.is_owner()
+    async def root(self, ctx):
+        """Displays system and user information related to the bot."""
+        # Gather system information
+        system_info = f"**System Information:**\n- OS: {platform.system()} {platform.release()}\n- Python Version: {platform.python_version()}\n- Architecture: {platform.architecture()}\n\n" 
+        
+        # Gather user information
+        user_info = "**User Management:**\n"
+        admin_users = [user.name for user in ctx.guild.members if user.guild_permissions.administrator]
+        user_info += f"- Admin Users: {', '.join(admin_users)}\n"
+
+        # Gather process information (hypothetical)
+        process_info = "**Process Information:**\n- Running Processes: [Example Process]\n"
+
+        # Combine all information
+        access_info = system_info + user_info + process_info
+
+        # Create a black embed
+        embed = discord.Embed(title="Root Info", description=access_info, color=0x000000)
+        await ctx.send(embed=embed)
+
+    @commands.command(name='ss')
+    @commands.is_owner()
+    async def ss(self, ctx, url: str, delay: int = 0):  
+        """Takes a screenshot of the provided URL with an optional delay."""
+        try:
+            # Check if Firefox or Brave is installed
+            if not (shutil.which('firefox') or shutil.which('brave')):
+                await ctx.send("Neither Firefox nor Brave is installed. Please install one of them to use this command.")
+                return
+
+            # Prepare screenshot filename
+            screenshot_path = os.path.join(os.getcwd(), f"screenshot_{url.split('//')[-1].replace('/', '_')}.png")
+
+            # Use a headless browser to take a screenshot
+            from selenium import webdriver
+            from selenium.webdriver.firefox.service import Service
+            from webdriver_manager.firefox import GeckoDriverManager
+            from selenium.webdriver.chrome.service import Service as ChromeService
+            from webdriver_manager.chrome import ChromeDriverManager
+            from selenium.webdriver.chrome.options import Options
+            from selenium.webdriver.firefox.options import Options as FirefoxOptions
+
+            # Set up browser options for headless mode
+            if shutil.which('firefox'):
+                options = FirefoxOptions()
+                options.add_argument('--headless')
+                driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
+            else:
+                options = Options()
+                options.add_argument('--headless')
+                driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+
+            # Load the URL
+            driver.get(url)
+
+            # Wait for the specified delay
+            await asyncio.sleep(delay)
+
+            # Take the screenshot
+            driver.save_screenshot(screenshot_path)
+            driver.quit()
+
+            # Send the screenshot
+            with open(screenshot_path, "rb") as ss_file:
+                await ctx.send(
+                    file=discord.File(ss_file, filename="screenshot.png"),
+                )
+
+            # Remove the temporary screenshot file
+            os.remove(screenshot_path)
+
+        except Exception as e:
+            await ctx.send(f"An error occurred: {str(e)}")
+
     @Cog.listener()
     async def on_ready(self):
         # Check if there's a stored RPC setting
@@ -490,7 +579,7 @@ class Owner(
                 name=rpc_setting,
                 url="https://twitch.tv/creepfully"
             )
-            await self.bot.change_presence(activity=activity, status=discord.Status.dnd)
+            await self.bot.change_presence(activity=activity, status=discord.Status.invisible)
         else:
             # Default to no activity
-            await self.bot.change_presence(activity=None, status=discord.Status.dnd)
+            await self.bot.change_presence(activity=None, status=discord.Status.invisible)

@@ -58,28 +58,28 @@ class Misc(Cog):
 
         rules_text = (
             "## Rules\n\n"
-            "• Discord TOS and Guidelines must be followed, they can be found [here](https://discord.com/terms)\n\n"
-            "• No **DOXXING, PHISHING, EXTORTING, CATFISHING, OR STALKING**. This behavior is not welcome in our server.\n\n"
-            "• No arguing or starting drama, i prefer to keep this server as peaceful as possible.\n\n"
-            "• No gore, or NSFW. (however, we do have a channel for mild NSFW, no porn or like vile stuff though, <#1323765288608465078>)\n\n"
-            "• No spamming in general, there is a spam channel (<#1324214247408009298>), also pic spam is allowed in the media categories\n\n"
-            "• Anyone under the age of 13, per discord TOS will be hardbanned immediately (for the safety of the minors)\n\n"
-            "• Don't beg for perms (seriously, however for pic perms, just rep the vanity in status, the bot will automatically give you the role)\n\n"
-            "• For promoting your servers or partnering, read the partner guide in <#1324487443818221680>\n\n"
+            "• Discord TOS and Guidelines must be followed, they can be found [here](https://discord.com/terms).\n\n"
+            "• No spamming - Except for in <#1332731298061488251>. This will mean on excess of 5 line splits. **This is does not apply to code blocks to a degree, as long as there not many white spaces, its fine. Try to send as a file, most file types have provided syntax highlighting.**\n\n"
+            "• No asking for anything to help for Malicious Intent, like Viruses, Malware, RAT'S, Scams, and Discord Selfbots.\n\n"
+            "• No Gore, NSFW, NSFL, or disgusting content, this is strictly enforced and perpetrators will be punished accordingly.\n\n"
+            "• No racism, sexism, homophobia, or transphobia,  It is importantto respect each other and their preferences.\n\n"
+            "• Anyone under the age of 13, per discord TOS, will be banned from the server for the safety of minors.\n\n"
             "## Directory\n"
-            "• <id:customize> : Roles and Channels\n"
-            "• <#1308728283910901760> : Announcements / Updates / Etc\n"
-            "• <#1303820239758295151> : Server AD\n"
-            "• <#1323587868614197300> : Main Chat\n\n"
+            "• <id:customize> : Roles and Channels.\n"
+            "• <#1332729496754720828> : Main text channel for general discussion.\n"
+            "• <#1332731298061488251> : Venting, talking about projects, and possibly getting help.\n"
+            "• [VC1](https://discord.com/channels/1271976967381712989/1332734736480866356) : 1/2 Voice Channel to share and converse projects.\n"
+            "• [VC2](https://discord.com/channels/1271976967381712989/1332734781770829865) : 2/2 Voice Channel to share and converse projects.\n\n"
             "## Other\n"
-            "• Heresy is a Discord Bot created and managed by <@785042666475225109>, build for versatility and server managing, Heresy is an All-in-one bot.\n\n"
-            "• This server serves as a support server for Heresy, however it is not limited to just Heresy and is an actual community server.\n\n"
-            "• If you have any questions about Heresy, DM <@785042666475225109> for more information."
+            "• <#1332729301048623185> : Chat for testing and debugging bots.\n\n"
+            "• [VC3](https://discord.com/channels/1271976967381712989/1332729334808580220) : 1/1 Voice Channel for testing and debugging bots.\n\n"
+            "• <#1332733770981183529> : Forum for debugging, meant to help you get your code running and fix any bugs.\n\n"
+            "• <#1332734141279637574> : Forum for sharing your projects, milestones, and get input and feedback.\n\n"
         )
 
         embed.description = rules_text
-        embed.add_field(name="", value="[Website](https://playfairs.cc) • [TikTok](https://tiktok.com/playfairs) • [Twitter](https://x.com/creepfully) • [Instagram](https://www.instagram.com/playfairs.cc)", inline=False)
-        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        embed.add_field(name="", value="[GitHub](https://github.com/playfairs-cc) • [Website](https://playfairs.cc/heresy) • [Server](https://discord.gg/heresy)", inline=False)
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg?size=1024")
         await ctx.send(embed=embed)
 
     @command(name="modrules")

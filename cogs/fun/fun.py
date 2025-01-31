@@ -5,8 +5,7 @@ import asyncio
 import discord
 import requests
 from discord.ext import commands
-from discord.ext.commands import Cog, Context
-from PIL import Image, ImageDraw, ImageFont
+from discord.ext.commands import Cog, Context, command
 import json
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
@@ -14,13 +13,20 @@ import aiohttp
 import random
 from database import db_manager
 
+from discord import app_commands
+from discord.app_commands import Choice
+from main import Heresy
+
 # Selenium imports
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 
-MERRIAM_WEBSTER_API_KEY = os.getenv("MERRIAM_WEBSTER_API_KEY") or "32b24f5f-8518-4520-9225-b6ce2d9f728a"
+MERRIAM_WEBSTER_API_KEY = (
+    os.getenv("MERRIAM_WEBSTER_API_KEY") or "32b24f5f-8518-4520-9225-b6ce2d9f728a"
+)
+
 
 class Fun(Cog):
     def __init__(self, bot: commands.Bot):
@@ -44,7 +50,9 @@ class Fun(Cog):
                 if response.status == 200:
                     return await response.read()
                 else:
-                    raise Exception(f"Failed to fetch avatar. Status code: {response.status}")
+                    raise Exception(
+                        f"Failed to fetch avatar. Status code: {response.status}"
+                    )
 
     async def create_mirror_webhook(self, ctx):
         """Create a webhook in the current channel for mirroring."""
@@ -57,10 +65,14 @@ class Fun(Cog):
                     pass
 
             # Create a new webhook
-            self.mirror_webhook = await ctx.channel.create_webhook(name="Mirror Webhook")
+            self.mirror_webhook = await ctx.channel.create_webhook(
+                name="Mirror Webhook"
+            )
             return True
         except discord.Forbidden:
-            await ctx.send("I don't have permission to create a webhook in this channel.")
+            await ctx.send(
+                "I don't have permission to create a webhook in this channel."
+            )
             return False
         except Exception as e:
             await ctx.send(f"Failed to create webhook: {e}")
@@ -76,12 +88,12 @@ class Fun(Cog):
                 "**Who the fuck said ruby done lost his touch?**\n\n"
                 "[Listen on Spotify](https://open.spotify.com/track/5diz02QLFSmDur9R9M6bcD?si=2a4b70a6d4a241e3)"
             ),
-            color=discord.Color.red()
+            color=discord.Color.red(),
         )
         embed.set_footer(text="THE_EVIL_THAT_MEN_DO")
         await ctx.reply(embed=embed, mention_author=False)
 
-    @commands.command(name='mirror')
+    @commands.command(name="mirror")
     async def mirror_user(self, ctx: commands.Context, user: discord.Member):
         # Create webhook first
         webhook_created = await self.create_mirror_webhook(ctx)
@@ -97,7 +109,9 @@ class Fun(Cog):
                 async with session.get(str(user.display_avatar.url)) as response:
                     if response.status == 200:
                         avatar_bytes = await response.read()
-                        await self.mirror_webhook.edit(name=user.display_name, avatar=avatar_bytes)
+                        await self.mirror_webhook.edit(
+                            name=user.display_name, avatar=avatar_bytes
+                        )
                     else:
                         await self.mirror_webhook.edit(name=user.display_name)
         except Exception as e:
@@ -106,7 +120,7 @@ class Fun(Cog):
 
         await ctx.send(f"Now mirroring {user.mention} using a webhook!")
 
-    @commands.command(name='stopmirror')
+    @commands.command(name="stopmirror")
     async def stop_mirror(self, ctx: commands.Context):
         if self.mirrored_user:
             # Delete the webhook
@@ -122,20 +136,24 @@ class Fun(Cog):
         else:
             await ctx.send("No user is currently being mirrored.")
 
-    @commands.command(name="urban", help="Fetches the definition of a word from Urban Dictionary.")
+    @commands.command(
+        name="urban", help="Fetches the definition of a word from Urban Dictionary."
+    )
     async def urban(self, ctx, *, word: str):
         url = f"https://api.urbandictionary.com/v0/define?term={word}"
         response = requests.get(url)
 
         if response.status_code == 200:
             data = response.json()
-            if data['list']:
-                definition_data = data['list'][0]
-                word = definition_data['word']
-                definition = definition_data['definition']
-                example = definition_data.get('example', 'No example available.')
+            if data["list"]:
+                definition_data = data["list"][0]
+                word = definition_data["word"]
+                definition = definition_data["definition"]
+                example = definition_data.get("example", "No example available.")
 
-                embed = discord.Embed(title=f"Urban Dictionary: {word}", color=discord.Color.blue())
+                embed = discord.Embed(
+                    title=f"Urban Dictionary: {word}", color=discord.Color.blue()
+                )
                 embed.add_field(name="Definition", value=definition, inline=False)
                 embed.add_field(name="Example", value=example, inline=False)
                 embed.set_footer(text="Provided by Urban Dictionary")
@@ -144,9 +162,13 @@ class Fun(Cog):
             else:
                 await ctx.send(f"No definitions found for **{word}**.")
         else:
-            await ctx.send("Failed to fetch data from Urban Dictionary. Please try again later.")
+            await ctx.send(
+                "Failed to fetch data from Urban Dictionary. Please try again later."
+            )
 
-    @commands.command(name="define", help="Fetches the definition of a word from Merriam-Webster.")
+    @commands.command(
+        name="define", help="Fetches the definition of a word from Merriam-Webster."
+    )
     async def dictionary(self, ctx, *, word: str):
         if not MERRIAM_WEBSTER_API_KEY:
             await ctx.send("The API key is not set.")
@@ -156,7 +178,9 @@ class Fun(Cog):
         response = requests.get(api_url)
 
         if response.status_code != 200:
-            await ctx.send("Sorry, I couldn't fetch the definition at the moment. Please try again later.")
+            await ctx.send(
+                "Sorry, I couldn't fetch the definition at the moment. Please try again later."
+            )
             return
 
         data = response.json()
@@ -166,7 +190,9 @@ class Fun(Cog):
             return
 
         definition_data = data[0]
-        word_definition = definition_data.get("shortdef", ["No definition available."])[0]
+        word_definition = definition_data.get("shortdef", ["No definition available."])[
+            0
+        ]
         part_of_speech = definition_data.get("fl", "Unknown")
 
         embed = discord.Embed(title=f"Definition of {word}", color=discord.Color.blue())
@@ -189,7 +215,7 @@ class Fun(Cog):
             f"{user.mention} has been publicly shamed for their questionable life choices!",
             f"Everyone point and laugh at {user.mention}!",
             f"{user.mention} is now experiencing the ultimate embarrassment!",
-            f"Shame! Shame! Shame! 🔔 {user.mention}"
+            f"Shame! Shame! Shame! 🔔 {user.mention}",
         ]
 
         # Select a random shaming message
@@ -198,35 +224,39 @@ class Fun(Cog):
         # Send the shaming message
         await ctx.send(shame_message)
 
-    def translate_text(self, text, language='lolcat'):
+    def translate_text(self, text, language="lolcat"):
         """Translate text to a fun language"""
         try:
             import pytranslate
 
             # Supported languages: lolcat, pirate, shakespeare, chef
             translators = {
-                'lolcat': pytranslate.lolcat,
-                'pirate': pytranslate.pirate,
-                'shakespeare': pytranslate.shakespeare,
-                'chef': pytranslate.chef
+                "lolcat": pytranslate.lolcat,
+                "pirate": pytranslate.pirate,
+                "shakespeare": pytranslate.shakespeare,
+                "chef": pytranslate.chef,
             }
 
             if language not in translators:
-                language = 'lolcat'  # default to lolcat
+                language = "lolcat"  # default to lolcat
 
             return translators[language](text)
         except ImportError:
             # Fallback to simple uwu-style translation if library is not available
             replacements = {
-                'l': 'w', 'r': 'w', 
-                'Love': 'Wuv', 'love': 'wuv',
-                'hello': 'hewwo', 'Hello': 'Hewwo',
-                'hi': 'hai', 'Hi': 'Hai'
+                "l": "w",
+                "r": "w",
+                "Love": "Wuv",
+                "love": "wuv",
+                "hello": "hewwo",
+                "Hello": "Hewwo",
+                "hi": "hai",
+                "Hi": "Hai",
             }
-            
+
             for old, new in replacements.items():
                 text = text.replace(old, new)
-            
+
             return text + " uwu"
 
     @commands.group(name="uwu", invoke_without_command=True)
@@ -240,7 +270,7 @@ class Fun(Cog):
         # If no subcommand and no text, show help embed
         if not text:
             embed = discord.Embed(
-                title="Language Translation Commands", 
+                title="Language Translation Commands",
                 description=(
                     "**Available Subcommands:**\n"
                     "- `uwulock <user> [language]`: Lock a user's messages\n"
@@ -248,17 +278,17 @@ class Fun(Cog):
                     "**Available Languages:**\n"
                     "- lolcat\n- uwu\n- pirate"
                 ),
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
             await ctx.send(embed=embed)
             return
 
         # If text is provided, translate it
-        translated = self.translate_text(text, 'uwu')
+        translated = self.translate_text(text, "uwu")
         await ctx.send(translated)
 
     @commands.command(name="uwulock")
-    async def uwu_lock(self, ctx, member: discord.Member, language: str = 'lolcat'):
+    async def uwu_lock(self, ctx, member: discord.Member, language: str = "lolcat"):
         """Lock a user's messages and translate them"""
         # Only allow the bot owner to use this command
         if ctx.author.id != self.owner_id:
@@ -266,18 +296,20 @@ class Fun(Cog):
             return
 
         # Validate language
-        valid_languages = ['lolcat', 'pirate', 'shakespeare', 'chef']
+        valid_languages = ["lolcat", "pirate", "shakespeare", "chef"]
         if language.lower() not in valid_languages:
-            await ctx.send(f"Invalid language. Choose from: {', '.join(valid_languages)}")
+            await ctx.send(
+                f"Invalid language. Choose from: {', '.join(valid_languages)}"
+            )
             return
 
         # Perform the lock
-        if not hasattr(self.bot, 'uwu_locks'):
+        if not hasattr(self.bot, "uwu_locks"):
             self.bot.uwu_locks = {}
-        
+
         self.bot.uwu_locks[member.id] = {
-            'language': language.lower(),
-            'channel_id': ctx.channel.id
+            "language": language.lower(),
+            "channel_id": ctx.channel.id,
         }
         await ctx.send(f"Locked {member.mention}'s messages in {language} mode.")
 
@@ -291,17 +323,19 @@ class Fun(Cog):
 
         # If no member specified, clear all locks
         if not member:
-            if hasattr(self.bot, 'uwu_locks'):
+            if hasattr(self.bot, "uwu_locks"):
                 self.bot.uwu_locks.clear()
             await ctx.send("All translation locks have been reset!")
             return
 
         # Remove specific user's lock
-        if hasattr(self.bot, 'uwu_locks') and member.id in self.bot.uwu_locks:
+        if hasattr(self.bot, "uwu_locks") and member.id in self.bot.uwu_locks:
             del self.bot.uwu_locks[member.id]
             await ctx.send(f"Translation lock for {member.mention} has been reset!")
         else:
-            await ctx.send(f"{member.mention} does not have an active translation lock.")
+            await ctx.send(
+                f"{member.mention} does not have an active translation lock."
+            )
 
     @commands.command(name="f")
     async def flip_table(self, ctx):
@@ -310,163 +344,55 @@ class Fun(Cog):
         flip_embed = discord.Embed(
             title="Table Flip! 😡",
             description="(╯°□°)╯︵ ┻━┻",
-            color=discord.Color.red()
+            color=discord.Color.red(),
         )
-        
+
         # Send the first embed
         message = await ctx.send(embed=flip_embed)
-        
+
         # Wait a moment
         await asyncio.sleep(2)
-        
+
         # Create the apology embed
         apology_embed = discord.Embed(
             title="I'm Sorry, Table 😔",
             description="┬─┬ノ( º _ ºノ)",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
-        
+
         # Edit the message with the apology embed
         await message.edit(embed=apology_embed)
-
-    @commands.command(name="ascii")
-    async def ascii_art(self, ctx, *, text: str):
-        """Convert text to ASCII art."""
-        # Import pyfiglet here to avoid potential import errors
-        import pyfiglet
-        
-        # List of available fonts (you can expand this)
-        available_fonts = [
-            'standard', 'banner', 'big', 'block', 'bubble', 'digital', 
-            'ivrit', 'lean', 'mini', 'script', 'shadow', 'slant', 
-            'small', 'smscript', 'smslant', 'speed', 'starwars', 
-            'stop', 'straight', 'thick', 'thin', 'univers'
-        ]
-        
-        # Limit text length to prevent spam
-        if len(text) > 20:
-            return await ctx.send("Text must be 20 characters or less.")
-        
-        try:
-            # Choose a random font for fun
-            import random
-            font = random.choice(available_fonts)
-            
-            # Generate ASCII art
-            ascii_result = pyfiglet.figlet_format(text, font=font)
-            
-            # Create an embed to make it look nicer
-            embed = discord.Embed(
-                title=f"ASCII Art (Font: {font})",
-                description=f"```\n{ascii_result}```",
-                color=discord.Color.random()
-            )
-            
-            await ctx.send(embed=embed)
-        
-        except Exception as e:
-            await ctx.send(f"Error generating ASCII art: {str(e)}")
-
-    @commands.command(name="ss")
-    async def take_screenshot(self, ctx):
-        """Take a screenshot of the replied message using Flameshot"""
-        # Only allow the bot owner to use this command
-        if ctx.author.id != self.owner_id:
-            await ctx.send("Only the bot owner can use this command.")
-            return
-
-        # Check if the command is a reply
-        if not ctx.message.reference:
-            await ctx.send("Please reply to a message to take a screenshot.")
-            return
-
-        try:
-            # Get the referenced message
-            ref_msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-
-            # Prepare screenshot filename
-            screenshot_path = os.path.join(os.getcwd(), f"screenshot_{ref_msg.id}.png")
-
-            # Use Flameshot to take a screenshot
-            import subprocess
-
-            # First, get the message's position in the Discord client
-            flameshot_command = [
-                "flameshot", "gui", 
-                "-p", screenshot_path,
-                "--delay", "500"  # 500ms delay to allow user to position
-            ]
-
-            # Run Flameshot
-            result = subprocess.run(flameshot_command, capture_output=True, text=True)
-
-            # Check if screenshot was taken successfully
-            if not os.path.exists(screenshot_path):
-                await ctx.send("Screenshot was not taken. Did you cancel?")
-                return
-
-            # Optional: Upload to Zipline if configured
-            zipline_url = None
-            try:
-                # Attempt to upload to Zipline if configured
-                zipline_command = [
-                    "zipline", "upload", 
-                    "-f", screenshot_path
-                ]
-                zipline_result = subprocess.run(zipline_command, capture_output=True, text=True)
-                
-                # Extract Zipline URL from output
-                if zipline_result.returncode == 0:
-                    zipline_url = zipline_result.stdout.strip()
-            except Exception:
-                # Silently fail if Zipline is not configured
-                pass
-
-            # Send the screenshot
-            if zipline_url:
-                # If Zipline upload was successful, send the URL
-                await ctx.send(
-                    content=f"Screenshot of message by {ref_msg.author.mention}:\n{zipline_url}", 
-                )
-            else:
-                # Otherwise, send the file directly
-                with open(screenshot_path, 'rb') as ss_file:
-                    await ctx.send(
-                        content=f"Screenshot of message by {ref_msg.author.mention}:", 
-                        file=discord.File(ss_file, filename="screenshot.png")
-                    )
-
-            # Remove the temporary screenshot file
-            os.remove(screenshot_path)
-
-        except discord.NotFound:
-            await ctx.send("Could not find the referenced message.")
-        except Exception as e:
-            await ctx.send(f"An error occurred: {str(e)}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
         # Ignore bot messages and DMs
         if message.author.bot or not message.guild:
             return
-        
+
         # Check if user is translation locked
-        if hasattr(self.bot, 'uwu_locks') and message.author.id in self.bot.uwu_locks:
+        if hasattr(self.bot, "uwu_locks") and message.author.id in self.bot.uwu_locks:
             # Get webhook info
             lock_info = self.bot.uwu_locks[message.author.id]
-            
+
             try:
                 # Delete original message
                 await message.delete()
-                
+
                 # Create webhook client in the current channel
                 async with aiohttp.ClientSession() as session:
                     # Fetch or create webhook for this specific channel
                     channel = message.channel
                     try:
                         webhooks = await channel.webhooks()
-                        webhook = next((w for w in webhooks if w.name.startswith(lock_info['language'].capitalize())), None)
-                        
+                        webhook = next(
+                            (
+                                w
+                                for w in webhooks
+                                if w.name.startswith(lock_info["language"].capitalize())
+                            ),
+                            None,
+                        )
+
                         # If no webhook exists, create a new one
                         if not webhook:
                             webhook = await channel.create_webhook(
@@ -476,18 +402,17 @@ class Fun(Cog):
                         # If can't fetch or create webhooks, remove the lock
                         del self.bot.uwu_locks[message.author.id]
                         return
-                    
+
                     # Translate the message
                     translated_content = self.translate_text(
-                        message.content, 
-                        lock_info.get('language', 'lolcat')
+                        message.content, lock_info.get("language", "lolcat")
                     )
-                    
+
                     # Send via webhook
                     await webhook.send(
-                        translated_content, 
-                        username=f"{lock_info['language'].capitalize()} {message.author.name}", 
-                        avatar_url=message.author.display_avatar.url
+                        translated_content,
+                        username=f"{lock_info['language'].capitalize()} {message.author.name}",
+                        avatar_url=message.author.display_avatar.url,
                     )
             except (discord.Forbidden, discord.NotFound):
                 # Remove lock if webhook or permissions fail
@@ -522,11 +447,11 @@ class Fun(Cog):
             "Diplodoculus puts something silly inside of the tree. You lose! :(",
             "Diplodoculus learns how to rollerskate and trips you, now you have bruises all over your knees. You lose!",
             "Diplodoculus slaps the fuck out of you! You lose!",
-            "Diplodoculus slaps your ass but it turns you on! Its a draw!"
+            "Diplodoculus slaps your ass but it turns you on! Its a draw!",
         ]
 
         outcome = random.choice(outcomes)
-        
+
         # Check if the user successfully tamed the Diplodoculus
         if "You win" in outcome:
             db_manager.add_dino(ctx.author.id)
@@ -535,15 +460,13 @@ class Fun(Cog):
             embed_color = discord.Color.yellow()
         else:
             embed_color = discord.Color.red()
-        
+
         # Display outcome and add XP
         xp_reward = 10 if "win" in outcome else 5 if "draw" in outcome else 0
         new_xp, new_level = db_manager.add_xp(ctx.author.id, xp_reward)
-        
+
         embed = discord.Embed(
-            title="Tame Diplodoculus",
-            description=outcome,
-            color=embed_color
+            title="Tame Diplodoculus", description=outcome, color=embed_color
         )
         embed.add_field(name="XP Earned", value=f"{xp_reward} XP", inline=True)
         embed.add_field(name="Current Level", value=new_level, inline=True)
@@ -554,11 +477,11 @@ class Fun(Cog):
     async def summon(self, ctx):
         """Summons Diplodoculus if the user owns one."""
         user_dino = db_manager.get_dino(ctx.author.id)
-        
+
         if not user_dino:
             await ctx.send("You don't own a Diplodoculus, try to tame one first!")
             return
-        
+
         summon_outcomes = [
             "Diplodoculus majestically appears, its long neck swaying gracefully.",
             "Diplodoculus stomps the ground and lets out a mighty roar!",
@@ -569,14 +492,14 @@ class Fun(Cog):
             "Diplodoculus winks at you and strikes a heroic pose.",
             "Diplodoculus appears with an entourage of smaller dinos.",
             "Diplodoculus munches on leaves while greeting you with a gentle nudge.",
-            "Diplodoculus stands tall, blocking the sun, casting a mighty shadow."
+            "Diplodoculus stands tall, blocking the sun, casting a mighty shadow.",
         ]
 
         outcome = random.choice(summon_outcomes)
         embed = discord.Embed(
             title=f"Summoning {user_dino.dino_name}",
             description=outcome,
-            color=discord.Color.green()
+            color=discord.Color.green(),
         )
         embed.set_thumbnail(url=ctx.author.avatar.url)
         await ctx.send(embed=embed)
@@ -585,11 +508,11 @@ class Fun(Cog):
     async def name_dino(self, ctx, *, pet_name: str):
         """Names your Diplodocus."""
         user_dino = db_manager.get_dino(ctx.author.id)
-        
+
         if not user_dino:
             await ctx.send("You don't own a Diplodoculus, try to tame one first!")
             return
-        
+
         db_manager.add_dino(ctx.author.id, pet_name)
         await ctx.send(f"Your Diplodoculus is now named **{pet_name}**!")
 
@@ -598,11 +521,11 @@ class Fun(Cog):
         """Shows how many pets the user owns."""
         all_dinos = db_manager.get_all_dinos()
         pet_count = len(all_dinos)
-        
+
         embed = discord.Embed(
             title="Pet Count",
             description=f"Total Diplodocus(es) owned: {pet_count} 🦕",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
         await ctx.send(embed=embed)
 
@@ -618,13 +541,12 @@ class Fun(Cog):
 
         try:
             user_xp = db_manager.get_xp(member.id)
-            
+
             # Explicitly call calculate_level
-            user_level = getattr(db_manager, 'calculate_level', lambda x: 0)(user_xp)
-            
+            user_level = getattr(db_manager, "calculate_level", lambda x: 0)(user_xp)
+
             embed = discord.Embed(
-                title=f"{member.name}'s XP and Level",
-                color=discord.Color.green()
+                title=f"{member.name}'s XP and Level", color=discord.Color.green()
             )
             embed.add_field(name="XP", value=user_xp, inline=True)
             embed.add_field(name="Level", value=user_level, inline=True)
@@ -665,7 +587,7 @@ class Fun(Cog):
         if not user_dino:
             await ctx.send("You don't own a Diplodoculus, try to tame one first!")
             return
-        
+
         opponent_dino = db_manager.get_dino(opponent.id)
         if not opponent_dino:
             await ctx.send(f"{opponent.mention} doesn't own a Diplodoculus!")
@@ -697,11 +619,11 @@ class Fun(Cog):
             "Diplodoculus puts something silly inside of the tree. You lose! :(",
             "Diplodoculus learns how to rollerskate and trips you, now you have bruises all over your knees. You lose!",
             "Diplodoculus slaps the fuck out of you! You lose!",
-            "Diplodoculus slaps your ass but it turns you on! Its a draw!"
+            "Diplodoculus slaps your ass but it turns you on! Its a draw!",
         ]
 
         outcome = random.choice(battle_outcomes)
-        
+
         # Determine XP rewards based on outcome
         if "You win" in outcome:
             winner_xp = 50
@@ -729,28 +651,28 @@ class Fun(Cog):
         embed = discord.Embed(
             title="🦕 Diplodoculus Battle 🦕",
             description=outcome,
-            color=discord.Color.random()
+            color=discord.Color.random(),
         )
-        
+
         # Add XP information to embed
         if winner:
             embed.add_field(
-                name="Battle Results", 
-                value=f"{winner.mention} wins and gains {winner_xp} XP!\n{loser.mention} loses and gains {loser_xp} XP.", 
-                inline=False
+                name="Battle Results",
+                value=f"{winner.mention} wins and gains {winner_xp} XP!\n{loser.mention} loses and gains {loser_xp} XP.",
+                inline=False,
             )
         else:
             embed.add_field(
-                name="Battle Results", 
-                value=f"It's a draw! Both participants gain {winner_xp} XP.", 
-                inline=False
+                name="Battle Results",
+                value=f"It's a draw! Both participants gain {winner_xp} XP.",
+                inline=False,
             )
 
         # Add participants' Diplodoculus names
         embed.add_field(
-            name="Combatants", 
-            value=f"{ctx.author.mention}'s {user_dino.dino_name} vs {opponent.mention}'s {opponent_dino.dino_name}", 
-            inline=False
+            name="Combatants",
+            value=f"{ctx.author.mention}'s {user_dino.dino_name} vs {opponent.mention}'s {opponent_dino.dino_name}",
+            inline=False,
         )
 
         await ctx.send(embed=embed)
@@ -769,11 +691,13 @@ class Fun(Cog):
         """Starts a battle with Diplodoculus."""
         outcomes = self.load_outcomes()
         if not outcomes:
-            await ctx.send("No battle outcomes available! Please add some using the `add-outcome` command.")
+            await ctx.send(
+                "No battle outcomes available! Please add some using the `add-outcome` command."
+            )
             return
 
         outcome = random.choice(outcomes)
-        
+
         # Add XP based on outcome
         if "You win" in outcome:
             db_manager.add_xp(ctx.author.id, 10)  # Award 10 XP for wins
@@ -786,11 +710,13 @@ class Fun(Cog):
             embed_color = discord.Color.yellow()
 
         embed = discord.Embed(
-            title="Battle Outcome",
-            description=outcome,
-            color=embed_color
+            title="Battle Outcome", description=outcome, color=embed_color
         )
-        embed.add_field(name="XP Earned", value=f"{'10 XP' if 'win' in outcome else '5 XP' if 'lose' in outcome else '2 XP'}", inline=True)
+        embed.add_field(
+            name="XP Earned",
+            value=f"{'10 XP' if 'win' in outcome else '5 XP' if 'lose' in outcome else '2 XP'}",
+            inline=True,
+        )
         embed.set_thumbnail(url=ctx.author.avatar.url)
         await ctx.send(embed=embed)
 
@@ -798,23 +724,23 @@ class Fun(Cog):
     async def add_battle_outcome(self, ctx, *, outcome: str):
         """Add a new battle outcome to the JSON file."""
         outcomes_file = "./json/battle_outcomes.json"
-        
+
         try:
             with open(outcomes_file, "r") as f:
                 outcomes = json.load(f)
         except FileNotFoundError:
             outcomes = []
-        
+
         # Check if outcome already exists
         if outcome in outcomes:
             await ctx.send("This outcome already exists!")
             return
-        
+
         outcomes.append(outcome)
-        
+
         with open(outcomes_file, "w") as f:
             json.dump(outcomes, f, indent=4)
-        
+
         await ctx.send(f"Added new battle outcome: {outcome}")
 
     @commands.command(name="9/11")
@@ -830,7 +756,7 @@ class Fun(Cog):
             "     ✈️  🏢",
             "      ✈️ 🏢",
             "       ✈️🏢",
-            "        💥"
+            "        💥",
         ]
 
         # Second plane sequence
@@ -843,7 +769,7 @@ class Fun(Cog):
             "🏢  ✈️     ",
             "🏢 ✈️      ",
             "🏢✈️       ",
-            "💥"
+            "💥",
         ]
 
         # First plane animation
@@ -851,7 +777,7 @@ class Fun(Cog):
         for stage in first_plane_stages[1:]:
             await asyncio.sleep(0.5)
             await message.edit(content=stage)
-        
+
         await asyncio.sleep(1)
 
         # Second plane animation
@@ -859,12 +785,12 @@ class Fun(Cog):
         for stage in second_plane_stages[1:]:
             await asyncio.sleep(0.5)
             await message.edit(content=stage)
-        
+
         await asyncio.sleep(1)
 
         # Aftermath
         await message.edit(content="💨 🏢💥🏢")
-        
+
         await asyncio.sleep(1)
         await message.edit(content="😔")
 
@@ -873,53 +799,67 @@ class Fun(Cog):
         """Show a user's birthday and time until next birthday."""
         # If no member specified, use the command invoker
         member = member or ctx.author
-        
+
         try:
             # Get birthday from database
             user_birthday = db_manager.get_birthday(member.id)
-            
+
             if not user_birthday:
-                await ctx.send(f"{member.mention} hasn't set a birthday yet. Use `bday set` to set one!")
+                await ctx.send(
+                    f"{member.mention} hasn't set a birthday yet. Use `bday set` to set one!"
+                )
                 return
-            
+
             # Calculate days until next birthday
             today = date.today()
             next_birthday = date(today.year, user_birthday.month, user_birthday.day)
-            
+
             # If birthday has passed this year, set to next year
             if next_birthday < today:
-                next_birthday = date(today.year + 1, user_birthday.month, user_birthday.day)
-            
+                next_birthday = date(
+                    today.year + 1, user_birthday.month, user_birthday.day
+                )
+
             # Calculate time difference
             time_diff = relativedelta(next_birthday, today)
-            
+
             # Create embed
             embed = discord.Embed(
-                title=f"🎂 {member.name}'s Birthday",
-                color=discord.Color.gold()
+                title=f"🎂 {member.name}'s Birthday", color=discord.Color.gold()
             )
-            embed.add_field(name="Birthday", value=user_birthday.strftime("%B %d"), inline=False)
-            
+            embed.add_field(
+                name="Birthday", value=user_birthday.strftime("%B %d"), inline=False
+            )
+
             # Format time until next birthday
             time_parts = []
             if time_diff.years > 0:
-                time_parts.append(f"{time_diff.years} year{'s' if time_diff.years > 1 else ''}")
+                time_parts.append(
+                    f"{time_diff.years} year{'s' if time_diff.years > 1 else ''}"
+                )
             if time_diff.months > 0:
-                time_parts.append(f"{time_diff.months} month{'s' if time_diff.months > 1 else ''}")
+                time_parts.append(
+                    f"{time_diff.months} month{'s' if time_diff.months > 1 else ''}"
+                )
             if time_diff.days > 0:
-                time_parts.append(f"{time_diff.days} day{'s' if time_diff.days > 1 else ''}")
-            
-            time_str = " and ".join(time_parts) if time_parts else "Today is your birthday!"
-            
+                time_parts.append(
+                    f"{time_diff.days} day{'s' if time_diff.days > 1 else ''}"
+                )
+
+            time_str = (
+                " and ".join(time_parts) if time_parts else "Today is your birthday!"
+            )
+
             embed.add_field(name="Next Birthday", value=f"In {time_str}", inline=False)
             embed.set_thumbnail(url=member.avatar.url)
-            
+
             await ctx.send(embed=embed)
-        
+
         except Exception as e:
             await ctx.send(f"An error occurred: {e}")
             # Additional debug print
             import traceback
+
             traceback.print_exc()
 
     @birthday.command(name="set")
@@ -932,56 +872,67 @@ class Fun(Cog):
             except ValueError:
                 # If year parsing fails, assume current year
                 try:
-                    birthday = datetime.strptime(birthday_str, "%m-%d").date().replace(year=date.today().year)
+                    birthday = (
+                        datetime.strptime(birthday_str, "%m-%d")
+                        .date()
+                        .replace(year=date.today().year)
+                    )
                 except ValueError:
-                    await ctx.send("Invalid date format. Please use YYYY-MM-DD or MM-DD (e.g., 2000-05-15 or 05-15).")
+                    await ctx.send(
+                        "Invalid date format. Please use YYYY-MM-DD or MM-DD (e.g., 2000-05-15 or 05-15)."
+                    )
                     return
-            
+
             # Validate birthday
             if birthday.year < 1900 or birthday > date.today():
                 await ctx.send("Please provide a valid birthday.")
                 return
-            
+
             # Save to database
             db_manager.set_birthday(ctx.author.id, birthday)
-            
+
             embed = discord.Embed(
                 title="🎂 Birthday Set",
                 description=f"Your birthday has been set to {birthday.strftime('%B %d')}!",
-                color=discord.Color.green()
+                color=discord.Color.green(),
             )
             await ctx.send(embed=embed)
-        
+
         except Exception as e:
             await ctx.send(f"An error occurred: {e}")
             # Additional debug print
             import traceback
+
             traceback.print_exc()
 
     async def check_birthdays(self):
         """Background task to check and announce birthdays."""
         await self.bot.wait_until_ready()
-        
+
         while not self.bot.is_closed():
             try:
                 today = date.today()
                 birthdays = db_manager.get_all_birthdays()
-                
+
                 for birthday_entry in birthdays:
-                    if (birthday_entry.birthday.month == today.month and 
-                        birthday_entry.birthday.day == today.day):
-                        
+                    if (
+                        birthday_entry.birthday.month == today.month
+                        and birthday_entry.birthday.day == today.day
+                    ):
+
                         # Find the user in the guild
                         user = await self.bot.fetch_user(int(birthday_entry.user_id))
-                        
+
                         # Find a general channel to announce
                         channel = self.bot.get_channel(self.bot.general_channel_id)
                         if channel:
-                            await channel.send(f"🎉 Happy birthday {user.mention}! 🎂🥳")
-            
+                            await channel.send(
+                                f"🎉 Happy birthday {user.mention}! 🎂🥳"
+                            )
+
             except Exception as e:
                 print(f"Error in birthday check: {e}")
-            
+
             # Wait 24 hours before checking again
             await asyncio.sleep(86400)
 
@@ -1003,7 +954,71 @@ class Fun(Cog):
             "Did you know the exact manufacturing date of this Discord server? I do! 📅",
             "Stimming is just my way of downloading updates 🤖",
             "Social interaction loading... please wait... **error**: **Failed to load Social Interaction: No such file or directory**",
-            "Autism isn't a processing error, it's a FEATURE! 🧩"
+            "Autism isn't a processing error, it's a FEATURE! 🧩",
         ]
-        
+
         await ctx.send(random.choice(tism_responses))
+
+    @commands.command(name="grr")
+    async def grr(self, ctx):
+        """Responds with a greeting."""
+        await ctx.send("Hi ochra <:pov_ochra:1317632496636002344>")
+
+    @commands.command(name="erection")
+    async def errection(self, ctx):
+        """Sends an embedded image of a stick."""
+        embed = discord.Embed(title="Don't ask why this is a command.. blame vio.", color=discord.Color.gold())
+        embed.set_image(url="https://c.tenor.com/U2y9ZVq5HSAAAAAd/tenor.gif")
+        await ctx.send(embed=embed)
+
+    @commands.command(name="fire")
+    async def fire(self, ctx):
+        """Responds with a specific message."""
+        msg = await ctx.send("california.")
+        await msg.add_reaction("🔥")
+
+    @commands.command(name="ochra")
+    async def ochra(self, ctx):
+        """Responds with a specific message."""
+        await ctx.send("<:pov_ochra:1317632496636002344>")
+
+    @app_commands.command(name='confession')
+    async def confession(self, interaction: discord.Interaction):
+        # Create the modal for confession input
+        class ConfessionModal(discord.ui.Modal):
+            def __init__(self):
+                super().__init__(title='Confession')
+                self.add_item(discord.ui.InputText(label='Your Confession', style=discord.InputTextStyle.long))
+                self.add_item(discord.ui.InputText(label='Submit as Anonymous?', style=discord.InputTextStyle.short, placeholder='yes/no'))
+
+            async def callback(self, interaction):
+                confession_text = self.children[0].value
+                anonymity = self.children[1].value.lower()
+                author = "Anonymous" if anonymity == 'anonymous' else f'{interaction.user.mention} Confession'
+
+                # Create the embed
+                embed = discord.Embed(title='Confession', description=f'"{confession_text}"', color=0xffffff)
+                embed.set_footer(text=author)
+
+                # Send the embed
+                await interaction.response.send_message(embed=embed)
+
+                # Add buttons
+                submit_button = discord.ui.Button(label='Submit a confession', style=discord.ButtonStyle.primary)
+                delete_button = discord.ui.Button(label='Delete', style=discord.ButtonStyle.danger)
+
+                async def submit_callback(button_interaction):
+                    await confession(button_interaction)  # Call the confession command again
+
+                async def delete_callback(button_interaction):
+                    await interaction.followup.send('Your confession has been deleted.')
+
+                submit_button.callback = submit_callback
+                delete_button.callback = delete_callback
+
+                # Send buttons as part of a view
+                await interaction.followup.send(view=discord.ui.View().add_item(submit_button).add_item(delete_button))
+
+        # Show the modal
+        modal = ConfessionModal()
+        await interaction.response.send_modal(modal)

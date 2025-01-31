@@ -1642,25 +1642,20 @@ class LastFM(commands.Cog):
         Checks every 1 second and posts updates to the dedicated channel.
         """
         try:
-            # Ensure we have a tracking channel and users
             if not self.tracking_channel or not self.tracking_users:
-                # Reload users in case the list is empty
                 await self.load_tracking_users()
                 
                 if not self.tracking_users:
                     return
 
-            # Get the channel object
             channel = self.bot.get_channel(self.tracking_channel)
             if not channel:
                 print("Tracking channel not found. Stopping continuous tracking.")
                 self.continuous_tracking.stop()
                 return
 
-            # Iterate through tracked users
             for user_id, lastfm_username in list(self.tracking_users.items()):
                 try:
-                    # Fetch recent tracks
                     data = await self.fetch_lastfm_data("user.getrecenttracks", {
                         "user": lastfm_username,
                         "limit": 1
@@ -1678,22 +1673,17 @@ class LastFM(commands.Cog):
                         
                         track = track[0] if track else {}
                         
-                        # Check if the track is currently playing
                         is_now_playing = track.get('@attr', {}).get('nowplaying') == 'true'
                         
-                        # Only process if the track is currently playing
                         if is_now_playing:
                             artist = track.get("artist", {}).get("#text", "Unknown Artist")
                             song = track.get("name", "Unknown Track")
                             album = track.get("album", {}).get("#text", "Unknown Album")
                             image_url = track.get("image", [{}])[-1].get("#text", None)
 
-                            # Construct track string for comparison
                             current_track = f"{artist} - {song}"
                             
-                            # Only send if it's a new track
                             if current_track != self.last_tracks.get(lastfm_username):
-                                # Fetch additional data
                                 artist_data = await self.fetch_lastfm_data("artist.getInfo", {
                                     "artist": artist,
                                     "username": lastfm_username
@@ -1722,7 +1712,6 @@ class LastFM(commands.Cog):
                                 if image_url:
                                     embed.set_thumbnail(url=image_url)
 
-                                # Fetch user info for avatar
                                 avatar_url = (
                                     user_info.get("user", {}).get("image", [{}])[-1].get("#text") 
                                     or "https://cdn.discordapp.com/embed/avatars/0.png"
@@ -1738,11 +1727,9 @@ class LastFM(commands.Cog):
                                 
                                 embed.set_footer(text=footer_text)
 
-                                # Send message
                                 try:
                                     message = await channel.send(embed=embed)
                                     
-                                    # Update last track to prevent duplicate messages
                                     self.last_tracks[lastfm_username] = current_track
                                 except Exception as send_error:
                                     print(f"Failed to send message for {lastfm_username}: {send_error}")
@@ -1756,7 +1743,6 @@ class LastFM(commands.Cog):
 
         except Exception as e:
             print(f"Unexpected error in continuous tracking: {e}")
-            # Optionally stop the task if a critical error occurs
             self.continuous_tracking.stop()
 
     @continuous_tracking.before_loop

@@ -285,7 +285,7 @@ class VoiceMaster(commands.Cog):
 
         await ctx.send(f"🔍 Found: **{video_title}**\n{video_url}")
 
-    @commands.command(name="sdeafen", aliases= ["sd"])
+    @commands.command(name="sdeafen", aliases= ["sd", "deafen"])
     @commands.has_permissions(moderate_members=True)
     async def server_deafen(self, ctx, member: discord.Member = None):
         """Server deafens the mentioned member, or self if none mentioned."""
@@ -303,7 +303,7 @@ class VoiceMaster(commands.Cog):
         except Exception as e:
             await ctx.send(f"no means no bruh")
 
-    @commands.command(name="smute", aliases= ["sm"])
+    @commands.command(name="smute", aliases= ["sm", "mute"])
     @commands.has_permissions(moderate_members=True)
     async def server_mute(self, ctx, member: discord.Member = None):
         """Server mutes the mentioned member, or self if none mentioned."""
@@ -321,7 +321,7 @@ class VoiceMaster(commands.Cog):
         except Exception as e:
             await ctx.send(f"no means no bruh")
 
-    @commands.command(name="sundeafen", aliases= ["sund"])
+    @commands.command(name="sundeafen", aliases= ["sund", "sunday", "undeafen"])
     @commands.has_permissions(moderate_members=True)
     async def server_undeafen(self, ctx, member: discord.Member = None):
         """Server undeafens the mentioned member, or self if none mentioned."""
@@ -339,7 +339,7 @@ class VoiceMaster(commands.Cog):
         except Exception as e:
             await ctx.send(f"no means no bruh")
 
-    @commands.command(name="sunmute", aliases= ["sum"])
+    @commands.command(name="sunmute", aliases= ["sum", "unmute"])
     @commands.has_permissions(moderate_members=True)
     async def server_unmute(self, ctx, member: discord.Member = None):
         """Server unmutes the mentioned member, or self if none mentioned."""

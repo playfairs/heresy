@@ -391,7 +391,39 @@ class Utility(Cog):
         )
         await ctx.send(embed=embed)
 
-    @command(name="steal")
+    @command(name='fetch')
+    async def fetch_sticker(self, ctx):
+        """Fetches the sticker from a reply and sends it as a downloadable file."""
+        if ctx.message.reference is None:
+            await ctx.send("Please reply to a sticker to fetch it.")
+            return
+
+        message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+        sticker = message.stickers[0] if message.stickers else None
+
+        if sticker:
+            # Download the sticker
+            async with aiohttp.ClientSession() as session:
+                async with session.get(sticker.url) as resp:
+                    if resp.status != 200:
+                        await ctx.send("Failed to download the sticker.")
+                        return
+                    sticker_bytes = await resp.read()
+
+            # Validate sticker size (Discord limit is 256 KB)
+            if len(sticker_bytes) > 256 * 1024:
+                await ctx.send("Sticker is too large to fetch (max 256 KB).")
+                return
+
+            # Determine the file format based on whether the sticker is animated
+            file_format = 'gif' if sticker.url.endswith('.gif') else 'png'
+
+            # Send the sticker as a downloadable file
+            await ctx.send(file=discord.File(io.BytesIO(sticker_bytes), filename=f"sticker.{file_format}"))
+        else:
+            await ctx.send("No sticker found in the replied message.")
+
+    @command(name='steal')
     @commands.has_permissions(manage_emojis=True)
     async def steal(self, ctx):
         """
@@ -443,6 +475,20 @@ class Utility(Cog):
         except Exception as e:
             await ctx.send(f"An error occurred: {e}")
             print(f"Sticker steal error: {e}")
+
+    @command(name='force_remove_afk')
+    async def force_remove_afk(self, ctx, member: discord.Member):
+        """Forcefully removes AFK status from a mentioned user if they are AFK."""
+        if ctx.author.id != 785042666475225109:
+            await ctx.send("You do not have permission to use this command.")
+            return
+
+        afk_data = self.get_afk_status(member.id)
+        if afk_data:
+            self.remove_afk(member.id)  # Logic to remove AFK status
+            await ctx.send(f"{member.mention} is no longer AFK.")
+        else:
+            await ctx.send(f"{member.mention} is not AFK.")
 
     @Cog.listener('on_message')
     async def afk_listener1(self, message):
@@ -498,3 +544,9 @@ class Utility(Cog):
                 color=discord.Color.red()
             )
             await message.channel.send(embed=embed)
+        
+        # Check if the bot is AFK
+        if message.author.id == self.bot.user.id:
+            # Remove AFK status
+            self.remove_afk(self.bot.user.id)  # Remove AFK status for the bot
+            await message.channel.send(f"{self.bot.user.mention} was AFK, removing AFK as this shouldn't be possible.")
