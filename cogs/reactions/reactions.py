@@ -129,6 +129,18 @@ class Reactions(Cog):
             "fuck you heresy": [
                 "why is bro sayin fuck you to a bot",
                 "what did i do"
+            ], 
+            "im playfairs": [
+                "no your not."
+            ],
+            "im playfair": [
+                "no your not."
+            ],
+            "i am playfair": [
+                "no your not."
+            ],
+            "i am playfairs": [
+                "no your not."
             ]
         }
 

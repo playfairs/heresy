@@ -1,9 +1,16 @@
-## What's New
+## What's New?
+- Confessions: Added command `confess` which allows users to confess their strange and weird confessions which get posted to a special confessions channel, exclusively for this server.
+- Removed a bunch of commands and features that were outdated, deprecated, or unused.
+- Added new users to Jishaku whitelist.
 
+
+## Playfairs.cc
+- Added new images to the Public Folder
+- Updated the bots tab on [playfairs.cc](https://playfairs.cc/heresy)
 
 
 ## Improvements
-
+- Ban and Kick: Added Direct Messaging to when a user is banned or kicked the bot DM's them right before their banned or kicked.
 
 
 ## Known Issues
@@ -11,7 +18,11 @@
 
 
 ## Coming Soon
+- Playfairs.cc: Dashboard, Commands Tab, and Documentation for the bot.
+- GitHub: Plan to add GitHub's API integration to the bot for certain features like directly interacting with Git with the bot.
+- Zipline: Plan to use and configure Zipline and Flameshot to playfairs.cc for screenshot linking, which makes it easier to manage screenshots with the bot.
+- Social: Planning to add Social Media integrations to the bot for platforms such as X, TikTok, Instagram and more (for searching and viewing posts via url with the bot)
+- Heresy.app: Eventually, will create a Desktop App for the Bot as a Dashboard and for other features, most likely will be made with Electron and React.
 
 
-
--# Report any bugs to @playfairs
+-# Report any bugs to @playfairs or @uxju

@@ -79,7 +79,6 @@ class Heresy(commands.AutoShardedBot):
         print(f'Shard ID: {self.shard_id} of {self.shard_count} shards')
         print("Heresy v2.1.0")
         
-        # Sync commands for each guild individually
         for guild in self.guilds:
             try:
                 await self.tree.sync(guild=guild)
@@ -90,33 +89,25 @@ class Heresy(commands.AutoShardedBot):
         print("Bot is ready and connected.")
 
     async def get_context(self, message, *, cls=commands.Context):
-        # Convert the entire message content to lowercase
         message.content = message.content.lower()
         
-        # Call the original get_context method
         return await super().get_context(message, cls=cls)
 
     async def get_prefix(self, message):
-        # Convert the message content to lowercase for case-insensitive prefix matching
         prefixes = [',']
         return commands.when_mentioned_or(*prefixes)(self, message)
 
     async def process_commands(self, message):
-        # Convert the command to lowercase to make it case-insensitive
         ctx = await self.get_context(message)
         
         if ctx.command is not None:
-            # Convert the invoked command to lowercase
             ctx.invoked_with = ctx.invoked_with.lower()
-            
-            # Special handling for help command
+
             if ctx.command.name == 'help' or 'help' in ctx.command.aliases:
-                # If the command is help, convert the first argument to lowercase
                 if len(ctx.args) > 2:
                     ctx.args = list(ctx.args)
                     ctx.args[2] = ctx.args[2].lower()
             
-            # Convert command arguments to lowercase if they are strings
             if ctx.args and len(ctx.args) > 2:
                 ctx.args = list(ctx.args)
                 for i in range(2, len(ctx.args)):
@@ -126,16 +117,11 @@ class Heresy(commands.AutoShardedBot):
         await self.invoke(ctx)
 
     async def invoke(self, ctx):
-        # Convert the command name to lowercase for case-insensitive matching
         if ctx.command is not None:
-            # Modify the command's name to be case-insensitive
             ctx.command.name = ctx.command.name.lower()
-            
-            # Also modify any aliases to lowercase
             if hasattr(ctx.command, 'aliases'):
                 ctx.command.aliases = [alias.lower() for alias in ctx.command.aliases]
-        
-        # Call the original invoke method
+
         await super().invoke(ctx)
 
     async def on_command_error(self, ctx, error):

@@ -48,34 +48,28 @@ class Moderation(commands.Cog):
         self.unbannable_user_ids = [785042666475225109, 1268333988376739931, 608450597347262472, 598125772754124823, 926665802957066291, 818507782911164487, 1003843669528424468, 757355424621133914, 812606857742647298, 1252011606687350805, 877283649588965416]
 
     def load_selfbots(self):
-        """Loads the selfbots.json file."""
         with open(self.file_path, "r") as f:
             return json.load(f)
 
     def save_selfbots(self, data):
-        """Saves data to the selfbots.json file."""
         with open(self.file_path, "w") as f:
             json.dump(data, f, indent=4)
 
     def save_json(self, data, filename):
-        """Saves the provided data to a JSON file."""
         with open(filename, 'w') as f:
             json.dump(data, f, indent=4)
     
     def load_json(self, filename):
-        """Loads data from a JSON file."""
         if os.path.exists(filename):
             with open(filename, 'r') as f:
                 return json.load(f)
         return {}
 
     async def give_role(self, ctx, member: discord.Member, role_input: str):
-        """Give or remove a role from a member, skipping bot users."""
         if member.bot:
             await ctx.send("Cannot modify roles for bots.")
             return
 
-        # Find the role by name or mention
         role = None
         try:
             role = await commands.RoleConverter().convert(ctx, role_input)
@@ -83,13 +77,11 @@ class Moderation(commands.Cog):
             await ctx.send(f"Role '{role_input}' not found.")
             return
 
-        # Check role hierarchy
         if role.position >= ctx.author.top_role.position:
             embed = discord.Embed(description="You cannot manage a role that is higher or equal to your highest role.", color=0xFF0000)
             await ctx.send(embed=embed)
             return
 
-        # Check bot's role hierarchy
         if role.position >= ctx.guild.me.top_role.position:
             embed = discord.Embed(description="I cannot manage a role that is higher or equal to my highest role.", color=0xFF0000)
             await ctx.send(embed=embed)
@@ -97,12 +89,10 @@ class Moderation(commands.Cog):
 
         try:
             if role in member.roles:
-                # Remove role if already has it
                 await member.remove_roles(role, reason=f"Role removed by {ctx.author}")
                 embed = discord.Embed(description=f"Removed {role.mention} from {member.mention}.", color=0xADD8E6)
                 await ctx.send(embed=embed)
             else:
-                # Add role
                 await member.add_roles(role, reason=f"Role added by {ctx.author}")
                 embed = discord.Embed(description=f"Gave {role.mention} to {member.mention}.", color=0xADD8E6)
                 await ctx.send(embed=embed)
@@ -126,11 +116,10 @@ class Moderation(commands.Cog):
     @role_group.command(name="human", aliases= ["humans"])
     @has_permissions(manage_roles=True)
     async def role_human(self, ctx, role: discord.Role):
-        count = len([member for member in ctx.guild.members if not member.bot])
+        count = len([member for member in ctx.guild.members])
         await self.send_embed(ctx, f"Adding {role.mention} to {count} human members, this may take a moment...")
 
         for member in ctx.guild.members:
-            if not member.bot:
                 await member.add_roles(role)
 
         await self.send_embed(ctx, f"Role {role.mention} has been given to {count} human members.")
@@ -590,9 +579,6 @@ class Moderation(commands.Cog):
             embed = discord.Embed(title="Bye bye", description=f"You were kicked in {ctx.guild.name} by {ctx.author.mention} for no reason", color=0xFF0000)
             # Send the embed as a DM to the kicked member
             await member.send(embed=embed)
-        except discord.HTTPException: 
-            await ctx.send("FUCK YOU! I could not pm user")
-
         except discord.Forbidden:
             await ctx.send("I do not have permission to kick this user.")
         except discord.HTTPException:
@@ -703,10 +689,14 @@ class Moderation(commands.Cog):
         except discord.HTTPException:
             await ctx.send("Failed to remove timeout from the user.")
 
-    @command(name='nick')
+    @command(name="nick")
     @has_permissions(manage_nicknames=True)
     async def nick(self, ctx, member: discord.Member, *, new_nick: str = None):
         """Changes or resets the nickname of the mentioned user."""
+        if new_nick in ["playfair", "playfairs"]:
+            await ctx.send("No.")
+            return
+        
         try:
             await member.edit(nick=new_nick)
             if new_nick:
@@ -716,7 +706,7 @@ class Moderation(commands.Cog):
         except discord.HTTPException:
             await ctx.send("Failed to change the nickname. Please try again.")
 
-    @command(name='forcenick', aliases=['fn'])
+    @command(name="forcenick", aliases=['fn'])
     @has_permissions(administrator=True)
     async def forcenick(self, ctx, member: discord.Member = None, *, forced_nick: Optional[str] = None):
         """Forces a nickname on a user that cannot be changed. If no nickname is provided, removes the forced nickname."""
@@ -929,7 +919,7 @@ class Moderation(commands.Cog):
                 # Create and send an embed in the new channel
                 embed = discord.Embed(
                     title="Channel Nuked", 
-                    description=f"This channel was nuked by {self.ctx.author.mention}",
+                    description=f"This channel was nuked by {self.ctx.author}",
                     color=discord.Color.red()
                 )
                 await new_channel.send(embed=embed)
@@ -1663,9 +1653,7 @@ class Moderation(commands.Cog):
         """
         Listener for guild bans to prevent banning immune users.
         """
-        # Check if the ban should be prevented
         if await self.check_ban_prevention(guild, user):
-            # Attempt to unban the user
             try:
                 await guild.unban(user, reason="User has immunity")
             except Exception as e:
@@ -1892,10 +1880,8 @@ class Moderation(commands.Cog):
     async def channel_create(self, ctx, name: str, category: discord.CategoryChannel = None):
         """Create a new text channel"""
         try:
-            # Sanitize channel name
             name = name.lower().replace(' ', '-')
             
-            # Create channel
             new_channel = await ctx.guild.create_text_channel(
                 name=name, 
                 category=category
@@ -1911,7 +1897,6 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     async def channel_delete(self, ctx, channel: discord.TextChannel = None):
         """Delete a channel"""
-        # Use current channel if no channel specified
         channel = channel or ctx.channel
         
         try:
@@ -1928,7 +1913,6 @@ class Moderation(commands.Cog):
     async def channel_rename(self, ctx, *, new_name: str):
         """Rename the current channel"""
         try:
-            # Sanitize channel name
             new_name = new_name.lower().replace(' ', '-')
             
             await ctx.channel.edit(name=new_name)
@@ -1943,13 +1927,10 @@ class Moderation(commands.Cog):
     async def channel_private(self, ctx, name: str = None):
         """Create a private channel"""
         try:
-            # Use current channel name if no name provided
             name = name or f"{ctx.author.name}-private"
             
-            # Sanitize channel name
             name = name.lower().replace(' ', '-')
-            
-            # Create private channel
+
             new_channel = await ctx.guild.create_text_channel(
                 name=name,
                 overwrites={
@@ -1999,17 +1980,15 @@ class Moderation(commands.Cog):
         if category.lower() == 'all':
             for channel in ctx.guild.channels:
                 if isinstance(channel, discord.TextChannel) and channel.category:
-                    # Sync permissions with the corresponding category as if pressing the sync button
                     await channel.edit(sync_permissions=True)
-            await ctx.send("👍")  # Send thumbs up when done
+            await ctx.send("👍")
         else:
-            # Fetch the category by name
             category = discord.utils.get(ctx.guild.categories, name=category)
             if category:
                 for channel in ctx.guild.channels:
                     if isinstance(channel, discord.TextChannel) and channel.category == category:
                         await channel.edit(sync_permissions=True)
-                await ctx.send("👍")  # Send thumbs up when done
+                await ctx.send("👍")
             else:
                 await ctx.send("Category not found.")
 

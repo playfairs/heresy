@@ -36,6 +36,7 @@ class Fun(Cog):
         self.mirror_webhook = None
         self.lorebooks_dir = "Lorebooks"
         self.initialize_lorebooks_dir()
+        self.confession_channel = None
 
     def initialize_lorebooks_dir(self):
         """Ensure the 'Lorebooks' folder exists."""
@@ -982,43 +983,16 @@ class Fun(Cog):
         """Responds with a specific message."""
         await ctx.send("<:pov_ochra:1317632496636002344>")
 
-    @app_commands.command(name='confession')
-    async def confession(self, interaction: discord.Interaction):
-        # Create the modal for confession input
-        class ConfessionModal(discord.ui.Modal):
-            def __init__(self):
-                super().__init__(title='Confession')
-                self.add_item(discord.ui.InputText(label='Your Confession', style=discord.InputTextStyle.long))
-                self.add_item(discord.ui.InputText(label='Submit as Anonymous?', style=discord.InputTextStyle.short, placeholder='yes/no'))
-
-            async def callback(self, interaction):
-                confession_text = self.children[0].value
-                anonymity = self.children[1].value.lower()
-                author = "Anonymous" if anonymity == 'anonymous' else f'{interaction.user.mention} Confession'
-
-                # Create the embed
-                embed = discord.Embed(title='Confession', description=f'"{confession_text}"', color=0xffffff)
-                embed.set_footer(text=author)
-
-                # Send the embed
-                await interaction.response.send_message(embed=embed)
-
-                # Add buttons
-                submit_button = discord.ui.Button(label='Submit a confession', style=discord.ButtonStyle.primary)
-                delete_button = discord.ui.Button(label='Delete', style=discord.ButtonStyle.danger)
-
-                async def submit_callback(button_interaction):
-                    await confession(button_interaction)  # Call the confession command again
-
-                async def delete_callback(button_interaction):
-                    await interaction.followup.send('Your confession has been deleted.')
-
-                submit_button.callback = submit_callback
-                delete_button.callback = delete_callback
-
-                # Send buttons as part of a view
-                await interaction.followup.send(view=discord.ui.View().add_item(submit_button).add_item(delete_button))
-
-        # Show the modal
-        modal = ConfessionModal()
-        await interaction.response.send_modal(modal)
+    @commands.group(name="confess", invoke_without_command=True)
+    async def confess(self, ctx, *, message: str = None):
+        if message is None:
+            await ctx.send("Please provide a message to confess.")
+        else:
+            await ctx.message.delete()  # Delete the original message
+            channel_id = 1334727473396584518
+            channel = self.bot.get_channel(channel_id)
+            if channel is not None:
+                embed = discord.Embed(title=f"Anonymous Confession", description=message, color=discord.Color.blue())
+                await channel.send(embed=embed)
+            else:
+                await ctx.send("Confession channel not found.")

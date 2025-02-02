@@ -8,7 +8,7 @@ import jishaku
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v3.1.15"
+        self.version = "v3.3.0"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
 
@@ -40,7 +40,7 @@ class Developer(commands.Cog):
         embed.set_footer(
             text=f"Heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
         )
-        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        embed.set_thumbnail(url="https://playfairs.cc/fox.gif")
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()
@@ -78,7 +78,7 @@ class Developer(commands.Cog):
         embed.set_footer(
             text=f"Heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
         )
-        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        embed.set_thumbnail(url="https://playfairs.cc/fox.gif")
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()

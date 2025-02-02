@@ -14,6 +14,8 @@ from PIL import ImageGrab, Image
 import platform
 import asyncio
 import shutil
+import random
+import string
 
 class Owner(
     Cog,
