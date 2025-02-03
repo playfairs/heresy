@@ -1,6 +1,6 @@
 asyncio
 asyncpg
-audioop-lts
+aiolimiter
 attrs
 blinker
 click
@@ -20,10 +20,14 @@ yarl
 zipp
 pyfiglet
 python-dateutil
-googleapi-python-client
-googleapiclient
+google-api-python-client
 pylast
 psutil
 pyperclip
 python-dotenv
 setuptools
+yt-dlp
+sqlalchemy
+pillow
+numpy
+psycopg2
