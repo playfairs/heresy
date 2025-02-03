@@ -10,10 +10,10 @@ import re
 import aiohttp
 from datetime import datetime, timedelta
 
-from main import Heresy
+from main import flesh
 
 class Reactions(Cog):
-    def __init__(self, bot: Heresy):
+    def __init__(self, bot: flesh):
         self.bot = bot
         self.custom_reactions = {}
         self.skull_targets = set()
@@ -48,8 +48,8 @@ class Reactions(Cog):
             "where the fuck my blunt where the fuck my cup where the fuck my reefer": [
                 "# HUH HUH HUH HUH HUH HUH, IM SMOKING ON KUSH, HUH HUH HUH HUH HUH HUH, IM SMOKING ON KUSH"
             ],
-            "what is Heresy": [
-                "Heresy is the act of holding or promoting beliefs or opinions that go against the established doctrines of a religious, social, or political system, particularly within the context of religion. Historically, it often referred to deviations from the teachings of a dominant church or faith; The 6th Circle of Dante's Inferno."
+            "what is flesh": [
+                "flesh is the act of holding or promoting beliefs or opinions that go against the established doctrines of a religious, social, or political system, particularly within the context of religion. Historically, it often referred to deviations from the teachings of a dominant church or faith; The 6th Circle of Dante's Inferno."
             ],
             "band for band": [
                 "https://cdn.discordapp.com/attachments/1302445192762359900/1302459603266699314/com_kid_bingo.gif?ex=672ccec7&is=672b7d47&hm=f1a89f9ae4669cfb7d36b86927067e332a95d7a91a1fbde3bfd376b33b55b7ae&"
@@ -116,8 +116,8 @@ class Reactions(Cog):
             "who are you": [
                 "# I AM GOD. I AM BASQUIAT"
             ],
-            "what happened to heresy": [
-                "Heresy is currently offline, in replacement, Heresy is running Heresy's code to ensure the bot still functions, meanwhile, Heresy is getting a new Src."
+            "what happened to flesh": [
+                "flesh is currently offline, in replacement, flesh is running flesh's code to ensure the bot still functions, meanwhile, flesh is getting a new Src."
             ],
             "Not me dude lol whats happening lol I hate this lol": [
                 "Not me dude lol whats happening lol I hate this lol"
@@ -126,7 +126,7 @@ class Reactions(Cog):
                 "<@356268235697553409> fuck you, I also have a fm command.",
                 "# <@356268235697553409> Kill thy self.",
             ],
-            "fuck you heresy": [
+            "fuck you flesh": [
                 "why is bro sayin fuck you to a bot",
                 "what did i do"
             ], 
@@ -484,8 +484,8 @@ class Reactions(Cog):
             if "hershey" in content or "1317632496636002344" in content:
                 await message.add_reaction("<:pov_ochra:1317632496636002344>")
 
-            if "heresy" in content or "1291967026788831232" in content:
-                await message.add_reaction("<:heresy:1291967026788831232>")
+            if "flesh" in content or "1291967026788831232" in content:
+                await message.add_reaction("<:flesh:1291967026788831232>")
 
             if "nova" in content or "1320964930387709973" in content:
                 await message.add_reaction("<:nova:1320964930387709973>")
@@ -574,7 +574,7 @@ class Reactions(Cog):
         trigger_phrases = ["nobody cares", "no one cares", "idc"]
 
         if any(phrase in message.content.lower() for phrase in trigger_phrases):
-            file_path = "/root/heresy/Assets/MP3/nobody cares nig"
+            file_path = "/root/flesh/Assets/MP3/nobody cares nig"
 
             await message.channel.send(
                 file=discord.File(file_path, filename="VoiceMessage.mp3"),

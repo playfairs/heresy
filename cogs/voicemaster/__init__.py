@@ -1,5 +1,5 @@
 from .voicemaster import VoiceMaster
-from main import Heresy
+from main import flesh
 
-async def setup(bot: Heresy):
+async def setup(bot: flesh):
     await bot.add_cog(VoiceMaster(bot))

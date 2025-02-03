@@ -15,7 +15,7 @@ from database import db_manager
 
 from discord import app_commands
 from discord.app_commands import Choice
-from main import Heresy
+from main import flesh
 
 # Selenium imports
 from selenium import webdriver

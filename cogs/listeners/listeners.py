@@ -1,10 +1,10 @@
 import discord
 from discord.ext.commands import Cog
-from main import Heresy
+from main import flesh
 import os
 
 class Listeners(Cog):
-    def __init__(self, bot: Heresy):
+    def __init__(self, bot: flesh):
         self.bot = bot
         self.blacklisted_guilds = set()
         self.last_message_author = None
@@ -27,11 +27,11 @@ class Listeners(Cog):
 
         if inviter:
             embed = discord.Embed(
-                title="Thanks for Choosing Heresy!",
+                title="Thanks for Choosing flesh!",
                 description=(
-                    "Hello! Thank you for inviting Heresy to your server.\n"
+                    "Hello! Thank you for inviting flesh to your server.\n"
                     "To see all available commands, use `,help`.\n\n"
-                    "If you have any questions, join discord.gg/Heresy for more info on Heresy."
+                    "If you have any questions, join discord.gg/flesh for more info on flesh."
                 ),
                 color=discord.Color.green()
             )
@@ -144,5 +144,5 @@ class Listeners(Cog):
         if message.author == self.bot.user:
             return
 
-        if message.content.lower() == "hi heresy":
+        if message.content.lower() == "hi flesh":
             await message.channel.send(f"Hi, {message.author.mention}")

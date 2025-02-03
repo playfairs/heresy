@@ -10,7 +10,7 @@ from config import DISCORD
 
 log = logging.getLogger(__name__)
 
-class Heresy(commands.AutoShardedBot):
+class flesh(commands.AutoShardedBot):
     
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -77,7 +77,7 @@ class Heresy(commands.AutoShardedBot):
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print(f'Shard ID: {self.shard_id} of {self.shard_count} shards')
-        print("Heresy v2.1.0")
+        print("flesh v2.1.0")
         
         for guild in self.guilds:
             try:
@@ -90,7 +90,7 @@ class Heresy(commands.AutoShardedBot):
 
     async def get_context(self, message, *, cls=commands.Context):
         message.content = message.content.lower()
-        
+        # message.content = message.content.split(" ")[0].lower() + " " + " ".join(message.content.split(" ")[1:])
         return await super().get_context(message, cls=cls)
 
     async def get_prefix(self, message):
@@ -103,16 +103,10 @@ class Heresy(commands.AutoShardedBot):
         if ctx.command is not None:
             ctx.invoked_with = ctx.invoked_with.lower()
 
-            if ctx.command.name == 'help' or 'help' in ctx.command.aliases:
+            if ctx.command.name == 'help' in ctx.command.aliases:
                 if len(ctx.args) > 2:
                     ctx.args = list(ctx.args)
                     ctx.args[2] = ctx.args[2].lower()
-            
-            if ctx.args and len(ctx.args) > 2:
-                ctx.args = list(ctx.args)
-                for i in range(2, len(ctx.args)):
-                    if isinstance(ctx.args[i], str):
-                        ctx.args[i] = ctx.args[i].lower()
         
         await self.invoke(ctx)
 
@@ -129,5 +123,5 @@ class Heresy(commands.AutoShardedBot):
             await ctx.message.add_reaction('❓')
 
 if __name__ == "__main__":
-    bot = Heresy()
+    bot = flesh()
     bot.run()

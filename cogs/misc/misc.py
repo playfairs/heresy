@@ -2,12 +2,12 @@ import discord
 import os
 
 from discord.ext.commands import command, Cog, Context
-from main import Heresy
+from main import flesh
 from discord.ext.commands import has_permissions
 
 
 class Misc(Cog):
-    def __init__(self, bot: Heresy):
+    def __init__(self, bot: flesh):
         self.bot = bot
         self.reports_dir = './Reports'
         if not os.path.exists(self.reports_dir):
@@ -78,8 +78,8 @@ class Misc(Cog):
         )
 
         embed.description = rules_text
-        embed.add_field(name="", value="[GitHub](https://github.com/playfairs-cc) • [Website](https://playfairs.cc/heresy) • [Server](https://discord.gg/heresy)", inline=False)
-        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg?size=1024")
+        embed.add_field(name="", value="[GitHub](https://github.com/playfairs-cc) • [Website](https://playfairs.cc/flesh) • [Server](https://discord.gg/flesh)", inline=False)
+        embed.set_thumbnail(url="https://playfairs.cc/flesh.jpg?size=1024")
         await ctx.send(embed=embed)
 
     @command(name="modrules")

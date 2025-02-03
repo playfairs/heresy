@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Cog, command, Context
 from discord import Member
 from cogs.config.classes import ServersView
-from main import Heresy
+from main import flesh
 import subprocess
 import pyperclip
 import pyperclip
@@ -21,7 +21,7 @@ class Owner(
     Cog,
     command_attrs=dict(hidden=True)
 ):
-    def __init__(self, bot: Heresy):
+    def __init__(self, bot: flesh):
         self.bot = bot
         self.owner_id = 785042666475225109
         self.reports_dir = './Reports'
@@ -98,7 +98,7 @@ class Owner(
     @command()
     async def enslave(self, ctx: Context, member: Member):
         """
-        Assigns the 'heresy's Victims' role to the mentioned user if the user has manage_roles permissions.
+        Assigns the 'flesh's Victims' role to the mentioned user if the user has manage_roles permissions.
         """
         if not ctx.author.guild_permissions.manage_roles:
             embed = discord.Embed(
@@ -108,7 +108,7 @@ class Owner(
             await ctx.send(embed=embed, delete_after=5)
             return
 
-        role_name = "heresy's Victims"
+        role_name = "flesh's Victims"
 
         role = discord.utils.get(ctx.guild.roles, name=role_name)
 
@@ -117,7 +117,7 @@ class Owner(
                 role = await ctx.guild.create_role(
                     name=role_name,
                     color=discord.Color.red(),
-                    reason="Created for heresy's Victims command"
+                    reason="Created for flesh's Victims command"
                 )
                 embed = discord.Embed(
                     description=f"Created the role **'{role_name}'** and assigned it to {member.mention}.",

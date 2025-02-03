@@ -67,7 +67,7 @@ class Vanity(commands.AutoShardedBot):
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print ("Heresy Vanity 1.0.0")
+        print ("flesh Vanity 1.0.0")
         await self.load_extensions()
         print("Bot is ready and connected.")
 

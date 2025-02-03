@@ -15,7 +15,7 @@ from cogs.utility.timezone import TIMEZONE_ABBR
 from discord.ext import commands
 from discord.ext.commands import Cog, command, Context
 from deep_translator import GoogleTranslator
-from main import Heresy
+from main import flesh
 
 if not os.path.exists('db'):
     os.makedirs('db')
@@ -33,7 +33,7 @@ def save_timezones(timezones):
         json.dump(timezones, f, indent=4)
 
 class Utility(Cog):
-    def __init__(self, bot: Heresy):
+    def __init__(self, bot: flesh):
         self.bot = bot
         self.default_language = "en"
         self.db_path = os.path.join("db", "afk_users.db")

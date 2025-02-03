@@ -31,3 +31,5 @@ sqlalchemy
 pillow
 numpy
 psycopg2
+selenium
+webdriver-manager
