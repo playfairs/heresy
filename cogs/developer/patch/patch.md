@@ -1,10 +1,10 @@
 ## What's New?
-- Changed the bots name from Heresy to Flesh, the bot will remain the same just under a different name.
-- Heresy, or Flesh, will now be spilt into 2 different bots, one for Production Build, and one for Developer Build, the Production Build will remain as the bot it is right now, and the Developer Build will be the bot that gets actively worked on, and when there are no bugs, or no futher needed improvements, it gets pushed to the Production Build. (Please note that the Developer Build will NOT be in the main server but will be in a Testing server)
+- Changed the bots name from heresy to heresy, the bot will remain the same just under a different name.
+- heresy, or heresy, will now be spilt into 2 different bots, one for Production Build, and one for Developer Build, the Production Build will remain as the bot it is right now, and the Developer Build will be the bot that gets actively worked on, and when there are no bugs, or no futher needed improvements, it gets pushed to the Production Build. (Please note that the Developer Build will NOT be in the main server but will be in a Testing server)
 
 
 ## Playfairs.cc
-- Updated the bots tab on [playfairs.cc](https://playfairs.cc/flesh)
+- Updated the bots tab on [playfairs.cc](https://playfairs.cc/heresy)
 
 
 ## Improvements

@@ -71,7 +71,7 @@ class Lore(commands.Cog):
         """Generate a unique hash for a lore entry to detect duplicates."""
         return hashlib.md5(content.encode()).hexdigest()
 
-    @commands.group(name="lore", invoke_without_command=True)
+    @commands.group(name="lore", invoke_without_command=True, aliases=['hoe'])
     async def lore(self, ctx, user: discord.Member = None):
         """
         Shows the lorebook for a user with pagination. 

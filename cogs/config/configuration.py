@@ -6,16 +6,16 @@ import base64
 from discord.ext.commands import Cog, command, has_permissions, Context
 from discord import app_commands
 
-from main import flesh
+from main import heresy
 
 class Config(Cog):
-    def __init__(self, bot: flesh):
+    def __init__(self, bot: heresy):
         self.bot = bot
         self.join_log_file = 'join_log_settings.json'
         self.join_log_settings = self.load_join_log_settings()
         self.log_channels = {}
         self.load_log_channels()
-        self.ad_path = "/root/flesh/cogs/config/ad.txt"
+        self.ad_path = "cogs/config/ad.txt"
 
     def get_ad_message(self):
         """

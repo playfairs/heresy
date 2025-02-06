@@ -15,7 +15,7 @@ from cogs.utility.timezone import TIMEZONE_ABBR
 from discord.ext import commands
 from discord.ext.commands import Cog, command, Context
 from deep_translator import GoogleTranslator
-from main import flesh
+from main import heresy
 
 if not os.path.exists('db'):
     os.makedirs('db')
@@ -33,7 +33,7 @@ def save_timezones(timezones):
         json.dump(timezones, f, indent=4)
 
 class Utility(Cog):
-    def __init__(self, bot: flesh):
+    def __init__(self, bot: heresy):
         self.bot = bot
         self.default_language = "en"
         self.db_path = os.path.join("db", "afk_users.db")
@@ -155,7 +155,7 @@ class Utility(Cog):
             reason = "Why is despawn even an alias???"
         
         if ctx.invoked_with == "akf":
-            reason = "AFK (How the hell did you misspell it?)"
+            reason = "close enough"
             
         self.set_afk(user_id, reason)
 

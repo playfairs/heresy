@@ -15,7 +15,7 @@ from database import db_manager
 
 from discord import app_commands
 from discord.app_commands import Choice
-from main import flesh
+from main import heresy
 
 # Selenium imports
 from selenium import webdriver
@@ -996,3 +996,9 @@ class Fun(Cog):
                 await channel.send(embed=embed)
             else:
                 await ctx.send("Confession channel not found.")
+
+    @commands.command(name="kys")
+    async def kys(self, ctx):
+        await ctx.send("oh, ok..")
+        await asyncio.sleep(5)
+        await ctx.send("bro thought a bot was gonna kill itself 😭")

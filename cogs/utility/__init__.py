@@ -1,5 +1,5 @@
 from .utility import Utility
-from main import flesh
+from main import heresy
 
-async def setup(bot: flesh):
+async def setup(bot: heresy):
     await bot.add_cog(Utility(bot))

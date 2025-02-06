@@ -10,7 +10,7 @@ from config import DISCORD
 
 log = logging.getLogger(__name__)
 
-class flesh(commands.AutoShardedBot):
+class heresy(commands.AutoShardedBot):
     
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -77,7 +77,7 @@ class flesh(commands.AutoShardedBot):
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print(f'Shard ID: {self.shard_id} of {self.shard_count} shards')
-        print("flesh v2.1.0")
+        print("heresy v2.1.0")
         
         for guild in self.guilds:
             try:
@@ -123,5 +123,5 @@ class flesh(commands.AutoShardedBot):
             await ctx.message.add_reaction('❓')
 
 if __name__ == "__main__":
-    bot = flesh()
+    bot = heresy()
     bot.run()

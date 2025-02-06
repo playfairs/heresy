@@ -8,7 +8,7 @@ import jishaku
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.0.0"
+        self.version = "v5.0.1"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
 
@@ -26,7 +26,7 @@ class Developer(commands.Cog):
         with open(patch_file_path, "r") as file:
             patch_notes = file.read()
 
-        role = discord.utils.get(ctx.guild.roles, name="Flesh Updates")
+        role = discord.utils.get(ctx.guild.roles, name="heresy Updates")
         if role is None:
             await ctx.send("Role not found.")
             await ctx.message.delete()
@@ -38,9 +38,9 @@ class Developer(commands.Cog):
             color=0xffffff
         )
         embed.set_footer(
-            text=f"flesh {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
+            text=f"heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
         )
-        embed.set_thumbnail(url="https://playfairs.cc/flesh.jpg")
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg")
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()
@@ -64,7 +64,7 @@ class Developer(commands.Cog):
             await ctx.message.delete()
             return
 
-        role = discord.utils.get(ctx.guild.roles, name="Flesh Updates")
+        role = discord.utils.get(ctx.guild.roles, name="heresy Updates")
         if role is None:
             await ctx.send("Role not found.")
             await ctx.message.delete()
@@ -76,9 +76,9 @@ class Developer(commands.Cog):
             color=0x3498db
         )
         embed.set_footer(
-            text=f"flesh {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
+            text=f"heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
         )
-        embed.set_thumbnail(url="https://playfairs.cc/flesh.jpg")
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg")
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()

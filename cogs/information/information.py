@@ -11,47 +11,46 @@ import subprocess
 from datetime import datetime, timezone
 from discord import Embed, Color
 from discord import app_commands
-from main import flesh
+from main import heresy
 
 
 class Information(Cog):
-    def __init__(self, bot: flesh):
+    def __init__(self, bot: heresy):
         self.bot = bot
         self.developer_id = 785042666475225109
         self.bot_id = 593921296224747521
         self.start_time = datetime.now(timezone.utc)
 
-    @app_commands.command(name='about', description="Displays information about Playfair or flesh.")
-    @app_commands.describe(option="Select either Playfair or flesh")
+    @app_commands.command(name='about', description="Displays information about Playfair or heresy.")
+    @app_commands.describe(option="Select either Playfair or heresy")
     @app_commands.choices(
         option=[
             app_commands.Choice(name="Playfair", value="playfair"),
-            app_commands.Choice(name="flesh", value="flesh"),
+            app_commands.Choice(name="heresy", value="heresy"),
         ]
     )
     async def about(self, interaction: discord.Interaction, option: app_commands.Choice[str]):
-        """Displays information about Playfair or flesh in an embed."""
+        """Displays information about Playfair or heresy in an embed."""
         option_value = option.value.lower()
         if option_value == 'playfair':
             embed = discord.Embed(
                 title="About Playfair",
-                description="Developer of flesh and other Discord Bots.",
+                description="Developer of heresy and other Discord Bots.",
                 color=discord.Color.pink()
             )
-            embed.add_field(name="Developer", value="<@785042666475225109>", inline=False)
-            embed.add_field(name="Description", value="Playfairs, or Playfair, is the Bot Developer of this and many other bots, also being the owner of /flesh, that is all.", inline=False)
-            embed.add_field(name="Useful Links", value="[guns.lol](https://guns.lol/playfair) | [about.me](https://about.me/creepfully)", inline=False)
-            embed.set_footer(text="For more information, visit https://about.me/creepfully to learn more about the Bot Developer.")
+            embed.add_field(name="Description", value="Playfairs, or Playfair, is the Bot Developer of this and many other bots, also being the owner of /heresy, that is all.", inline=False)
+            embed.add_field(name="Useful Links", value="[Website](https://playfairs.cc)", inline=False)
+            embed.set_footer(text="Requested by: {}".format(interaction.user.name))
 
-        elif option_value == 'flesh':
+        elif option_value == 'heresy':
             embed = discord.Embed(
-                title="About flesh",
-                description="Discord Bot created and coded by <@785042666475225109>.",
+                title="About heresy",
+                description="An all-in-one Discord Bot meant to enhance your Discord Server. Developed and Maintained by <@785042666475225109>.",
                 color=discord.Color.green()
             )
             embed.add_field(name="Developer", value="<@785042666475225109>", inline=False)
-            embed.add_field(name="Description", value="flesh, originally flesh, is a all-in-one Discord Bot created by <@785042666475225109>, built for versatility", inline=False)
-            embed.add_field(name="Useful Links", value="[Server](https://discord.gg/flesh) | [Website](https://playfairs.cc) | [Invite](https://discord.com/oauth2/authorize?client_id=1284037026672279635&permissions=8&integration_type=0&scope=bot)", inline=False)
+            embed.add_field(name="Description", value="heresy, originally heresy, is a all-in-one Discord Bot created by <@785042666475225109>, built for versatility", inline=False)
+            embed.add_field(name="Useful Links", value="[Server](https://discord.gg/heresy) | [Website](https://playfairs.cc) | [Invite](https://discord.com/oauth2/authorize?client_id=1284037026672279635&permissions=8&integration_type=0&scope=bot)", inline=False)
             embed.set_footer(text="For more information, DM @playfairs, or check ,help for more info.")
 
         await interaction.response.send_message(embed=embed)
@@ -76,14 +75,14 @@ class Information(Cog):
         """Displays information about the bot."""
         embed = discord.Embed(
             title="About This Bot",
-            description="flesh is a Discord Bot packed with a whole bunch of commands, designed for versatility (NOT HOSTED 24/7)",
+            description="heresy is a Discord Bot packed with a whole bunch of commands, designed for versatility (NOT HOSTED 24/7)",
             color=0x3498db
         )
         embed.add_field(name="Developer", value="@playfairs", inline=False)
         embed.add_field(name="Language", value="Python", inline=True)
         embed.add_field(name="Library", value="discord.py", inline=True)
         embed.add_field(name="Purpose", value="Meant for managing and adding a bit of fun to your server(s)!", inline=False)
-        embed.set_footer(text="Thanks for using flesh, if you have any questions about the bot then hit up the developer and ask your questions!")
+        embed.set_footer(text="Thanks for using heresy, if you have any questions about the bot then hit up the developer and ask your questions!")
         await ctx.send(embed=embed)
 
     @app_commands.command(name="userinfo", description="Get information about a user")
@@ -101,8 +100,7 @@ class Information(Cog):
     async def avatar(self, ctx, member: discord.Member = None):
         """Displays the avatar of the specified user or yourself if no one is mentioned."""
         member = member or ctx.author
-        
-        # Check if member has an avatar
+
         if not member.avatar:
             await ctx.send(f"{member.mention} doesn't have an avatar, man, who runs around discord without an avatar.")
             return
@@ -273,30 +271,21 @@ class Information(Cog):
             if len(roles) > 5:
                 roles_string += f" (+{len(roles) - 5} more)"
 
-            # Determine avatar URL
             if member.avatar:
                 avatar_url = member.avatar.url
             else:
-                # Use bot's avatar as fallback
                 avatar_url = self.bot.user.avatar.url if self.bot.user.avatar else self.bot.user.default_avatar.url
 
-            # Determine avatar URL for footer
             if ctx.author.avatar:
                 footer_avatar_url = ctx.author.avatar.url
             else:
-                # Use bot's avatar as fallback for footer
                 footer_avatar_url = self.bot.user.avatar.url if self.bot.user.avatar else self.bot.user.default_avatar.url
 
             embed = discord.Embed(color=discord.Color.dark_purple(), timestamp=datetime.utcnow())
             embed.set_author(name=f"{member.display_name}{developer_title}", icon_url=avatar_url)
-
-            # Update thumbnail to use the same fallback logic
             embed.set_thumbnail(url=avatar_url)
-
             embed.add_field(name="User ID", value=f"`{member.id}`", inline=False)
-
             embed.add_field(name="Badges", value=custom_emojis, inline=False)
-
             if listening:
                 embed.add_field(name="Listening", value=listening, inline=False)
             if playing:
@@ -462,10 +451,10 @@ class Information(Cog):
     @commands.command()
     async def owners(self, ctx: Context):
         """
-        Displays an embed of the owners of flesh.
+        Displays an embed of the owners of heresy.
         """
         embed = Embed(
-        title="Owners of flesh",
+        title="Owners of heresy",
         description=(
             f"<@785042666475225109> | 785042666475225109\n"
             f"<@1268333988376739931> | 1268333988376739931\n"

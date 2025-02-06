@@ -10,10 +10,10 @@ import re
 import aiohttp
 from datetime import datetime, timedelta
 
-from main import flesh
+from main import heresy
 
 class Reactions(Cog):
-    def __init__(self, bot: flesh):
+    def __init__(self, bot: heresy):
         self.bot = bot
         self.custom_reactions = {}
         self.skull_targets = set()
@@ -48,8 +48,8 @@ class Reactions(Cog):
             "where the fuck my blunt where the fuck my cup where the fuck my reefer": [
                 "# HUH HUH HUH HUH HUH HUH, IM SMOKING ON KUSH, HUH HUH HUH HUH HUH HUH, IM SMOKING ON KUSH"
             ],
-            "what is flesh": [
-                "flesh is the act of holding or promoting beliefs or opinions that go against the established doctrines of a religious, social, or political system, particularly within the context of religion. Historically, it often referred to deviations from the teachings of a dominant church or faith; The 6th Circle of Dante's Inferno."
+            "what is heresy": [
+                "heresy is the act of holding or promoting beliefs or opinions that go against the established doctrines of a religious, social, or political system, particularly within the context of religion. Historically, it often referred to deviations from the teachings of a dominant church or faith; The 6th Circle of Dante's Inferno."
             ],
             "band for band": [
                 "https://cdn.discordapp.com/attachments/1302445192762359900/1302459603266699314/com_kid_bingo.gif?ex=672ccec7&is=672b7d47&hm=f1a89f9ae4669cfb7d36b86927067e332a95d7a91a1fbde3bfd376b33b55b7ae&"
@@ -100,12 +100,6 @@ class Reactions(Cog):
             ",snipe": [
                 "I don't wanna be a rapper..."
             ],
-            "hwlp": [
-                "<@1252011606687350805> https://www.grammarly.com",
-                "GOD DAMNIT NOVA ITS HELP NOT HWLP",
-                "Nova, I don't knnow how to tell you this.. but it's not hwlp",
-                "Nova, do you say hwlp to the officers when you call 911?"
-            ],
             "WIPF": [
                 "Playfair is currently taking a break, not sure how long since I am just a bot, and he coded me to say this, aw shit I may as well just say it, I'm taking a break for a little bit, nothing happened, there is no tragic reason or anything bad that caused this, I'm just sleep deprived and admitible a bit depressed maybe, i have no idea if i am for sure but my mom told me ive been giving signs of being depressed, (lack of eating, lack of sleep, not very active or energetic), i mean shit on 11/29 i stayed in bed from waking up at 12 al the way to 5pm, got up at 5:30ish and walked my dog, took her inside and stayed outside for an hour, I'm perfectly fine, i am just tired and not very motivated"
             ],
@@ -116,8 +110,8 @@ class Reactions(Cog):
             "who are you": [
                 "# I AM GOD. I AM BASQUIAT"
             ],
-            "what happened to flesh": [
-                "flesh is currently offline, in replacement, flesh is running flesh's code to ensure the bot still functions, meanwhile, flesh is getting a new Src."
+            "what happened to heresy": [
+                "heresy is currently offline, in replacement, heresy is running heresy's code to ensure the bot still functions, meanwhile, heresy is getting a new Src."
             ],
             "Not me dude lol whats happening lol I hate this lol": [
                 "Not me dude lol whats happening lol I hate this lol"
@@ -126,7 +120,7 @@ class Reactions(Cog):
                 "<@356268235697553409> fuck you, I also have a fm command.",
                 "# <@356268235697553409> Kill thy self.",
             ],
-            "fuck you flesh": [
+            "fuck you heresy": [
                 "why is bro sayin fuck you to a bot",
                 "what did i do"
             ], 
@@ -332,7 +326,7 @@ class Reactions(Cog):
         conn.commit()
         conn.close()
 
-    @commands.command(aliases= ["autoreactor, autoreaction, reactions"])
+    @commands.command(name= "ar", aliases= ["autoreactor, autoreaction, reactions"])
     async def autoreact(self, ctx: commands.Context, user: discord.Member, *emojis):
         """Sets up auto-react for a specified user with given emojis."""
         if user.id not in self.auto_react_targets:
@@ -343,7 +337,7 @@ class Reactions(Cog):
         embed = discord.Embed(
             title="Auto-Reaction Set",
             description=f"{user.mention} will receive reactions: {', '.join(emojis)}",
-            color=discord.Color.orange()
+            color=discord.Color.from_rgb(255, 255, 255)
         )
         await ctx.send(embed=embed)
 
@@ -484,8 +478,8 @@ class Reactions(Cog):
             if "hershey" in content or "1317632496636002344" in content:
                 await message.add_reaction("<:pov_ochra:1317632496636002344>")
 
-            if "flesh" in content or "1291967026788831232" in content:
-                await message.add_reaction("<:flesh:1291967026788831232>")
+            if "heresy" in content or "1291967026788831232" in content:
+                await message.add_reaction("<:heresy:1291967026788831232>")
 
             if "nova" in content or "1320964930387709973" in content:
                 await message.add_reaction("<:nova:1320964930387709973>")
@@ -499,60 +493,71 @@ class Reactions(Cog):
             if "kys" in content or "kill yourself" in content:
                 await message.add_reaction("💀")
 
-            # Custom reactions with case-insensitive matching
             for trigger, reaction in self.custom_reactions.items():
                 if trigger.lower() in content:
                     await message.add_reaction(reaction)
 
-            # Auto reactions for specific users
             if message.author.id in self.auto_react_targets:
                 for emoji in self.auto_react_targets[message.author.id]:
                     await message.add_reaction(emoji)
         except discord.HTTPException:
-            # Silently ignore reaction errors
             pass
 
-        # Response handling
-        # Check for exact and partial matches
         for trigger, responses in self.responses.items():
             trigger_lower = trigger.lower()
             
-            # Check for exact or partial match
+
             if trigger_lower in content:
                 try:
-                    # Randomly select a response
+
                     response = random.choice(responses)
                     
-                    # Send the response
                     await message.reply(response)
                 except Exception as e:
                     print(f"Error sending response for trigger {trigger}: {e}")
                 break
 
-        # Check for secondary responses
         for trigger, secondary_responses in getattr(self, 'secondary_responses', {}).items():
             trigger_lower = trigger.lower()
-            
-            # Check for exact or partial match
+
             if trigger_lower in content:
                 try:
-                    # Randomly select a secondary response
                     secondary_response = random.choice(secondary_responses)
                     
-                    # Send the response
                     await message.reply(secondary_response)
                 except Exception as e:
                     print(f"Error sending secondary response for trigger {trigger}: {e}")
                 break
+
+        if message.author.id == 1252011606687350805 or message.author.id == 1265662059056463976 and message.content == 'hwlp':  
+            await message.reply("<@1252011606687350805> https://www.grammarly.com")  
+            print(f"Response sent for hwlp from user {message.author.id}")  
+
+        if message.author.id == 785042666475225109 and message.content == 'hi':  
+            await message.channel.send("hi creator")  
+            print(f"Response sent for hi from user {message.author.id}")  
+
+        if message.author.id == 854145272749490216 and message.content == 'grr':  
+            await message.channel.send("hi <@854145272749490216>")  
+            print(f"Response sent for hello from user {message.author.id}")
+
+        if message.author.id == 757355424621133914 and message.content == 'guess what':
+            await message.channel.send("chicken butt")
+            print(f"Response sent for guess what from user {message.author.id}")
+
+        if message.author.id == 757355424621133914 and message.content == 'pocket pussy':
+            await message.channel.send("stfu lina")
+            print(f"Response sent for pocket pussy from user {message.author.id}")
+            
+        if message.author.id == self.bot.user.id and message.content == 'failed to fetch that post!':
+            await message.channel.send("this is why I'm better <@1203514684326805524>")
+            print(f"Response sent for failed to fetch that post! from user {message.author.id}")
 
     @commands.Cog.listener()
     async def sob_skull(self, message):
         """Listens for specific keywords and reacts accordingly."""
         if message.author == self.bot.user:
             return
-
-        if "@everyone" in message.content:
-            await message.reply("https://cdn.discordapp.com/attachments/1258207125797208064/1274904156234317926/caption-2.gif?ex=673fdf85&is=673e8e05&hm=54c8c2e29ab8e5e9b923245b2d66f55bf9b9b8e85a89d4fb8ac1e730e3882e6d&")
 
         if message.author.id in self.skull_targets:
             await message.add_reaction("💀")
@@ -574,7 +579,7 @@ class Reactions(Cog):
         trigger_phrases = ["nobody cares", "no one cares", "idc"]
 
         if any(phrase in message.content.lower() for phrase in trigger_phrases):
-            file_path = "/root/flesh/Assets/MP3/nobody cares nig"
+            file_path = "/root/heresy/Assets/MP3/nobody cares nig"
 
             await message.channel.send(
                 file=discord.File(file_path, filename="VoiceMessage.mp3"),
@@ -585,7 +590,14 @@ class Reactions(Cog):
     async def fox(self, ctx):
         """Shows a fox gif"""
         embed = discord.Embed(color=discord.Color.orange())
-        embed.set_image(url="https://cdn.discordapp.com/avatars/785042666475225109/a_49422bfa76ed118dbe14d94bc2c4818a.gif?size=1024")
+        embed.set_image(url="https://playfairs.cc/fox.gif")
+        await ctx.send(embed=embed)
+
+    @commands.command(name="mouse")
+    async def mouse(self, ctx):
+        """Shows a mouse gif"""
+        embed = discord.Embed(color=discord.Color.from_rgb(255, 255, 255))
+        embed.set_image(url="https://playfairs.cc/mouse.gif")
         await ctx.send(embed=embed)
 
     def add_bot_responder(self, triggers, responses):

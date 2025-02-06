@@ -946,17 +946,14 @@ class LastFM(commands.Cog):
                 current_artist = data["recenttracks"]["track"][0]["artist"]["#text"]
 
             if not song_name:
-                # If no song name, use the current track
                 track = data["recenttracks"]["track"][0]
                 artist_name = track["artist"]["#text"]
                 song_name = track["name"]
             else:
-                # Try searching with the current artist first
                 tracks = []
                 if current_artist:
                     tracks = await self.search_tracks(song_name, username, artist=current_artist)
                 
-                # If no tracks found with current artist, do a general search
                 if not tracks:
                     tracks = await self.search_tracks(song_name, username)
                 
@@ -964,12 +961,10 @@ class LastFM(commands.Cog):
                     await self.error_embed(ctx, f"No tracks found matching '{song_name}'")
                     return
                 
-                # Choose the most relevant track (first in the list)
                 best_match = tracks[0]
                 song_name = best_match["name"]
                 artist_name = best_match["artist"]
-
-                # If multiple results, show selection embed
+ 
                 if len(tracks) > 1:
                     selection_embed = discord.Embed(
                         title="Multiple Tracks Found",
@@ -1044,7 +1039,6 @@ class LastFM(commands.Cog):
     async def spotify_link(self, ctx):
         """Generate Spotify URL for the currently playing track"""
         async with ctx.typing():
-            # Get Last.fm username
             username = await self.get_lastfm_username(ctx.author.id)
 
             if not username:
@@ -1052,7 +1046,6 @@ class LastFM(commands.Cog):
                 return
 
             try:
-                # Fetch recent tracks
                 data = await self.fetch_lastfm_data("user.getrecenttracks", {
                     "user": username,
                     "limit": 1
@@ -1066,10 +1059,8 @@ class LastFM(commands.Cog):
                 artist = track["artist"]["#text"]
                 song = track["name"]
 
-                # Generate Spotify search URL
                 spotify_search_url = f"https://open.spotify.com/search/{quote_plus(f'{song} {artist}')}"
 
-                # Create an embed with the Spotify link
                 embed = discord.Embed(
                     title="Spotify Link",
                     description=f"[Open '{song}' by {artist} on Spotify]({spotify_search_url})",
@@ -1096,11 +1087,9 @@ class LastFM(commands.Cog):
             "limit": limit
         }
         
-        # If username is provided, use it to get more personalized results
         if username:
             params["username"] = username
         
-        # If artist is provided, add it to the search
         if artist:
             params["artist"] = artist
         
@@ -1110,7 +1099,6 @@ class LastFM(commands.Cog):
             if not search_data or "results" not in search_data or "trackmatches" not in search_data["results"]:
                 return []
             
-            # Normalize track matches (might be a dict or list depending on number of results)
             tracks = search_data["results"]["trackmatches"]["track"]
             if not isinstance(tracks, list):
                 tracks = [tracks]
@@ -1123,7 +1111,6 @@ class LastFM(commands.Cog):
     @commands.command(name="auth")
     async def lastfm_auth(self, ctx):
         """Authenticate and link your Last.fm account."""
-        # Create an authentication embed with instructions
         embed = discord.Embed(
             title="Last.fm Account Authentication",
             description=(
@@ -1161,14 +1148,11 @@ class LastFM(commands.Cog):
             """, user_id, emoji)
             self.custom_commands[user_id] = emoji
 
-    @commands.command(name="np", aliases=["nowplaying", "fm"])
+    @commands.command(name="np", aliases=["nowplaying", "fm", "fuckme"])
     async def now_playing(self, ctx, user: Optional[discord.Member] = None):
         """Show currently playing track"""
         async with ctx.typing():
-            # Determine the target user
             target = user or ctx.author
-            
-            # Get Last.fm username
             lastfm_username = await self.get_lastfm_username(target.id)
 
             if not lastfm_username:
@@ -1176,7 +1160,6 @@ class LastFM(commands.Cog):
                 return
 
             try:
-                # Fetch recent tracks
                 data = await self.fetch_lastfm_data("user.getrecenttracks", {
                     "user": lastfm_username,
                     "limit": 1
@@ -1193,35 +1176,28 @@ class LastFM(commands.Cog):
                 
                 track = track[0] if track else {}
                 
-                # Check if the track is currently playing
                 is_now_playing = track.get('@attr', {}).get('nowplaying') == 'true'
                 
-                # Extract track details
                 artist = track.get("artist", {}).get("#text", "Unknown Artist")
                 song = track.get("name", "Unknown Track")
                 album = track.get("album", {}).get("#text", "Unknown Album")
                 image_url = track.get("image", [{}])[-1].get("#text", None)
 
-                # Fetch additional artist data
                 artist_data = await self.fetch_lastfm_data("artist.getInfo", {
                     "artist": artist,
                     "username": lastfm_username
                 }) or {}
 
-                # Fetch user's total scrobble info
                 user_info = await self.fetch_lastfm_data("user.getInfo", {
                     "user": lastfm_username
                 }) or {}
 
-                # Calculate artist and total plays
                 artist_plays = int(artist_data.get("artist", {}).get("stats", {}).get("userplaycount", 0))
                 total_scrobbles = int(user_info.get("user", {}).get("playcount", 0))
 
-                # Track and Last.fm links
                 track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
                 lastfm_profile_url = f"https://www.last.fm/user/{lastfm_username}"
 
-                # Prepare embed
                 embed = discord.Embed(
                     description=f"[{song}]({track_url})\n{artist} · {album}",
                     color=0xffffff
@@ -1230,18 +1206,15 @@ class LastFM(commands.Cog):
                 if image_url:
                     embed.set_thumbnail(url=image_url)
 
-                # Fetch user info for avatar
                 user_info_response = await self.fetch_lastfm_data("user.getInfo", {
                     "user": lastfm_username
                 })
                 
-                # Use Last.fm avatar or fallback to default
                 avatar_url = (
                     user_info_response.get("user", {}).get("image", [{}])[-1].get("#text") 
                     or "https://cdn.discordapp.com/embed/avatars/0.png"
                 )
 
-                # Determine display text based on current playing status
                 display_text = "Now playing" if is_now_playing else "Last track"
                 embed.set_author(
                     name=f"{display_text} - {target.name}", 
@@ -1249,25 +1222,21 @@ class LastFM(commands.Cog):
                     url=lastfm_profile_url
                 )
                 
-                # Prepare footer text
                 footer_text = f"{artist_plays} artist scrobbles · {total_scrobbles} total scrobbles"
                 
-                # Attempt to get WhoKnows position if in a guild
                 position = None
                 if not isinstance(ctx.channel, discord.DMChannel):
                     try:
-                        # Fetch WhoKnows position for the artist
                         position_data = await self.whoknows_calculate_position(ctx.guild.id, artist)
                         position = position_data.get(target.id, "N/A")
                         footer_text += f" · WhoKnows #{position}"
                     except Exception:
-                        pass  # Silently ignore if WhoKnows position can't be calculated
+                        pass
             
                 embed.set_footer(text=footer_text)
 
                 message = await ctx.send(embed=embed)
                 
-                # Add reactions in guild channels
                 if not isinstance(ctx.channel, discord.DMChannel):
                     await message.add_reaction("🔥")
                     await message.add_reaction("🗑️")
@@ -1372,23 +1341,18 @@ class LastFM(commands.Cog):
         # Use mentioned user or command invoker
         user = user or ctx.author
         
-        # Get Last.fm username for the user
         lastfm_username = await self.get_lastfm_username(user.id)
         if not lastfm_username:
             return await self.error_embed(ctx, f"{user.mention} has not set their Last.fm username. Use `,lf set <username>` to set it.")
 
-        # Verify the username is valid first
         user_info_response = await self.fetch_lastfm_data("user.getinfo", {"user": lastfm_username})
         
-        # Check if the response is valid
         if not user_info_response or "error" in user_info_response:
             return await self.error_embed(ctx, f"Invalid Last.fm username: {lastfm_username}")
 
-        # Fetch user info from Last.fm
         try:
             user_info = user_info_response.get('user', {})
             
-            # Fetch total scrobbles
             top_artists_params = {
                 'user': lastfm_username,
                 'period': 'overall',
@@ -1396,7 +1360,6 @@ class LastFM(commands.Cog):
             }
             top_artists_response = await self.fetch_lastfm_data('user.gettopartists', top_artists_params)
 
-            # Fetch unique counts
             unique_tracks_params = {
                 'user': lastfm_username,
                 'period': 'overall',
@@ -1411,36 +1374,30 @@ class LastFM(commands.Cog):
             }
             unique_albums_response = await self.fetch_lastfm_data('user.gettopalbums', unique_albums_params)
 
-            # Create embed
             embed = discord.Embed(
                 title=f"Last.fm Profile: {lastfm_username}",
                 color=discord.Color.blurple(),
                 url=f"https://www.last.fm/user/{lastfm_username}"
             )
 
-            # Add profile details
             embed.add_field(name="Total Scrobbles", value=user_info.get('playcount', 'N/A'), inline=True)
             embed.add_field(name="Unique Tracks", value=len(unique_tracks_response.get('toptracks', {}).get('track', [])), inline=True)
             embed.add_field(name="Unique Albums", value=len(unique_albums_response.get('topalbums', {}).get('album', [])), inline=True)
             embed.add_field(name="Unique Artists", value=len(top_artists_response.get('topartists', {}).get('artist', [])), inline=True)
 
-            # Account creation date
             registered = user_info.get('registered', {})
             if registered:
                 account_creation = datetime.fromtimestamp(int(registered.get('#text', 0)))
                 embed.add_field(name="Account Created", value=account_creation.strftime("%B %d, %Y"), inline=False)
 
-            # Set thumbnail to user's Last.fm avatar
             if user_info.get('image'):
                 for img in user_info['image']:
                     if img.get('size') == 'large':
                         embed.set_thumbnail(url=img['#text'])
                         break
 
-            # Create view with buttons
             view = discord.ui.View()
             
-            # Scrobbles button
             scrobbles_button = discord.ui.Button(
                 label="Scrobbles", 
                 style=discord.ButtonStyle.link, 
@@ -1448,7 +1405,6 @@ class LastFM(commands.Cog):
             )
             view.add_item(scrobbles_button)
 
-            # Profile button
             profile_button = discord.ui.Button(
                 label="Profile", 
                 style=discord.ButtonStyle.link, 
@@ -1542,36 +1498,28 @@ class LastFM(commands.Cog):
         
         Usage: ,addtracking [lastfm_username]
         """
-        # Validate Last.fm username
         try:
-            # Use the Last.fm API to get user info
             response = requests.get(
                 f"http://ws.audioscrobbler.com/2.0/?method=user.getinfo&user={lastfm_username}&api_key={self.api_key}&format=json"
             )
             
-            # Check if the request was successful and user exists
             if response.status_code == 200:
                 user_data = response.json()
                 if 'user' in user_data:
-                    # Read the current tracking users
                     with open('/Users/playfair/Downloads/hersey-main/cogs/lastfm/tracking_users.py', 'r') as f:
                         content = f.read()
                     
-                    # Parse the existing dictionary
                     import ast
                     tracking_users = ast.literal_eval(content.split('=')[1].strip())
                     
-                    # Add or update the user
                     tracking_users[ctx.author.id] = lastfm_username
                     
-                    # Write back to the file
                     with open('/Users/playfair/Downloads/hersey-main/cogs/lastfm/tracking_users.py', 'w') as f:
                         f.write(f"# Tracking users for continuous Last.fm tracking\nTRACKING_USERS = {tracking_users}")
                     
                     await ctx.send(f"Added {lastfm_username} to continuous tracking.")
                     return
             
-            # If we reach here, username is invalid
             await ctx.send(f"Invalid Last.fm username: {lastfm_username}")
         
         except Exception as e:
@@ -1585,19 +1533,15 @@ class LastFM(commands.Cog):
         Usage: ,removetracking
         """
         try:
-            # Read the current tracking users
             with open('/Users/playfair/Downloads/hersey-main/cogs/lastfm/tracking_users.py', 'r') as f:
                 content = f.read()
             
-            # Parse the existing dictionary
             import ast
             tracking_users = ast.literal_eval(content.split('=')[1].strip())
             
-            # Remove the user if exists
             if ctx.author.id in tracking_users:
                 del tracking_users[ctx.author.id]
                 
-                # Write back to the file
                 with open('/Users/playfair/Downloads/hersey-main/cogs/lastfm/tracking_users.py', 'w') as f:
                     f.write(f"# Tracking users for continuous Last.fm tracking\nTRACKING_USERS = {tracking_users}")
                 
@@ -1613,21 +1557,16 @@ class LastFM(commands.Cog):
         Load tracking users from the tracking_users.py file.
         """
         try:
-            # Reload the tracking users module to get the latest changes
             import importlib
             import sys
             
-            # Remove the module from sys.modules to force a reload
             if 'cogs.lastfm.tracking_users' in sys.modules:
                 del sys.modules['cogs.lastfm.tracking_users']
             
-            # Import the module again
             import cogs.lastfm.tracking_users as tracking_users_module
             
-            # Clear existing tracking users
             self.tracking_users.clear()
             
-            # Copy users from the imported module
             self.tracking_users.update(tracking_users_module.TRACKING_USERS)
             
             print(f"Total tracking users loaded: {len(self.tracking_users)}")
