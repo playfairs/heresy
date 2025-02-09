@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from discord import Embed, Color
 from discord import app_commands
 from main import heresy
+from typing import Union
 
 
 class Information(Cog):
@@ -566,7 +567,12 @@ class Information(Cog):
         total_guilds = len(bot.guilds)
         total_commands = len(bot.commands)
         total_cogs = len(bot.cogs)
-        
+
+        if platform.system() == "Darwin":
+            host = "MacOS " + platform.mac_ver()[0]
+        else:
+            host = platform.system() + " " + platform.release()
+
         jishaku = self.bot.get_cog('Jishaku')
         if jishaku:
             uptime = datetime.now(timezone.utc) - jishaku.load_time
@@ -609,7 +615,7 @@ class Information(Cog):
         # Runtime Stats
         embed.add_field(
             name="**Runtime**",
-            value=f"**OS**: `{platform.system()} {platform.release()}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
+            value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
             inline=True
         )
         
@@ -620,7 +626,7 @@ class Information(Cog):
             inline=True
         )
 
-        embed.set_thumbnail(url=bot.user.avatar.url)
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg")
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
         
         await ctx.send(embed=embed)
@@ -753,3 +759,43 @@ class Information(Cog):
 
         except Exception as e:
             await ctx.send(f"```py\n{type(e).__name__}: {str(e)}```")
+
+    @commands.command(name="permissions", description="Shows current permissions for users or a role.")
+    async def permissions(self, ctx, *, target: Union[discord.Member, discord.Role] = None):
+        """Shows current permissions for users or a role."""
+        try:
+            target = target or ctx.author
+
+            if isinstance(target, discord.Member):
+                permissions = target.permissions
+            elif isinstance(target, discord.Role):
+                permissions = target.permissions
+            else:
+                return await ctx.send("Invalid target. Please specify a member or role.")
+
+            embed = discord.Embed(
+                title=f"🔧 Permissions for {target.name}",
+                color=discord.Color.blue()
+            )
+            
+            embed.add_field(
+                name="Permissions",
+                value=f"```\n{permissions}```",
+                inline=False
+            )
+            
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+            await ctx.send(embed=embed)
+
+        except Exception as e:
+            await ctx.send(f"```py\n{type(e).__name__}: {str(e)}```")
+
+    @commands.command(name="bots", description="Shows the number of bots in the server.")
+    async def bots(self, ctx):
+        """Shows the number of bots in the server."""
+        bot_count = sum(1 for member in ctx.guild.members if member.bot)
+        await ctx.send(embed=discord.Embed(
+            title=f"Bots in {ctx.guild.name}",
+            description=f"{bot_count} bots",
+            color=discord.Color.blue()
+        ))

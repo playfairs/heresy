@@ -468,7 +468,6 @@ class Moderation(commands.Cog):
     @inrole.command(name="timeout")
     @has_permissions(moderate_members=True)
     async def inrole_timeout(self, ctx, role: discord.Role):
-        """Timeouts all members in the mentioned role."""
         for member in role.members:
             try:
                 await member.timeout_for(duration=600, reason=f"Mass timeout by {ctx.author} via inrole timeout")
@@ -479,7 +478,6 @@ class Moderation(commands.Cog):
     @inrole.command(name="strip")
     @has_permissions(manage_roles=True)
     async def inrole_strip(self, ctx, role: discord.Role):
-        """Removes all roles from members in the mentioned role."""
         for member in role.members:
             try:
                 await member.edit(roles=[], reason=f"Mass role removal by {ctx.author} via inrole strip")
@@ -488,7 +486,6 @@ class Moderation(commands.Cog):
                 await ctx.send(f"Failed to strip roles from {member.mention}: {e}")
 
     def can_moderate(self, moderator, target) -> bool:
-        """Helper function to check if moderator can moderate target based on role hierarchy"""
 
         if moderator.id == moderator.guild.owner_id:
             return True
@@ -549,7 +546,6 @@ class Moderation(commands.Cog):
         """
         Kicks a member from the server.
         """
-        # If user_id is provided, try to fetch the member
         if user_id and not member:
             try:
                 member = await ctx.guild.fetch_member(user_id)
@@ -560,12 +556,10 @@ class Moderation(commands.Cog):
                 await ctx.send("An error occurred while fetching the user.")
                 return
 
-        # Validate member
         if not member:
             await ctx.send("What, are we kicking ghosts now? What in the ghostbusters are you trying to kick, specify a user..")
             return
 
-        # Check role hierarchy
         if member.top_role >= ctx.author.top_role and ctx.author.id != ctx.guild.owner_id:
             embed = discord.Embed(description="You cannot kick this user due to role hierarchy!", color=0xFF0000)
             await ctx.send(embed=embed)
@@ -574,10 +568,6 @@ class Moderation(commands.Cog):
         try:
             await member.kick(reason=f"Kicked by {ctx.author}")
             await ctx.send(f"👍")
-
-            # Create the embed for the kicked user
-            embed = discord.Embed(title="Bye bye", description=f"You were kicked in {ctx.guild.name} by {ctx.author.mention} for no reason", color=0xFF0000)
-            # Send the embed as a DM to the kicked member
             await member.send(embed=embed)
         except discord.Forbidden:
             await ctx.send("I do not have permission to kick this user.")

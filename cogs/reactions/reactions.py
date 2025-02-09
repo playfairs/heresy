@@ -107,9 +107,6 @@ class Reactions(Cog):
                 "Your going to deprecate WHAT?",
                 "ah nah bro wanna get rid of features instead of adding them 😭🙏"
             ],
-            "who are you": [
-                "# I AM GOD. I AM BASQUIAT"
-            ],
             "what happened to heresy": [
                 "heresy is currently offline, in replacement, heresy is running heresy's code to ensure the bot still functions, meanwhile, heresy is getting a new Src."
             ],
@@ -135,6 +132,9 @@ class Reactions(Cog):
             ],
             "i am playfairs": [
                 "no your not."
+            ],
+            "shit type": [
+                "oh ok"
             ]
         }
 
