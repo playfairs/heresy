@@ -8,7 +8,7 @@ import jishaku
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.0.1"
+        self.version = "v5.0.2"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
 
@@ -26,7 +26,7 @@ class Developer(commands.Cog):
         with open(patch_file_path, "r") as file:
             patch_notes = file.read()
 
-        role = discord.utils.get(ctx.guild.roles, name="heresy Updates")
+        role = discord.utils.get(ctx.guild.roles, name="Heresy Updates")
         if role is None:
             await ctx.send("Role not found.")
             await ctx.message.delete()
@@ -64,7 +64,7 @@ class Developer(commands.Cog):
             await ctx.message.delete()
             return
 
-        role = discord.utils.get(ctx.guild.roles, name="heresy Updates")
+        role = discord.utils.get(ctx.guild.roles, name="Heresy Updates")
         if role is None:
             await ctx.send("Role not found.")
             await ctx.message.delete()

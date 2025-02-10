@@ -1,22 +1,24 @@
 ## What's New?
-- Changed the bots name from heresy to heresy, the bot will remain the same just under a different name.
-- heresy, or heresy, will now be spilt into 2 different bots, one for Production Build, and one for Developer Build, the Production Build will remain as the bot it is right now, and the Developer Build will be the bot that gets actively worked on, and when there are no bugs, or no futher needed improvements, it gets pushed to the Production Build. (Please note that the Developer Build will NOT be in the main server but will be in a Testing server)
+- Updated the BotInfo (bi) command to show more proper information
+- Updated flameshot.conf to change the dimensions of the flameshot window upon screenshot
 
 
 ## Playfairs.cc
-- Updated the bots tab on [playfairs.cc](https://playfairs.cc/heresy)
+- Added a gallery tab to the playfairs.cc website at [playfairs.cc](https://playfairs.cc/gallery).
+- Changed the way the Equipment and Software is contained in the About page to prevent the page from being scrollable.
+- In the gallery tab, added the ability to either copy or download images directly from the website.
 
 
 ## Improvements
-- Updated the bots Requirements.txt for easier installation of Packages, also removed audioop-lts from the requirements as the Package seems to either be fixed by Audioop or was removed from PyPI.
+- Fixed the the issue with kick, where the bot would kick a member, but then also say it failed to kick.
 
 
 ## Known Issues
-- Not entirely an issue, but the bot will treat all uppercase as lowercase even if the context is not a command or subcommand but rather a message for example.
+- No known issues.
 
 
 ## Coming Soon
-- Will work on FuzzyWuzzy for command capitalisation, to allow for the bot to work with both lower and upper case, while pertaining the upper case in commands such as afk, when giving a input in caps.
+- Nothing new coming soon.
 
 
 -# Report any bugs to @playfairs or @uxju

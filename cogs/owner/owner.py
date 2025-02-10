@@ -237,38 +237,30 @@ class Owner(
         - In a server: ,sname <new_name>
         - For a specific server: ,sname <guild_id> <new_name>
         """
-        # Check number of arguments
         if len(args) < 1:
             return await ctx.send("Please provide a new server name.")
         
-        # Determine if guild_id is provided
         if len(args) >= 2:
             try:
                 guild_id = int(args[0])
                 new_name = " ".join(args[1:])
                 guild = self.bot.get_guild(guild_id)
             except ValueError:
-                # If first argument is not a valid integer, assume current server
                 new_name = " ".join(args)
                 guild = ctx.guild
         else:
-            # Single argument mode (current server)
             new_name = args[0]
             guild = ctx.guild
         
-        # Validate guild
         if not guild:
             return await ctx.send(f"Could not find a server with ID {guild_id}.")
         
-        # Check bot's permissions
         if not guild.me.guild_permissions.manage_guild:
             return await ctx.send("I do not have permission to change the server name.")
         
         try:
-            # Change server name
             await guild.edit(name=new_name)
             
-            # Confirm the change
             embed = discord.Embed(
                 title="Server Name Changed",
                 description=f"Server name for **{guild.name}** has been changed to **{new_name}**",
@@ -340,7 +332,6 @@ class Owner(
         ,jsk rollback - Rollback all cogs
         ,jsk rollback cogs.example - Rollback a specific cog
         """
-        # Ensure only the bot owner can use this command
         if ctx.author.id != self.bot.owner_id:
             return await ctx.send("Only the bot owner can use this command.")
         
@@ -348,36 +339,28 @@ class Owner(
             import subprocess
             import os
             
-            # Change to the project root directory
             project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             os.chdir(project_root)
             
-            # If no specific cog is provided, rollback all changes
             if not cog:
                 cmd = "git reset --hard HEAD"
                 result = subprocess.run(cmd.split(), capture_output=True, text=True)
                 
-                # Send output
                 if result.returncode == 0:
                     await ctx.send(f"```\nSuccessfully rolled back all changes:\n{result.stdout}```")
                 else:
                     await ctx.send(f"```\nError rolling back:\n{result.stderr}```")
                 return
             
-            # Rollback a specific cog
-            # Normalize cog path
             cog_path = cog.replace('.', '/')
             full_cog_path = os.path.join(project_root, cog_path + '.py')
             
-            # Check if cog file exists
             if not os.path.exists(full_cog_path):
                 return await ctx.send(f"Cog file not found: {full_cog_path}")
             
-            # Checkout the specific file
             cmd = f"git checkout HEAD -- {full_cog_path}"
             result = subprocess.run(cmd.split(), capture_output=True, text=True)
             
-            # Send output
             if result.returncode == 0:
                 await ctx.send(f"```\nSuccessfully rolled back {cog}:\n{result.stdout}```")
             else:
@@ -390,49 +373,37 @@ class Owner(
     async def show_clipboard(self, ctx):
         """Show the current contents of the clipboard."""
         try:
-            # Delete the user's message
             try:
                 await ctx.message.delete()
             except discord.errors.NotFound:
-                # Message already deleted
                 pass
             except discord.errors.Forbidden:
-                # Bot doesn't have permission to delete messages
                 pass
 
-            # Try to get image from clipboard
             image = ImageGrab.grabclipboard()
             
             if image:
-                # Create a temporary file to save the image
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as temp_file:
                     image.save(temp_file.name, 'PNG')
                     
-                # Send the image
                 await ctx.send(file=discord.File(temp_file.name))
                 
-                # Remove the temporary file
                 os.unlink(temp_file.name)
                 return
 
-            # If not an image, try text content
             clipboard_content = pyperclip.paste()
             
-            # If clipboard is empty
             if not clipboard_content:
-                await ctx.send("📋 Clipboard is empty.")
+                await ctx.send("Clipboard is empty.")
                 return
             
-            # Determine the type of content
             if len(clipboard_content) > 2000:
-                # For long content, send as a file
                 with open('clipboard_content.txt', 'w', encoding='utf-8') as f:
                     f.write(clipboard_content)
                 
                 await ctx.send(file=discord.File('clipboard_content.txt'))
                 os.remove('clipboard_content.txt')
             else:
-                # Check if content looks like code (contains code block markers or multiple lines with indentation)
                 is_code = (
                     '```' in clipboard_content or 
                     '\n    ' in clipboard_content or 
@@ -440,10 +411,8 @@ class Owner(
                 )
                 
                 if is_code:
-                    # Send as code block
                     await ctx.send(f"```\n{clipboard_content}\n```")
                 else:
-                    # Send as normal message
                     await ctx.send(clipboard_content)
         
         except Exception as e:
@@ -454,16 +423,13 @@ class Owner(
     async def set_rpc(self, ctx, *, name: str = None):
         """Set the bot's custom Rich Presence status."""
         if name is None:
-            # Remove stored RPC
             if hasattr(self.bot, 'stored_rpc'):
                 delattr(self.bot, 'stored_rpc')
             
-            # Clear to no activity
             await self.bot.change_presence(activity=None)
             await ctx.send("Cleared bot's Rich Presence.")
             return
 
-        # Create a custom activity with the provided name
         activity = discord.Activity(
             type=discord.ActivityType.streaming, 
             name=name,
@@ -471,7 +437,6 @@ class Owner(
         )
 
         try:
-            # Store RPC setting on the bot object
             self.bot.stored_rpc = name
             
             await self.bot.change_presence(activity=activity)
@@ -490,28 +455,23 @@ class Owner(
         if ctx.author.id != self.owner_id:
             await ctx.send("You do not have permission to use this command.")
             return
-        await ctx.message.delete()  # Deletes the command message
+        await ctx.message.delete()
         await ctx.send(message)
 
     @commands.command(name='root')
     @commands.is_owner()
     async def root(self, ctx):
         """Displays system and user information related to the bot."""
-        # Gather system information
         system_info = f"**System Information:**\n- OS: {platform.system()} {platform.release()}\n- Python Version: {platform.python_version()}\n- Architecture: {platform.architecture()}\n\n" 
         
-        # Gather user information
         user_info = "**User Management:**\n"
         admin_users = [user.name for user in ctx.guild.members if user.guild_permissions.administrator]
         user_info += f"- Admin Users: {', '.join(admin_users)}\n"
 
-        # Gather process information (hypothetical)
         process_info = "**Process Information:**\n- Running Processes: [Example Process]\n"
 
-        # Combine all information
         access_info = system_info + user_info + process_info
 
-        # Create a black embed
         embed = discord.Embed(title="Root Info", description=access_info, color=0x000000)
         await ctx.send(embed=embed)
 
@@ -520,15 +480,12 @@ class Owner(
     async def ss(self, ctx, url: str, delay: int = 0):  
         """Takes a screenshot of the provided URL with an optional delay."""
         try:
-            # Check if Firefox or Brave is installed
             if not (shutil.which('firefox') or shutil.which('brave')):
                 await ctx.send("Neither Firefox nor Brave is installed. Please install one of them to use this command.")
                 return
 
-            # Prepare screenshot filename
             screenshot_path = os.path.join(os.getcwd(), f"screenshot_{url.split('//')[-1].replace('/', '_')}.png")
 
-            # Use a headless browser to take a screenshot
             from selenium import webdriver
             from selenium.webdriver.firefox.service import Service
             from webdriver_manager.firefox import GeckoDriverManager
@@ -537,7 +494,6 @@ class Owner(
             from selenium.webdriver.chrome.options import Options
             from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
-            # Set up browser options for headless mode
             if shutil.which('firefox'):
                 options = FirefoxOptions()
                 options.add_argument('--headless')
@@ -547,23 +503,18 @@ class Owner(
                 options.add_argument('--headless')
                 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
-            # Load the URL
             driver.get(url)
 
-            # Wait for the specified delay
             await asyncio.sleep(delay)
 
-            # Take the screenshot
             driver.save_screenshot(screenshot_path)
             driver.quit()
 
-            # Send the screenshot
             with open(screenshot_path, "rb") as ss_file:
                 await ctx.send(
                     file=discord.File(ss_file, filename="screenshot.png"),
                 )
 
-            # Remove the temporary screenshot file
             os.remove(screenshot_path)
 
         except Exception as e:
@@ -571,11 +522,9 @@ class Owner(
 
     @Cog.listener()
     async def on_ready(self):
-        # Check if there's a stored RPC setting
         rpc_setting = getattr(self.bot, 'stored_rpc', None)
         
         if rpc_setting:
-            # If RPC is stored, set streaming presence
             activity = discord.Activity(
                 type=discord.ActivityType.streaming, 
                 name=rpc_setting,
@@ -583,5 +532,4 @@ class Owner(
             )
             await self.bot.change_presence(activity=activity, status=discord.Status.invisible)
         else:
-            # Default to no activity
             await self.bot.change_presence(activity=None, status=discord.Status.invisible)
