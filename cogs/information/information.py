@@ -712,6 +712,16 @@ class Information(Cog):
         else:
             await ctx.send(f"{member.mention} does not have a server banner.")
 
+    @commands.command(name="bots", description="Shows the number of bots in the server.")
+    async def bots(self, ctx):
+        """Shows the number of bots in the server."""
+        total_bots = sum(1 for member in ctx.guild.members if member.bot)
+        await ctx.send(embed=discord.Embed(
+            title=f"Bots in {ctx.guild.name}",
+            description=f"Total Bots: {total_bots}",
+            color=discord.Color.blue()
+        ))
+
     @commands.command(name="lines")
     async def count_lines(self, ctx, *, cog_path: str):
         """Count lines in a cog file. Usage: ,lines cogs.lastfm"""
@@ -789,13 +799,3 @@ class Information(Cog):
 
         except Exception as e:
             await ctx.send(f"```py\n{type(e).__name__}: {str(e)}```")
-
-    @commands.command(name="bots", description="Shows the number of bots in the server.")
-    async def bots(self, ctx):
-        """Shows the number of bots in the server."""
-        bot_count = sum(1 for member in ctx.guild.members if member.bot)
-        await ctx.send(embed=discord.Embed(
-            title=f"Bots in {ctx.guild.name}",
-            description=f"{bot_count} bots",
-            color=discord.Color.blue()
-        ))
