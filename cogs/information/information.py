@@ -190,41 +190,32 @@ class Information(Cog):
             developer_title = " - Developer" if member.id == self.developer_id else ""
 
             badges = []
-            # Discord Staff Badge
             if member.public_flags.staff:
                 badges.append("<:staff:1297931763229917246>")
             
-            # Partner Badge
             if member.public_flags.partner:
                 badges.append("<:partner:1297931370357723198>")
             
-            # Hypesquad Events Badge
             if member.public_flags.hypesquad:
                 badges.append("<:hypesquad:1297930974633398293>")
             
-            # Bug Hunter Badges
             if member.public_flags.bug_hunter_level_2:
                 badges.append("<:bug_hunter_level_2:1297931831521312850>")
             elif member.public_flags.bug_hunter:
                 badges.append("<:bug_hunter:1297931813121036321>")
             
-            # Early Supporter Badge
             if member.public_flags.early_supporter:
                 badges.append("<:early_supporter:1297931252158042283>")
             
-            # Verified Bot Developer Badge
             if member.public_flags.verified_bot_developer:
                 badges.append("<:verified_bot_developer:1297931270139150338>")
             
-            # Discord Certified Moderator Badge
             if member.public_flags.discord_certified_moderator:
                 badges.append("<:certified_moderator:1297932110514098290>")
             
-            # Active Developer Badge
             if member.public_flags.active_developer:
                 badges.append("<:active_developer:1297930880987431035>")
             
-            # HypeSquad House Badges
             if member.public_flags.hypesquad_balance:
                 badges.append("<:hypesquad_balance:1297930998864019509>")
             if member.public_flags.hypesquad_bravery:
@@ -232,15 +223,12 @@ class Information(Cog):
             if member.public_flags.hypesquad_brilliance:
                 badges.append("<:hypesquad_brilliance:1297931072503418890>")
             
-            # Server Booster Badge
             if member.premium_since:
                 badges.append("<:boost:1297931223972450488>")
             
-            # Server Owner Badge
             if member == member.guild.owner:
                 badges.append("<:server_owner:1297930836368167015>")
             
-            # Bot Badge and Slash Commands
             if member.bot:
                 badges.append("<a:bot2:1323899876924198976>")
 
@@ -253,9 +241,9 @@ class Information(Cog):
             for activity in activities:
                 if isinstance(activity, discord.Spotify):
                     track_url = f"https://open.spotify.com/track/{activity.track_id}"
-                    listening = f"🎧 [{activity.title} by {activity.artist}]({track_url})"
+                    listening = f"[**{activity.title}** by **{activity.artist}**]({track_url})"
                 elif isinstance(activity, discord.Game):
-                    playing = f"🎮 {activity.name}"
+                    playing = f"{activity.name}"
 
             created_at = member.created_at.strftime("%B %d, %Y")
             joined_at = member.joined_at.strftime("%B %d, %Y")
@@ -265,7 +253,6 @@ class Information(Cog):
             created_ago = f"{created_days_ago // 365} year{'s' if (created_days_ago // 365) > 1 else ''} ago" if created_days_ago >= 365 else f"{created_days_ago} day{'s' if created_days_ago > 1 else ''} ago"
             joined_ago = f"{joined_days_ago // 365} year{'s' if (joined_days_ago // 365) > 1 else ''} ago" if joined_days_ago >= 365 else f"{joined_days_ago} day{'s' if joined_days_ago > 1 else ''} ago"
 
-            # Sort roles by position (highest to lowest) and take top 5
             roles = sorted([role for role in member.roles[1:]], key=lambda x: x.position, reverse=True)
             top_roles = roles[:5]
             roles_string = " ".join(role.mention for role in top_roles) if top_roles else "No roles"
@@ -302,7 +289,7 @@ class Information(Cog):
             await ctx.send(embed=embed)
 
         except Exception as e:
-            await ctx.send(f"**Error**: Something went wrong - (No, nothing went wrong, I just don't like the person you're looking for)")
+            await ctx.send(f"**Error**: Something went wrong - User Profile does not contain displayable information // or does not exist")
             raise e
 
     @commands.command(name="si", help="Show the server info.")
@@ -310,7 +297,7 @@ class Information(Cog):
         """Shows the server information in a red embed."""
         
         if not ctx.guild.me.guild_permissions.embed_links:
-            await ctx.send("I don't have permission to send embeds!")
+            await ctx.send("I don't have permission to send embeds")
             return
 
         guild = ctx.guild
@@ -332,7 +319,7 @@ class Information(Cog):
         vanity_url_code = guild.vanity_url_code
         vanity_url = f"/{vanity_url_code}" if vanity_url_code else "None"
 
-        server_description = guild.description or "No description available"
+        server_description = guild.description or "No server description set"
         creation_time = guild.created_at.strftime("%B %d, %Y %I:%M %p")
 
         now = datetime.now(timezone.utc)
@@ -344,14 +331,13 @@ class Information(Cog):
         server_icon_url = guild.icon.url if guild.icon else None
 
         embed = discord.Embed(
-            description=f"{creation_time} ({time_since_creation})",
+            title=f"{guild.name}",
+            description=server_description,
             color=discord.Color.red()
         )
 
         if server_icon_url:
             embed.set_thumbnail(url=server_icon_url)
-
-        embed.title = f"{guild.name} \n{server_description}"
 
         embed.add_field(
             name="**Server**",

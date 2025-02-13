@@ -14,6 +14,7 @@ import asyncio
 import re
 import requests
 from .tracking_users import TRACKING_USERS
+import time
 
 class ArtistPaginator(View):
     def __init__(self, author_id: int, artists: List[dict], username: str, period: str):
@@ -179,14 +180,12 @@ class LastFM(commands.Cog):
             api_key=os.getenv('LASTFM_API_KEY'),
             api_secret=os.getenv('LASTFM_API_SECRET')
         )
-        self.tracking_channel = 1326226914255568906  # Dedicated tracking channel
-        self.tracking_users = {}  # {user_id: lastfm_username}
-        self.last_tracks = {}  # {lastfm_username: last_track} to prevent duplicate messages
+        self.tracking_channel = 1326226914255568906
+        self.tracking_users = {}
+        self.last_tracks = {}
         
-        # Load tracking users when the cog is initialized
         self.bot.loop.create_task(self.load_tracking_users())
         
-        # Start continuous tracking
         self.continuous_tracking.start()
 
     def cog_unload(self):
@@ -358,7 +357,7 @@ class LastFM(commands.Cog):
             try:
                 total_plays = int(data["user"]["playcount"])
                 embed = discord.Embed(
-                    description=f"{target.mention} has **{total_plays:,}** total scrobbles",
+                    description=f"{target.mention} has {total_plays:,} total scrobbles",
                     color=discord.Color.red()
                 )
                 await ctx.send(embed=embed)
@@ -401,7 +400,7 @@ class LastFM(commands.Cog):
                 artist_plays = int(data["artist"]["stats"]["userplaycount"])
                 artist_name = data["artist"]["name"]
                 embed = discord.Embed(
-                    description=f"You have **{artist_plays:,}** plays for **{artist_name}**",
+                    description=f"You have {artist_plays:,} plays for {artist_name}",
                     color=discord.Color.red()
                 )
                 await ctx.send(embed=embed)
@@ -462,7 +461,7 @@ class LastFM(commands.Cog):
                 
                 embed.add_field(
                     name="Stats",
-                    value=f"**Listeners:** {listeners:,}\n**Total Plays:** {playcount:,}",
+                    value=f"Listeners: {listeners:,}\nTotal Plays: {playcount:,}",
                     inline=False
                 )
                 
@@ -615,7 +614,7 @@ class LastFM(commands.Cog):
                 # No listeners found
                 if not listeners:
                     embed = discord.Embed(
-                        description=f"Nobody in this server has listened to **{track_name}** by **{artist}**",
+                        description=f"Nobody in this server has listened to {track_name} by {artist}",
                         color=discord.Color.red()
                     )
                     await ctx.send(embed=embed)
@@ -766,10 +765,10 @@ class LastFM(commands.Cog):
                     embed.set_thumbnail(url=image_url)
 
             description = [
-                f"**Global Statistics**",
-                f"**Listeners:** {listeners:,}",
-                f"**Total Plays:** {playcount:,}",
-                "\n**Top Listeners**"
+                f"Global Statistics",
+                f"Listeners: {listeners:,}",
+                f"Total Plays: {playcount:,}",
+                "\nTop Listeners"
             ]
 
             top_fans = artist_info["artist"].get("stats", {}).get("topfans", {}).get("user", [])
@@ -843,10 +842,10 @@ class LastFM(commands.Cog):
                     embed.set_thumbnail(url=image_url)
 
             description = [
-                f"**Global Statistics**",
-                f"**Listeners:** {listeners:,}",
-                f"**Total Plays:** {playcount:,}",
-                "\n**Top Listeners**"
+                f"Global Statistics",
+                f"Listeners: {listeners:,}",
+                f"Total Plays: {playcount:,}",
+                "\nTop Listeners"
             ]
 
             top_fans = track_info["track"].get("topfans", {}).get("user", [])
@@ -910,7 +909,7 @@ class LastFM(commands.Cog):
 
             embed.add_field(
                 name="Global Statistics",
-                value=f"**Listeners:** {listeners:,}\n**Total Plays:** {playcount:,}",
+                value=f"Listeners: {listeners:,}\nTotal Plays: {playcount:,}",
                 inline=False
             )
 
@@ -1022,7 +1021,7 @@ class LastFM(commands.Cog):
                 artist_name = track_data["track"]["artist"]["name"]
                 
                 embed = discord.Embed(
-                    description=f"You have **{plays:,}** plays for **{song_name}** by **{artist_name}**",
+                    description=f"You have {plays:,} plays for {song_name} by {artist_name}",
                     color=discord.Color.red()
                 )
                 
@@ -1166,7 +1165,7 @@ class LastFM(commands.Cog):
                 })
 
                 if not data or "error" in data:
-                    await self.error_embed(ctx, "Error fetching tracks.")
+                    await self.error_embed(ctx, "Error fetching tracks, this is most likely due to the Last.FM API, not the bot.")
                     return
 
                 track = data["recenttracks"]["track"]
@@ -1192,54 +1191,41 @@ class LastFM(commands.Cog):
                     "user": lastfm_username
                 }) or {}
 
-                artist_plays = int(artist_data.get("artist", {}).get("stats", {}).get("userplaycount", 0))
-                total_scrobbles = int(user_info.get("user", {}).get("playcount", 0))
-
                 track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
                 lastfm_profile_url = f"https://www.last.fm/user/{lastfm_username}"
 
+                artist_plays = int(artist_data.get("artist", {}).get("stats", {}).get("userplaycount", 0))
+                total_scrobbles = int(user_info.get("user", {}).get("playcount", 0))
+
+                description = [
+                    f"[{song}]({track_url})",
+                    f"{artist} · {album}" if album else artist
+                ]
+
                 embed = discord.Embed(
-                    description=f"[{song}]({track_url})\n{artist} · {album}",
+                    description="\n".join(description),
                     color=0xffffff
                 )
 
                 if image_url:
                     embed.set_thumbnail(url=image_url)
 
-                user_info_response = await self.fetch_lastfm_data("user.getInfo", {
-                    "user": lastfm_username
-                })
-                
                 avatar_url = (
-                    user_info_response.get("user", {}).get("image", [{}])[-1].get("#text") 
+                    user_info.get("user", {}).get("image", [{}])[-1].get("#text") 
                     or "https://cdn.discordapp.com/embed/avatars/0.png"
                 )
 
-                display_text = "Now playing" if is_now_playing else "Last track"
                 embed.set_author(
-                    name=f"{display_text} - {target.name}", 
+                    name=f"Now playing - {lastfm_username}", 
                     icon_url=avatar_url,
                     url=lastfm_profile_url
                 )
                 
                 footer_text = f"{artist_plays} artist scrobbles · {total_scrobbles} total scrobbles"
                 
-                position = None
-                if not isinstance(ctx.channel, discord.DMChannel):
-                    try:
-                        position_data = await self.whoknows_calculate_position(ctx.guild.id, artist)
-                        position = position_data.get(target.id, "N/A")
-                        footer_text += f" · WhoKnows #{position}"
-                    except Exception:
-                        pass
-            
                 embed.set_footer(text=footer_text)
 
-                message = await ctx.send(embed=embed)
-                
-                if not isinstance(ctx.channel, discord.DMChannel):
-                    await message.add_reaction("🔥")
-                    await message.add_reaction("🗑️")
+                await ctx.send(embed=embed)
 
             except (KeyError, IndexError):
                 await self.error_embed(ctx, "No recent tracks found.")
@@ -1256,7 +1242,7 @@ class LastFM(commands.Cog):
 
         data = await self.fetch_lastfm_data("user.getrecenttracks", {
             "user": username,
-            "limit": 10
+            "limit": 9
         })
 
         if not data or "error" in data:
@@ -1266,24 +1252,26 @@ class LastFM(commands.Cog):
         try:
             tracks = data["recenttracks"]["track"]
             
-            embed = discord.Embed(
-                title=f"Recent Tracks for {username}",
-                color=discord.Color.red()
-            )
-
-            for track in tracks:
+            recent_tracks_text = []
+            for i, track in enumerate(tracks, 1):
                 artist = track.get("artist", {}).get("#text", "Unknown Artist")
                 song = track.get("name", "Unknown Track")
                 
                 now_playing = "@attr" in track and track["@attr"].get("nowplaying") == "true"
                 
-                status = "Now Playing:" if now_playing else "Played:"
+                track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
                 
-                embed.add_field(
-                    name=f"{status} {song}",
-                    value=f"by {artist}",
-                    inline=False
-                )
+                track_format = f"{i}. [{song}]({track_url}) - {artist}"
+                if now_playing:
+                    track_format = f"{track_format}"
+                
+                recent_tracks_text.append(track_format)
+
+            embed = discord.Embed(
+                title=f"Recent Tracks for {username}",
+                description="\n".join(recent_tracks_text),
+                color=discord.Color.red()
+            )
 
             embed.set_footer(text=f"Last.fm | {username}", icon_url=target.display_avatar.url)
             await ctx.send(embed=embed)
@@ -1574,108 +1562,111 @@ class LastFM(commands.Cog):
         except Exception as e:
             print(f"Error loading tracking users: {e}")
 
-    @tasks.loop(seconds=1)
+    @tasks.loop(seconds=1)  # Reduced to 1 second interval
     async def continuous_tracking(self):
         """
         Continuously track Last.fm listening history for registered users.
-        Checks every 1 second and posts updates to the dedicated channel.
+        Checks every 1 second and posts updates to the dedicated channel when track changes.
         """
         try:
-            if not self.tracking_channel or not self.tracking_users:
-                await self.load_tracking_users()
-                
-                if not self.tracking_users:
-                    return
-
+            # Ensure the tracking channel exists
             channel = self.bot.get_channel(self.tracking_channel)
             if not channel:
-                print("Tracking channel not found. Stopping continuous tracking.")
+                print("Tracking channel not found.")
                 self.continuous_tracking.stop()
                 return
 
+            # Iterate through tracking users
             for user_id, lastfm_username in list(self.tracking_users.items()):
                 try:
+                    # Fetch recent tracks
                     data = await self.fetch_lastfm_data("user.getrecenttracks", {
                         "user": lastfm_username,
                         "limit": 1
                     })
 
                     if not data or "error" in data:
-                        print(f"Error fetching tracks for {lastfm_username}: {data}")
                         continue
 
-                    try:
-                        track = data["recenttracks"]["track"]
-                        if not track or not isinstance(track, list):
-                            print(f"Error processing track for {lastfm_username}: unable to retrieve track information")
-                            continue
-                        
-                        track = track[0] if track else {}
-                        
-                        is_now_playing = track.get('@attr', {}).get('nowplaying') == 'true'
-                        
-                        if is_now_playing:
-                            artist = track.get("artist", {}).get("#text", "Unknown Artist")
-                            song = track.get("name", "Unknown Track")
-                            album = track.get("album", {}).get("#text", "Unknown Album")
-                            image_url = track.get("image", [{}])[-1].get("#text", None)
+                    track = data["recenttracks"]["track"]
+                    
+                    # Ensure track data exists
+                    if not track or not isinstance(track, list):
+                        continue
+                    
+                    track = track[0] if track else {}
+                    
+                    # Check if track is currently playing
+                    is_now_playing = track.get('@attr', {}).get('nowplaying') == 'true'
+                    
+                    if is_now_playing:
+                        artist = track.get("artist", {}).get("#text", "Unknown Artist")
+                        song = track.get("name", "Unknown Track")
+                        album = track.get("album", {}).get("#text", "Unknown Album")
+                        image_url = track.get("image", [{}])[-1].get("#text", None)
 
-                            current_track = f"{artist} - {song}"
+                        # Create a unique track identifier
+                        current_track_id = f"{artist} - {song}"
+                        
+                        # Check if this track is different from the last tracked track
+                        last_track_data = self.last_tracks.get(lastfm_username, {})
+                        last_track = last_track_data.get('track')
+
+                        # Only send if track is different
+                        if current_track_id != last_track:
+                            # Fetch additional track information
+                            artist_data = await self.fetch_lastfm_data("artist.getInfo", {
+                                "artist": artist,
+                                "username": lastfm_username
+                            }) or {}
+
+                            user_info = await self.fetch_lastfm_data("user.getInfo", {
+                                "user": lastfm_username
+                            }) or {}
+
+                            track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
+                            lastfm_profile_url = f"https://www.last.fm/user/{lastfm_username}"
+
+                            artist_plays = int(artist_data.get("artist", {}).get("stats", {}).get("userplaycount", 0))
+                            total_scrobbles = int(user_info.get("user", {}).get("playcount", 0))
+
+                            description = [
+                                f"[{song}]({track_url})",
+                                f"{artist} · {album}" if album else artist
+                            ]
+
+                            embed = discord.Embed(
+                                description="\n".join(description),
+                                color=0xffffff
+                            )
+
+                            if image_url:
+                                embed.set_thumbnail(url=image_url)
+
+                            avatar_url = (
+                                user_info.get("user", {}).get("image", [{}])[-1].get("#text") 
+                                or "https://cdn.discordapp.com/embed/avatars/0.png"
+                            )
+
+                            embed.set_author(
+                                name=f"Now playing - {lastfm_username}", 
+                                icon_url=avatar_url,
+                                url=lastfm_profile_url
+                            )
                             
-                            if current_track != self.last_tracks.get(lastfm_username):
-                                artist_data = await self.fetch_lastfm_data("artist.getInfo", {
-                                    "artist": artist,
-                                    "username": lastfm_username
-                                }) or {}
+                            footer_text = f"{artist_plays} artist scrobbles · {total_scrobbles} total scrobbles"
+                            
+                            embed.set_footer(text=footer_text)
 
-                                user_info = await self.fetch_lastfm_data("user.getInfo", {
-                                    "user": lastfm_username
-                                }) or {}
-
-                                track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
-                                lastfm_profile_url = f"https://www.last.fm/user/{lastfm_username}"
-
-                                artist_plays = int(artist_data.get("artist", {}).get("stats", {}).get("userplaycount", 0))
-                                total_scrobbles = int(user_info.get("user", {}).get("playcount", 0))
-
-                                description = [
-                                    f"[{song}]({track_url})",
-                                    f"{artist} · {album}" if album else artist
-                                ]
-
-                                embed = discord.Embed(
-                                    description="\n".join(description),
-                                    color=0xffffff
-                                )
-
-                                if image_url:
-                                    embed.set_thumbnail(url=image_url)
-
-                                avatar_url = (
-                                    user_info.get("user", {}).get("image", [{}])[-1].get("#text") 
-                                    or "https://cdn.discordapp.com/embed/avatars/0.png"
-                                )
-
-                                embed.set_author(
-                                    name=f"Now playing - {lastfm_username}", 
-                                    icon_url=avatar_url,
-                                    url=lastfm_profile_url
-                                )
+                            try:
+                                await channel.send(embed=embed)
                                 
-                                footer_text = f"{artist_plays} artist scrobbles · {total_scrobbles} total scrobbles"
-                                
-                                embed.set_footer(text=footer_text)
-
-                                try:
-                                    message = await channel.send(embed=embed)
-                                    
-                                    self.last_tracks[lastfm_username] = current_track
-                                except Exception as send_error:
-                                    print(f"Failed to send message for {lastfm_username}: {send_error}")
-
-                    except (KeyError, IndexError) as track_error:
-                        print(f"Error processing track for {lastfm_username}: {track_error}")
-                        continue
+                                # Update the last track for this user
+                                self.last_tracks[lastfm_username] = {
+                                    'track': current_track_id
+                                }
+                            except Exception as send_error:
+                                print(f"Failed to send message for {lastfm_username}: {send_error}")
 
                 except Exception as user_error:
                     print(f"Error processing user {lastfm_username}: {user_error}")
@@ -1687,6 +1678,81 @@ class LastFM(commands.Cog):
     @continuous_tracking.before_loop
     async def before_continuous_tracking(self):
         await self.bot.wait_until_ready()
+
+    @commands.command(name="last")
+    async def last_track(self, ctx, *, user: Optional[discord.Member] = None):
+        """Show the last played track (excluding currently playing track)"""
+        async with ctx.typing():
+            target = user or ctx.author
+            username = await self.get_lastfm_username(target.id)
+
+            if not username:
+                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                return
+
+            data = await self.fetch_lastfm_data("user.getrecenttracks", {
+                "user": username,
+                "limit": 2  # Get 2 tracks to filter out current track
+            })
+
+            if not data or "error" in data:
+                await self.error_embed(ctx, "Error fetching recent tracks from Last.fm")
+                return
+
+            try:
+                tracks = data["recenttracks"]["track"]
+                
+                # Filter out the currently playing track
+                last_track = next((track for track in tracks if "@attr" not in track), None)
+                
+                if not last_track:
+                    await self.error_embed(ctx, "No last track found.")
+                    return
+
+                artist = last_track.get("artist", {}).get("#text", "Unknown Artist")
+                song = last_track.get("name", "Unknown Track")
+                album = last_track.get("album", {}).get("#text", "Unknown Album")
+                image_url = last_track.get("image", [{}])[-1].get("#text", None)
+                
+                # Create Last.fm track URL
+                track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
+                
+                # Fetch additional track information
+                track_info = await self.fetch_lastfm_data("track.getInfo", {
+                    "artist": artist,
+                    "track": song,
+                    "username": username
+                }) or {}
+
+                artist_info = await self.fetch_lastfm_data("artist.getInfo", {
+                    "artist": artist,
+                    "username": username
+                }) or {}
+
+                # Get user's play counts
+                user_track_plays = track_info.get("track", {}).get("userplaycount", "0")
+                user_artist_plays = artist_info.get("artist", {}).get("stats", {}).get("userplaycount", "0")
+
+                embed = discord.Embed(
+                    description=f"[{song}]({track_url})\n{artist} · {album}",
+                    color=discord.Color.red()
+                )
+
+                # Set track cover as thumbnail
+                if image_url:
+                    embed.set_thumbnail(url=image_url)
+
+                embed.set_author(
+                    name=f"Last Track - {username}", 
+                    icon_url=target.display_avatar.url
+                )
+
+                embed.set_footer(text=f"Track plays: {user_track_plays} · Artist plays: {user_artist_plays}")
+
+                await ctx.send(embed=embed)
+
+            except (KeyError, IndexError):
+                await self.error_embed(ctx, "No last track found.")
 
 async def setup(bot):
     await bot.add_cog(LastFM(bot))

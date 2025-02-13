@@ -8,7 +8,7 @@ import jishaku
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.0.2"
+        self.version = "v5.0.3"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
 
