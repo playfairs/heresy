@@ -45,7 +45,7 @@ class Moderation(commands.Cog):
             with open(self.file_path, "w") as f:
                 json.dump([], f)
 
-        self.unbannable_user_ids = [785042666475225109, 1268333988376739931, 608450597347262472, 598125772754124823, 926665802957066291, 818507782911164487, 1003843669528424468, 757355424621133914, 812606857742647298, 1252011606687350805, 877283649588965416]
+        self.unbannable_user_ids = [785042666475225109, 608450597347262472, 1268333988376739931, 598125772754124823, 926665802957066291, 1003843669528424468, 757355424621133914, 812606857742647298, 1252011606687350805, 877283649588965416]
 
     def load_selfbots(self):
         with open(self.file_path, "r") as f:
@@ -498,7 +498,7 @@ class Moderation(commands.Cog):
             
         return moderator.top_role > target.top_role
 
-    @command(name='ban', aliases=['fuck', 'rape'], help='Bans a member by mention or User ID.')
+    @command(name='ban', help='Bans a member by mention or User ID.')
     @has_permissions(ban_members=True)
     async def ban(self, ctx, target: Union[discord.Member, int] = None, *, reason: str = None):
         if target is None:

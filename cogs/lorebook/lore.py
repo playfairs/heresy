@@ -71,7 +71,7 @@ class Lore(commands.Cog):
         """Generate a unique hash for a lore entry to detect duplicates."""
         return hashlib.md5(content.encode()).hexdigest()
 
-    @commands.group(name="lore", invoke_without_command=True, aliases=['hoe'])
+    @commands.group(name="lore", invoke_without_command=True)
     async def lore(self, ctx, user: discord.Member = None):
         """
         Shows the lorebook for a user with pagination. 
@@ -409,3 +409,19 @@ class Lore(commands.Cog):
             await ctx.author.send(file=discord.File(file_name))
         else:
             await ctx.send("You do not have a lorebook.")
+
+    @lore.command(name='merge')
+    @commands.has_permissions(administrator=True)
+    async def merge(self, ctx, user1: discord.Member, user2: discord.Member):
+        # Fetch lore for both users
+        lore1 = self.load_lorebook(user1.id)
+        lore2 = self.load_lorebook(user2.id)
+
+        # Merge the lore
+        merged_lore = lore1 + lore2
+
+        # Save the merged lore to both users' lorebooks
+        self.save_lorebook(user1.id, merged_lore)
+        self.save_lorebook(user2.id, merged_lore)
+
+        await ctx.send(f"Merged lore of {user1.mention} and {user2.mention} successfully!")

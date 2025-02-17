@@ -1147,7 +1147,7 @@ class LastFM(commands.Cog):
             """, user_id, emoji)
             self.custom_commands[user_id] = emoji
 
-    @commands.command(name="np", aliases=["nowplaying", "fm", "fuckme"])
+    @commands.command(name="np", aliases=["nowplaying", "fm"])
     async def now_playing(self, ctx, user: Optional[discord.Member] = None):
         """Show currently playing track"""
         async with ctx.typing():
@@ -1225,7 +1225,9 @@ class LastFM(commands.Cog):
                 
                 embed.set_footer(text=footer_text)
 
-                await ctx.send(embed=embed)
+                message = await ctx.send(embed=embed)
+                await message.add_reaction("🔥")
+                await message.add_reaction("🗑️")
 
             except (KeyError, IndexError):
                 await self.error_embed(ctx, "No recent tracks found.")

@@ -160,7 +160,7 @@ class Utility(Cog):
         self.set_afk(user_id, reason)
 
         embed = discord.Embed(
-            description=f"<:check:1301903971535028314> {ctx.author.mention}, you're now AFK with status: **{reason}**.",
+            description=f"<:check:1301903971535028314> {ctx.author.mention}, you're now AFK with status: **{reason}**",
             color=discord.Color.blue()
         )
         await ctx.reply(embed=embed, mention_author=True)

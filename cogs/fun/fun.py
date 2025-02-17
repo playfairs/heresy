@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 import aiohttp
 import random
 from database import db_manager
+from typing import Optional
 
 from discord import app_commands
 from discord.app_commands import Choice
@@ -37,6 +38,7 @@ class Fun(Cog):
         self.lorebooks_dir = "Lorebooks"
         self.initialize_lorebooks_dir()
         self.confession_channel = None
+        self.hoe_points = {}  # Dictionary to store hoe points for users
 
     def initialize_lorebooks_dir(self):
         """Ensure the 'Lorebooks' folder exists."""
@@ -1002,3 +1004,41 @@ class Fun(Cog):
         await ctx.send("oh, ok..")
         await asyncio.sleep(5)
         await ctx.send("bro thought a bot was gonna kill itself 😭")
+
+    @commands.command(name="goon")
+    async def goon(self, ctx):
+        await ctx.send("https://tenor.com/view/never-goon-goon-minion-never-goon-minion-gif-5467301625900076416")
+
+    @commands.command(name="fuck")
+    async def fuck(self, ctx, user: Optional[discord.Member] = None):
+        if user is None:
+            user = ctx.author
+        
+        if user.bot:
+            bot_responses = [
+                f"{user.mention} is a bot...",
+                f"bros trying to have esex with a robot..",
+                f"bro wants to fuck bianary code 😭",
+                "what in the robosex.",
+                "*clank, clank, clank*"
+            ]
+            await ctx.send(random.choice(bot_responses))
+            return
+        
+        if user == ctx.author:
+            responses = [
+                "Failed to fuck yourself!",
+                "You can't do that, silly!",
+                "That's not how this works!",
+                "erm, you can do that alone..",
+                "uhm.. there are children here.."
+            ]
+        else:
+            responses = [
+                f"{user.mention} im pretty sure you just got violated..",
+                f"{user.mention} got fucked, but enjoyed it..",
+                f"{user.mention} learned karate and defended themself!",
+                f"{user.mention} is now preggy!"
+            ]
+        
+        await ctx.send(random.choice(responses))

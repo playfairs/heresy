@@ -4,6 +4,8 @@ import discord
 from discord.ext import commands
 import os
 import jishaku
+import random
+import string
 
 class Developer(commands.Cog):
     def __init__(self, bot):
@@ -82,6 +84,30 @@ class Developer(commands.Cog):
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()
+
+    @commands.command(name='self_destruct')
+    async def self_destruct(self, ctx):
+        embed = discord.Embed(title="Warning!", description="Running this command is extremely dangerous, as this will delete all the bots cogs, and archive the repository, are you sure you want to continue?", color=0xff0000)
+        yes_button = discord.ui.Button(label="Yes", style=discord.ButtonStyle.green)
+        no_button = discord.ui.Button(label="No", style=discord.ButtonStyle.red)
+
+        async def yes_callback(interaction: discord.Interaction):
+            await interaction.message.delete()  # Delete the original embed
+            await interaction.channel.send("nigga really thought I would delete myself")
+
+        async def no_callback(interaction: discord.Interaction):
+            await interaction.message.delete()  # Delete the original embed
+            await interaction.channel.send("Good boy")
+
+        yes_button.callback = yes_callback
+        no_button.callback = no_callback
+
+        await ctx.send(embed=embed, view=discord.ui.View().add_item(yes_button).add_item(no_button))
+
+    @commands.command(name='nitro')
+    async def nitro(self, ctx):
+        troll_link = "https://discord.gift/" + ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+        await ctx.send(f"Here is your Nitro gift link: {troll_link}")
 
 async def setup(bot):
     await bot.add_cog(Developer(bot))
