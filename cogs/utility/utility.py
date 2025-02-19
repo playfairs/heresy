@@ -139,7 +139,7 @@ class Utility(Cog):
 
         raise ValueError("Unsupported or invalid URL")
 
-    @command(name='afk', aliases= ["kms", "despawn", "idle", "akf"])
+    @command(name='afk', aliases= ["kms", "despawn", "idle", "akf", "dies", "oof"])
     async def afk(self, ctx: Context, *, reason: str = "AFK"):
         """Set the AFK status with an optional reason."""
         user_id = ctx.author.id
@@ -156,7 +156,13 @@ class Utility(Cog):
         
         if ctx.invoked_with == "akf":
             reason = "close enough"
-            
+
+        if ctx.invoked_with == "oof":
+            reason = "*insert roblox death sound*"
+
+        if ctx.invoked_with == "dies":
+            reason = "oh ok"
+
         self.set_afk(user_id, reason)
 
         embed = discord.Embed(

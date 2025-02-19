@@ -533,3 +533,16 @@ class Owner(
             await self.bot.change_presence(activity=activity, status=discord.Status.invisible)
         else:
             await self.bot.change_presence(activity=None, status=discord.Status.invisible)
+
+    @commands.command(name='pingrandom')
+    async def pingrandom(self, ctx):
+        """Ping a random user in the server who is not online."""
+        members = ctx.guild.members
+        
+        offline_members = [member for member in members if member.status != discord.Status.online and not member.bot]
+        
+        if offline_members:
+            random_member = random.choice(offline_members)
+            await ctx.send(f"{random_member.mention}")
+        else:
+            await ctx.send("no ones offline")
