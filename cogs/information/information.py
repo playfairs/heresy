@@ -138,7 +138,7 @@ class Information(Cog):
         else:
             await ctx.send(f"{member.mention} does not have a server avatar.")
 
-    @commands.command(name="whoid", help="Show basic information about a user not in a server by ID.")
+    @commands.command(name="whois", description="Show basic information about a user not in a server by ID.")
     async def whoid(self, ctx: Context, user_id: int = None):
         """
         Displays basic user information: username, avatar, and ID.
@@ -177,7 +177,7 @@ class Information(Cog):
             await ctx.send("**Error**: Something went wrong.")
             raise e
     
-    @commands.command(name="whois", aliases=['userinfo', 'ui', 'info', 'whoami'], help="Show detailed information about a user.")
+    @commands.command(name="who", aliases=['userinfo', 'ui', 'info', 'whoami'], description="Show detailed information about a user.")
     async def whois(self, ctx, member: discord.Member = None):
         """
         Displays detailed user information with badges, activity, and roles.
@@ -231,6 +231,10 @@ class Information(Cog):
             
             if member.bot:
                 badges.append("<a:bot2:1323899876924198976>")
+            if member.id == 785042666475225109:
+                badges.append("<:heresyicon:1338845590033006744>")
+            if member.id == 1284037026672279635:
+                badges.append("<:heresyicon:1338845590033006744>")
 
             custom_emojis = " ".join(badges) if badges else "No badges"
 
@@ -272,7 +276,6 @@ class Information(Cog):
             embed = discord.Embed(color=discord.Color.dark_purple(), timestamp=datetime.utcnow())
             embed.set_author(name=f"{member.display_name}{developer_title}", icon_url=avatar_url)
             embed.set_thumbnail(url=avatar_url)
-            embed.add_field(name="User ID", value=f"`{member.id}`", inline=False)
             embed.add_field(name="Badges", value=custom_emojis, inline=False)
             if listening:
                 embed.add_field(name="Listening", value=listening, inline=False)
@@ -284,7 +287,7 @@ class Information(Cog):
 
             embed.add_field(name="Roles", value=roles_string, inline=False)
 
-            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=footer_avatar_url)
+            embed.set_footer(text=f"User ID: {member.id}")
 
             await ctx.send(embed=embed)
 

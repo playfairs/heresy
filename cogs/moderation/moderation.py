@@ -237,35 +237,28 @@ class Moderation(commands.Cog):
             from PIL import Image, ImageDraw, ImageFont
             import io
 
-            # Create a 128x128 transparent image
             img = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
             draw = ImageDraw.Draw(img)
 
-            # Handle Unicode emojis
             if isinstance(emoji, str):
-                # Check if it's a valid Unicode emoji
                 if len(emoji) > 1:
                     await ctx.send("Please provide a single Unicode emoji.")
                     return
                 
-                # Use a large font to draw the emoji
                 font_size = 100
                 try:
                     font = ImageFont.truetype("arial.ttf", font_size)
                 except IOError:
                     font = ImageFont.load_default()
 
-                # Get text size and position to center the emoji
                 bbox = draw.textbbox((0, 0), emoji, font=font)
                 text_width = bbox[2] - bbox[0]
                 text_height = bbox[3] - bbox[1]
                 x = (128 - text_width) // 2
                 y = (128 - text_height) // 2
 
-                # Draw the emoji
                 draw.text((x, y), emoji, font=font, fill=(255, 255, 255, 255))
             
-            # Handle custom Discord emojis
             else:
                 async with aiohttp.ClientSession() as session:
                     async with session.get(str(emoji.url)) as response:
@@ -275,17 +268,14 @@ class Moderation(commands.Cog):
 
                         emoji_bytes = await response.read()
                         emoji_img = Image.open(io.BytesIO(emoji_bytes))
-                        
-                        # Resize and center the emoji
+
                         emoji_img.thumbnail((128, 128), Image.LANCZOS)
                         img.paste(emoji_img, ((128 - emoji_img.width) // 2, (128 - emoji_img.height) // 2), emoji_img)
             
-            # Save image to bytes
             img_byte_arr = io.BytesIO()
             img.save(img_byte_arr, format='PNG')
             img_byte_arr = img_byte_arr.getvalue()
             
-            # Use Discord's method to set role icon
             await role.edit(display_icon=img_byte_arr)
             await ctx.send(f"Role {role.mention}'s icon has been updated using the emoji {emoji}.")
         
@@ -521,7 +511,6 @@ class Moderation(commands.Cog):
                 await ctx.send("no.")
                 return
 
-        # Check role hierarchy for Member objects
         if isinstance(target, discord.Member):
             if target.top_role >= ctx.author.top_role and ctx.author.id != ctx.guild.owner_id:
                 embed = discord.Embed(description="You cannot ban a user with a role higher or equal to yours.", color=0xFF0000)
@@ -529,12 +518,10 @@ class Moderation(commands.Cog):
                 return
 
         try:
-            # Check if user is already banned
             try:
                 ban_entry = await ctx.guild.fetch_ban(target)
                 return await ctx.send("They're already banned 😭")
             except discord.NotFound:
-                # User is not banned, proceed with banning
                 await ctx.guild.ban(target, reason=f"Banned by {ctx.author}" + (f": {reason}" if reason else ""))
                 await ctx.send("👍")
         except discord.HTTPException as e:
@@ -581,28 +568,21 @@ class Moderation(commands.Cog):
         Unbans a user by their User ID.
         """
         try:
-            # Directly attempt to unban using the user ID
             await ctx.guild.unban(discord.Object(id=user_id), reason=f"Unbanned by {ctx.author}")
             
-            # Send a simple confirmation
             await ctx.send("👍")
 
         except discord.NotFound:
-            # This typically means the user is not in the ban list
             await ctx.send(f"They're not even banned 😭")
         
         except discord.Forbidden:
-            # Bot lacks permissions to unban
             await ctx.send("I not have permissions :c")
         
         except discord.HTTPException as e:
-            # Catch any HTTP-related errors
             await ctx.send(f"something went wrong 😭 {e}")
         
         except Exception as e:
-            # Catch any unexpected errors
             await ctx.send(f"something went wrong 😭 {str(e)}")
-            # Log the full error for debugging
             print(f"Unban error: {traceback.format_exc()}")
 
     @command(name='warn', help='Warns a member by mention or User ID.')
@@ -700,7 +680,7 @@ class Moderation(commands.Cog):
     @has_permissions(administrator=True)
     async def forcenick(self, ctx, member: discord.Member = None, *, forced_nick: Optional[str] = None):
         """Forces a nickname on a user that cannot be changed. If no nickname is provided, removes the forced nickname."""
-        # Check if only the command was typed
+
         if member is None:
             await ctx.send("Did you mean ,fm or are you saying fuck nigga.")
             return
@@ -872,7 +852,6 @@ class Moderation(commands.Cog):
     @has_permissions(administrator=True)
     async def nuke(self, ctx):
         """Nukes the current channel with confirmation."""
-        # Create a confirmation view
         class ConfirmView(discord.ui.View):
             def __init__(self, ctx, original_channel):
                 super().__init__()
@@ -881,22 +860,18 @@ class Moderation(commands.Cog):
 
             @discord.ui.button(label="Confirm", style=discord.ButtonStyle.red)
             async def confirm_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-                # Ensure the interaction user is the command invoker
                 if interaction.user != self.ctx.author:
                     await interaction.response.send_message("You cannot use this button.", ephemeral=True)
                     return
 
-                # Get channel properties
                 category = self.original_channel.category
                 position = self.original_channel.position
                 topic = self.original_channel.topic
                 nsfw = self.original_channel.is_nsfw()
                 overwrites = self.original_channel.overwrites
 
-                # Delete the original channel
                 await self.original_channel.delete()
 
-                # Recreate the channel with the same properties
                 new_channel = await self.ctx.guild.create_text_channel(
                     name=self.original_channel.name,
                     category=category,
@@ -906,7 +881,6 @@ class Moderation(commands.Cog):
                     overwrites=overwrites
                 )
 
-                # Create and send an embed in the new channel
                 embed = discord.Embed(
                     title="Channel Nuked", 
                     description=f"This channel was nuked by {self.ctx.author}",
@@ -917,7 +891,6 @@ class Moderation(commands.Cog):
 
             @discord.ui.button(label="Cancel", style=discord.ButtonStyle.green)
             async def cancel_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-                # Ensure the interaction user is the command invoker
                 if interaction.user != self.ctx.author:
                     await interaction.response.send_message("You cannot use this button.", ephemeral=True)
                     return
@@ -925,14 +898,12 @@ class Moderation(commands.Cog):
                 await interaction.response.send_message("Nuke cancelled.", ephemeral=True)
                 await interaction.message.delete()
 
-        # Send the confirmation message with an embed
         embed = discord.Embed(
             title="Nuke Confirmation", 
             description="Are you sure you want to nuke this channel? This will delete and recreate the channel.",
             color=discord.Color.red()
         )
         
-        # Create and send the view with the embed
         view = ConfirmView(ctx, ctx.channel)
         await ctx.send(embed=embed, view=view)
 
@@ -1573,15 +1544,12 @@ class Moderation(commands.Cog):
         Manages the list of immune users.
         Only a specific user can use this command.
         """
-        # Specify the user ID who can use this command
         AUTHORIZED_USER_ID = 785042666475225109
 
-        # Check if the command invoker is the authorized user
         if ctx.author.id != AUTHORIZED_USER_ID:
             await ctx.send("This command can only be ran by <@785042666475225109>")
             return
 
-        # If no user ID is provided, show the current immune users
         if user_id is None:
             if not hasattr(self.bot, 'immune_users'):
                 self.bot.immune_users = set()
@@ -1590,14 +1558,12 @@ class Moderation(commands.Cog):
                 await ctx.send("No users currently have immunity.")
                 return
             
-            # Create an embed to display immune users
             embed = discord.Embed(
                 title="Immune Users", 
                 description=f"Total Immune Users: {len(self.bot.immune_users)}",
                 color=discord.Color.green()
             )
             
-            # Try to get usernames for each ID
             for uid in list(self.bot.immune_users):
                 try:
                     member = await ctx.guild.fetch_member(uid)
@@ -1607,7 +1573,7 @@ class Moderation(commands.Cog):
                         inline=False
                     )
                 except:
-                    # If user can't be fetched, just show ID
+                    
                     embed.add_field(
                         name="Unknown User", 
                         value=f"ID: `{uid}`", 
@@ -1617,11 +1583,9 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
             return
 
-        # Ensure immune_users exists
         if not hasattr(self.bot, 'immune_users'):
             self.bot.immune_users = set()
 
-        # Check if the user is already in the list
         if user_id in self.bot.immune_users:
             self.bot.immune_users.remove(user_id)
             await ctx.send(f"User ID {user_id} has been removed from the immunity list.")
@@ -1633,7 +1597,6 @@ class Moderation(commands.Cog):
         """
         Check if a user should be prevented from being banned.
         """
-        # Check if the user ID is in the unbannable list
         if user.id in self.unbannable_user_ids:
             return True
         return False
@@ -1707,7 +1670,6 @@ class Moderation(commands.Cog):
                 )
             """)
 
-            # Add this to your database initialization
             CREATE_ANTINUKE_TABLE = """
             CREATE TABLE IF NOT EXISTS antinuke_admins (
                 guild_id BIGINT,
@@ -1716,7 +1678,6 @@ class Moderation(commands.Cog):
             );
             """
 
-            # In your setup or init function where you create tables:
             await self.bot.db.execute(CREATE_ANTINUKE_TABLE)
 
     @commands.hybrid_command(name="staffstrip", description="Strips a user of all their moderation-related roles")
