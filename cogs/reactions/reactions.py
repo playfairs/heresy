@@ -135,16 +135,16 @@ class Reactions(Cog):
             ],
             "shit type": [
                 "oh ok"
+            ],
+            "yoy": [
+                "yoy"
             ]
         }
 
-        # Track conversation context
         self.conversation_context = {}
 
-        # New specific bot responders
         self.bot_responders = {}
 
-        # Print out the bot responders to verify
         print("Responses Initialized:", self.bot_responders)
 
     async def add_response(self, ctx, args):

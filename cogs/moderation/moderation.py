@@ -66,10 +66,6 @@ class Moderation(commands.Cog):
         return {}
 
     async def give_role(self, ctx, member: discord.Member, role_input: str):
-        if member.bot:
-            await ctx.send("Cannot modify roles for bots.")
-            return
-
         role = None
         try:
             role = await commands.RoleConverter().convert(ctx, role_input)
@@ -507,6 +503,7 @@ class Moderation(commands.Cog):
                 await ctx.send("I am not banning myself, that would be stupid.")
                 return
 
+            print(f"Unbannable User IDs: {self.unbannable_user_ids}, Target ID: {target.id}")
             if target.id in self.unbannable_user_ids:
                 await ctx.send("no.")
                 return

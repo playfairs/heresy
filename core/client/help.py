@@ -156,6 +156,7 @@ class HerseyHelp(MinimalHelpCommand):
                     "Hog",
                     "Developer",
                     "RateLimit",
+                    "Jishaku"
                 ]
                 and (
                     "cogs" in cog.__module__

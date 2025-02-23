@@ -202,7 +202,7 @@ class Utility(Cog):
         )
         await ctx.reply(embed=embed, mention_author=True)
 
-    @command(name="translate")
+    @command(name="translate", aliases=["trans", "wtf"])
     async def translate(self, ctx, *, text: str = None):
         """
         Translates the given text or a replied-to message into the default language.

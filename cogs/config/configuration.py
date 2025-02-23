@@ -168,71 +168,12 @@ class Config(Cog):
             await channel.send(f"{leave_message} {interaction.user.mention}")
             await interaction.response.send_message("Leave message tested.", ephemeral=True)
 
-    @command(name="p4p-setup")
-    @has_permissions(administrator=True)
-    async def p4p_setup(self, ctx):
-        """
-        Sets up the P4P category, channels, and role.
-        """
-        guild = ctx.guild
-        category_name = "US VS THEM"
-        category = discord.utils.get(guild.categories, name=category_name)
-        if not category:
-            category = await guild.create_category(category_name)
-
-        us_channel = discord.utils.get(guild.text_channels, name="us")
-        if not us_channel:
-            us_channel = await category.create_text_channel("us")
-
-        them_channel = discord.utils.get(guild.text_channels, name="them")
-        if not them_channel:
-            them_channel = await category.create_text_channel("them")
-
-        overwrite = discord.PermissionOverwrite()
-        overwrite.send_messages = False
-        overwrite.read_messages = True
-
-        await us_channel.set_permissions(guild.default_role, overwrite=overwrite)
-        await them_channel.set_permissions(guild.default_role, overwrite=overwrite)
-
-        pm_role = discord.utils.get(guild.roles, name="pm")
-        if not pm_role:
-            pm_role = await guild.create_role(name="pm")
-
-        pm_overwrite = discord.PermissionOverwrite(send_messages=True, read_messages=True)
-        await us_channel.set_permissions(pm_role, overwrite=pm_overwrite)
-        await them_channel.set_permissions(pm_role, overwrite=pm_overwrite)
-
-        ad_message = self.get_ad_message()
-        await us_channel.send(ad_message)
-
-        await ctx.send(f"P4P setup complete! Category `{category_name}` created.")
-
-    @command()
-    async def ad(self, ctx):
-        """
-        Sends the promotional message read from ad.txt.
-        """
-        ad_message = self.get_ad_message()
-        await ctx.send(ad_message)
-
     @command(name="modlogs")
     @has_permissions(administrator=True)
     async def set_modlog_channel(self, ctx: Context, channel: discord.TextChannel):
         self.log_channels[str(ctx.guild.id)] = channel.id
         self.save_log_channels()
         await ctx.send(f"Mod logs channel has been set to {channel.mention}")
-
-    @command()
-    async def req(self, ctx):
-        embed = discord.Embed(
-            title="Requirements",
-            description="> Minimum Members: 250\n> No Toxic, Dox, or 764 related Servers.\n> Preferably Vanity Servers, makes invite links more readable.",
-            color=discord.Color.green()
-        )
-        embed.set_footer(text="If you have any questions, or want to partner, DM either @playfairs or ask <@&1311736090008485938>.")
-        
-        await ctx.send(embed=embed)
 
     @Cog.listener()
     async def on_member_update(self, before, after):

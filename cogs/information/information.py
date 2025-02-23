@@ -145,7 +145,7 @@ class Information(Cog):
         """
         try:
             if not user_id:
-                await ctx.send("Please provide a User ID, You fucking moron, it's literally called whoID for a reason")
+                await ctx.send("Please provide a User ID; If you were trying to run what used to be `whois`, try `who` or run `,h who` for more info.")
                 return
 
             try:
