@@ -21,6 +21,21 @@ class Information(Cog):
         self.developer_id = 785042666475225109
         self.bot_id = 593921296224747521
         self.start_time = datetime.now(timezone.utc)
+#        self.user_message_count = {}
+#        self.channel_message_count = {}
+
+    # may remove this if stats doesn't work
+#    @commands.Cog.listener()
+#    async def on_message(self, message):
+#        if message.author.bot:
+#            return
+
+#        user.id = message.author.id
+#        self.user_message_count[user_id] = self.user_message_count.get(user_id, 0) + 1
+
+#        channel_id = message.channel.id
+#        self.channel_message_count[channel_id] = self.channel_message_count.get(channel_id, 0) + 1
+
 
     @app_commands.command(name='about', description="Displays information about Playfair or heresy.")
     @app_commands.describe(option="Select either Playfair or heresy")
@@ -775,3 +790,29 @@ class Information(Cog):
 
         except Exception as e:
             await ctx.send(f"```py\n{type(e).__name__}: {str(e)}```")
+
+#    @commands.group(name="stats", invoke_without_command=True)
+#    async def stats(self, ctx: Context):
+#        """Fetchs activity stats about a user or channel."""
+#        await ctx.send("No stats to fetch.")
+
+#    @stats.command(name="user", description="Fetchs activity stats about a user.")
+#    async def stats_user(self, ctx: Context, member: discord.Member = None):
+#        """Fetchs activity stats about a user."""
+#        member = member or ctx.author
+#        messages = self.user_message_count.get(member.id, 0)
+
+#        embed = discord.Embed(title=f"Activity stats for {member.name}", color=discord.Color.blue())
+#        embed.set_thumbnail(url=member.display_avatar.url)
+#        embed.add_field(name="Messages Sent", value=f"```\n{messages}```", inline=True)
+#        await ctx.send(embed=embed)
+
+#    @stats.command(name="channel", description="Fetchs activity stats about a channel.")
+#    async def stats_channel(self, ctx: Context, channel: discord.TextChannel = None):
+#        """Fetchs activity stats about a channel."""
+#        channel = channel or ctx.channel
+#        messages = self.channel_message_count.get(channel.id, 0)
+
+#        embed = discord.Embed(title=f"Stats for #{channel.name}", color=discord.Color.blue())
+#        embed.add_field(name="Messages Sent", value=f"```\n{messages}```", inline=True)
+#        await ctx.send(embed=embed)
