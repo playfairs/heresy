@@ -56,7 +56,7 @@ class Config(Cog):
         with open(self.join_log_file, 'w') as f:
             json.dump(self.join_log_settings, f, indent=4)
 
-    @command(name="joinlogs")
+    @command(name="gate", aliases= ["joinlogs"])
     @has_permissions(administrator=True)
     async def set_join_logs(self, ctx: Context, channel: discord.TextChannel):
         """Sets the join log channel for the current server."""
