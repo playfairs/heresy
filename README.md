@@ -3,15 +3,15 @@
 
 # Requirements
 
-discord.py
-json
-asyncio
-aiohttp
-PyNaCl (Install from Python Wheel, pip doesn't install all packages for some mmodules)
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
 # Database Setup
 
-## PostgreSQL Configuration
+## PostgreSQL Configuration (MacOS)
 
 1. Install PostgreSQL:
    ```bash
@@ -45,5 +45,5 @@ PyNaCl (Install from Python Wheel, pip doesn't install all packages for some mmo
 Activate the virtual environment before running:
 ```bash
 source venv/bin/activate
-python3 bot.py
+python3 main.py
 ```
