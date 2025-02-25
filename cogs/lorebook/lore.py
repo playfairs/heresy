@@ -362,3 +362,25 @@ class Lore(commands.Cog):
         self.save_lorebook(user2.id, merged_lore)
 
         await ctx.send(f"Merged lore of {user1.mention} and {user2.mention} successfully!")
+
+    @lore.command(name="random")
+    async def random_entry(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+
+        lorebook = self.load_lorebook(user.id)
+        random_entry = random.choice(lorebook)
+
+        if not lorebook:
+            await ctx.send(f"Congrats {user.mention}, you haven't been clipped yet..")
+            return
+
+        entry = random_entry.choice(lorebook)
+
+        embed = discord.Embed(
+            title=f"{user.display_name}'s Random Lore",
+            description=entry.get('content', 'No content'),
+            color=0x000000
+        )
+        
+        await ctx.send(embed=embed)
