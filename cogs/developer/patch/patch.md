@@ -1,22 +1,25 @@
 ## What's New?
-- Last.FM: New command `last` which shows your last played track.
+- Fastfetch: Simply executes the shell command fastfetch and outputs it to the user.
+- Stats: Added a stats command with 2 types, channel and user, shows how many messages a user or channel has sent/contains.
+
 
 
 ## Playfairs.cc
-- Updated the bots tab on the website to have a Dashboard, which is currently available at [heresy.vercel.app](https://heresy.vercel.app)
+- Nothing new has changed to playfairs.cc
 
 
 ## Improvements
-- Updated the `whois` command, nothing detrimental was changed, just changed some hyprlinking and hrefs.
-- Changed the color of `last` from white to red to determine the difference between `last` and `np`.
-- Updated the `recent` command embed to be more visually appealing.
+- Jishaku: Updated some Jishaku commands, mostly just adding aliases.
+- Updated `ui` to show mutual servers in the footer, also readded `ms` and `nms`.
+- Along with adding mutual servers to `ui`, the embed color now matches a users role color, if none, then default, and also added a new badge for developers, which is exclusive to anyone working on the bot.
+
 
 ## Known Issues
 - No known issues.
 
 
 ## Coming Soon
-- Specifically for [heresy](https://heresy.vercel.app/), I plan to sync the commands tab to be accurate with the bot and all the commands, but this will take a while, as I plan to buy a VPS, a few Servers, and plan to make an API for Heresy, all of this wil be done around the time I verify the bot.
+- Nothing planned at the moment.
 
 
 -# Report any bugs to @playfairs or @uxju

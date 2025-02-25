@@ -312,7 +312,7 @@ class Information(Cog):
 
             embed.add_field(name="Roles", value=roles_string, inline=False)
 
-            embed.set_footer(text=f"User ID: {member.id} | Shared Servers: {mutual_server}")
+            embed.set_footer(text=f"User ID: {member.id} | Mutual Servers: {mutual_server}")
 
             await ctx.send(embed=embed)
 

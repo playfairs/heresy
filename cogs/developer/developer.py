@@ -10,7 +10,7 @@ import string
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.0.3"
+        self.version = "v5.1.0"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
 
@@ -108,7 +108,7 @@ class Developer(commands.Cog):
     async def nitro(self, ctx):
         troll_link = "https://discord.gift/" + ''.join(random.choices(string.ascii_letters + string.digits, k=16))
         await ctx.send(f"Here is your Nitro gift link: {troll_link}")
-        
+
 
 async def setup(bot):
     await bot.add_cog(Developer(bot))

@@ -524,10 +524,6 @@ class Reactions(Cog):
             await message.reply("<@1252011606687350805> https://www.grammarly.com")  
             print(f"Response sent for hwlp from user {message.author.id}")  
 
-        if message.author.id == 785042666475225109 and message.content == 'hi':  
-            await message.channel.send("hi creator")  
-            print(f"Response sent for hi from user {message.author.id}")  
-
         if message.author.id == 854145272749490216 and message.content == 'grr':  
             await message.channel.send("hi <@854145272749490216>")  
             print(f"Response sent for hello from user {message.author.id}")
