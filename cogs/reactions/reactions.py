@@ -223,7 +223,6 @@ class Reactions(Cog):
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 
-                # Create tables if they don't exist
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS skull_targets (
                         user_id INTEGER PRIMARY KEY
@@ -255,11 +254,9 @@ class Reactions(Cog):
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 
-                # Load skull targets
                 cursor.execute('SELECT user_id FROM skull_targets')
                 self.skull_targets = {row[0] for row in cursor.fetchall()}
                 
-                # Load auto react targets
                 cursor.execute('SELECT user_id, emoji FROM auto_react_targets')
                 self.auto_react_targets = {}
                 for user_id, emoji in cursor.fetchall():
@@ -267,7 +264,6 @@ class Reactions(Cog):
                         self.auto_react_targets[user_id] = []
                     self.auto_react_targets[user_id].append(emoji)
                 
-                # Load custom reactions
                 cursor.execute('SELECT trigger, reaction FROM custom_reactions')
                 self.custom_reactions = dict(cursor.fetchall())
         except sqlite3.Error as e:
@@ -455,20 +451,15 @@ class Reactions(Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         """Handle automatic reactions and responses"""
-        # Ignore bot messages and messages in DMs
         if message.author.bot or not message.guild:
             return
 
-        # Convert message content to lowercase for case-insensitive matching
         content = message.content.lower()
 
-        # Reaction handling
         try:
-            # Skull reaction for specific users
             if message.author.id in self.skull_targets:
                 await message.add_reaction("💀")
 
-            # SOB reaction with more flexible matching
             if "sob" in content or "😭" in content:
                 await message.add_reaction("😭")
 

@@ -92,11 +92,11 @@ class Developer(commands.Cog):
         no_button = discord.ui.Button(label="No", style=discord.ButtonStyle.red)
 
         async def yes_callback(interaction: discord.Interaction):
-            await interaction.message.delete()  # Delete the original embed
+            await interaction.message.delete()
             await interaction.channel.send("nigga really thought I would delete myself")
 
         async def no_callback(interaction: discord.Interaction):
-            await interaction.message.delete()  # Delete the original embed
+            await interaction.message.delete()
             await interaction.channel.send("Good boy")
 
         yes_button.callback = yes_callback

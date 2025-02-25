@@ -457,14 +457,11 @@ class Information(Cog):
     @commands.command(name="ri", aliases=["roleinfo"])
     async def role_info(self, ctx, *, role: discord.Role = None):
         """Display detailed information about a role."""
-        # If no role is specified, try to get the highest role of the author
         if not role:
             role = ctx.author.top_role
 
-        # Validate role
         if not isinstance(role, discord.Role):
             try:
-                # Try to find role by name or mention
                 role = discord.utils.get(ctx.guild.roles, name=role) or \
                        discord.utils.get(ctx.guild.roles, mention=role)
                 if not role:
@@ -472,10 +469,8 @@ class Information(Cog):
             except:
                 return await ctx.send("Role not found. Please specify a valid role.")
 
-        # Count members with this role
         members_with_role = len([member for member in ctx.guild.members if role in member.roles])
 
-        # Determine role type (admin, mod, staff, or regular)
         role_type = "Regular"
         permissions = role.permissions
         if permissions.administrator:
@@ -485,25 +480,20 @@ class Information(Cog):
         elif permissions.moderate_members:
             role_type = "Moderator"
 
-        # Create embed with role color
         embed = discord.Embed(
             title=role.name,
             color=role.color
         )
 
-        # Add bot's avatar to the top right
         if ctx.bot.user.avatar:
             embed.set_thumbnail(url=ctx.bot.user.avatar.url)
 
-        # Display Information
         display_info = f"**Color:** {str(role.color)}\n**Hoisted:** {'Yes' if role.hoist else 'No'}"
         embed.add_field(name="Display", value=display_info, inline=True)
 
-        # Base Information
         base_info = f"**Role ID:** {role.id}\n**Highest Permission:** {role_type}"
         embed.add_field(name="Base", value=base_info, inline=True)
 
-        # Other Information
         other_info = (
             f"**Mentionable:** {'Yes' if role.mentionable else 'No'}\n"
             f"**Hierarchy Position:** {role.position}/{len(ctx.guild.roles)}\n"
@@ -640,7 +630,6 @@ class Information(Cog):
             color=discord.Color.blue()
         )
 
-        # Split into chunks of 10 servers per field
         for i in range(0, len(mutual_guilds), 10):
             chunk = mutual_guilds[i:i + 10]
             field_value = "\n".join(f"> **{guild.name}** (`{guild.id}`)" for guild in chunk)
@@ -675,7 +664,6 @@ class Information(Cog):
             color=discord.Color.red()
         )
 
-        # Split into chunks of 10 servers per field
         for i in range(0, len(non_mutual_guilds), 10):
             chunk = non_mutual_guilds[i:i + 10]
             field_value = "\n".join(f"> **{guild.name}** (`{guild.id}`)" for guild in chunk)
@@ -715,7 +703,6 @@ class Information(Cog):
     async def count_lines(self, ctx, *, cog_path: str):
         """Count lines in a cog file. Usage: ,lines cogs.lastfm"""
         try:
-            # Get the bot's root directory and construct absolute path
             root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
             file_path = os.path.join(root_dir, cog_path.replace('.', os.sep) + '.py')
 

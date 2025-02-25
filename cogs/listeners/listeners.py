@@ -9,8 +9,8 @@ class Listeners(Cog):
         self.blacklisted_guilds = set()
         self.last_message_author = None
         self.consecutive_messages = 0
-        self.owner_id = 785042666475225109  # Hardcoded owner ID from the existing code
-        self.bot_id = 1284037026672279635  # Bot's user ID
+        self.owner_id = 785042666475225109
+        self.bot_id = 1284037026672279635
 
     @Cog.listener('on_guild_join')
     async def join_logger(self, guild):
@@ -74,19 +74,15 @@ class Listeners(Cog):
         """
         Listener to find the location of a command when bot is mentioned.
         """
-        # Check if the bot is mentioned
         if message.author.bot:
             return
 
-        # Check if the message mentions the bot
         bot_mention = f'<@{self.bot_id}>'
         if not message.content.startswith(bot_mention):
             return
 
-        # Split the message content
         parts = message.content.split()
 
-        # Special case for "where is your mom"
         if (len(parts) >= 4 and 
             parts[0] == bot_mention and 
             parts[1].lower() == 'where' and 
@@ -95,24 +91,19 @@ class Listeners(Cog):
             await message.channel.send("<@926665802957066291> where are you?")
             return
 
-        # Check for the specific query format
         if (len(parts) < 4 or 
             parts[0] != bot_mention or 
             parts[1].lower() != 'where' or 
             parts[2].lower() != 'is'):
             return
 
-        # Get the command name
         command_name = parts[3]
 
-        # Search through all cogs for the command
         for cog_name, cog in self.bot.cogs.items():
             for cmd in cog.get_commands():
                 if cmd.name == command_name or command_name in cmd.aliases:
-                    # Find the file and get its absolute path
                     file_path = os.path.abspath(os.path.join('cogs', type(cog).__module__.replace('.', '/') + '.py'))
                     
-                    # Try to find the exact line numbers
                     try:
                         with open(file_path, 'r') as f:
                             lines = f.readlines()
@@ -125,7 +116,6 @@ class Listeners(Cog):
                     except Exception:
                         start_line = "unknown"
 
-                    # Construct the response
                     response = (
                         f"Command `{command_name}` is located in:\n"
                         f"Folder: `cogs`\n"
@@ -136,7 +126,6 @@ class Listeners(Cog):
                     await message.channel.send(response)
                     return
 
-        # If command not found
         await message.channel.send(f"Could not find a command named `{command_name}`.")
 
     @Cog.listener('on_message')

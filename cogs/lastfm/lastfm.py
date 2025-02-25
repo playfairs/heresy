@@ -194,7 +194,6 @@ class LastFM(commands.Cog):
     async def cog_load(self):
         """Create necessary database tables on cog load"""
         async with self.bot.db.acquire() as conn:
-            # Create table for Last.fm usernames
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS lastfm_usernames (
                     user_id BIGINT PRIMARY KEY,
@@ -202,7 +201,6 @@ class LastFM(commands.Cog):
                 )
             """)
 
-            # Create table for custom commands
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS lastfm_custom_commands (
                     user_id BIGINT PRIMARY KEY,
@@ -213,7 +211,6 @@ class LastFM(commands.Cog):
             records = await conn.fetch("SELECT user_id, emoji FROM lastfm_custom_commands")
             self.custom_commands = {record['user_id']: record['emoji'] for record in records}
 
-            # Create table for Last.fm continuous tracking
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS lastfm_continuous_tracking (
                     user_id BIGINT PRIMARY KEY,
@@ -272,7 +269,6 @@ class LastFM(commands.Cog):
     @commands.group(invoke_without_command=True)
     async def lf(self, ctx):
         """Last.fm command group with various subcommands."""
-        # If no subcommand is invoked, show help
         await ctx.send_help(ctx.command)
 
     @lf.command(name="set")
@@ -535,14 +531,11 @@ class LastFM(commands.Cog):
         """See who knows the currently playing or specified track"""
         try:
             async with ctx.typing():
-                # If no track specified, use current track
                 if not track_name:
-                    # Get Last.fm username
                     username = await self.get_lastfm_username(ctx.author.id)
                     if not username:
                         return await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
 
-                    # Fetch recent tracks
                     data = await self.fetch_lastfm_data("user.getrecenttracks", {
                         "user": username,
                         "limit": 1
@@ -551,7 +544,6 @@ class LastFM(commands.Cog):
                     if not data or "recenttracks" not in data or not data["recenttracks"]["track"]:
                         return await self.error_embed(ctx, "No recent tracks found.")
 
-                    # Safely extract track information
                     track = data["recenttracks"]["track"]
                     if not track or not isinstance(track, list):
                         return await self.error_embed(ctx, "Unable to retrieve track information.")
@@ -560,26 +552,21 @@ class LastFM(commands.Cog):
                     artist = track.get("artist", {}).get("#text", "Unknown Artist")
                     track_name = track.get("name", "Unknown Track")
                 else:
-                    # If track is specified, split into artist and track
                     parts = track_name.split(" - ", 1)
                     if len(parts) == 2:
                         artist, track_name = parts
                     else:
-                        # If no dash, assume last word is track name
                         artist = " ".join(parts[:-1]) or "Unknown Artist"
                         track_name = parts[-1]
 
-                # Fetch track info to get additional details
                 track_info = await self.fetch_lastfm_data("track.getInfo", {
                     "track": track_name,
                     "artist": artist
                 }) or {}
 
-                # Prepare image (safely handle missing image)
                 image_data = track_info.get("track", {}).get("album", {}).get("image", [])
                 image = image_data if image_data and isinstance(image_data, list) else []
 
-                # Fetch users with Last.fm usernames in the server
                 listeners = []
                 async with self.bot.db.acquire() as conn:
                     records = await conn.fetch(
@@ -592,14 +579,12 @@ class LastFM(commands.Cog):
                         continue
 
                     try:
-                        # Fetch track info for this user
                         user_track_info = await self.fetch_lastfm_data("track.getInfo", {
                             "track": track_name,
                             "artist": artist,
                             "username": record['lastfm_username']
                         }) or {}
 
-                        # Get user's playcount for this track
                         playcount = int(user_track_info.get("track", {}).get("userplaycount", 0))
                         
                         if playcount > 0:
@@ -611,7 +596,6 @@ class LastFM(commands.Cog):
                     except Exception:
                         continue
 
-                # No listeners found
                 if not listeners:
                     embed = discord.Embed(
                         description=f"Nobody in this server has listened to {track_name} by {artist}",
@@ -620,10 +604,8 @@ class LastFM(commands.Cog):
                     await ctx.send(embed=embed)
                     return
 
-                # Sort listeners by playcount
                 listeners.sort(key=lambda x: x["plays"], reverse=True)
 
-                # Create a paginator view
                 view = WhoKnowsPaginator(
                     ctx.author.id, 
                     listeners, 
@@ -934,7 +916,6 @@ class LastFM(commands.Cog):
                 await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
                 return
 
-            # First, get the current artist from recent tracks
             current_artist = None
             data = await self.fetch_lastfm_data("user.getrecenttracks", {
                 "user": username,
@@ -1004,7 +985,6 @@ class LastFM(commands.Cog):
                             color=discord.Color.orange()
                         ))
 
-            # Get track info
             track_data = await self.fetch_lastfm_data("track.getInfo", {
                 "track": song_name,
                 "artist": artist_name,
@@ -1328,7 +1308,6 @@ class LastFM(commands.Cog):
     @lf.command(name="user")
     async def lf_user(self, ctx, user: Optional[discord.Member] = None):
         """Show a user's Last.fm profile information."""
-        # Use mentioned user or command invoker
         user = user or ctx.author
         
         lastfm_username = await self.get_lastfm_username(user.id)
@@ -1564,24 +1543,21 @@ class LastFM(commands.Cog):
         except Exception as e:
             print(f"Error loading tracking users: {e}")
 
-    @tasks.loop(seconds=1)  # Reduced to 1 second interval
+    @tasks.loop(seconds=1)
     async def continuous_tracking(self):
         """
         Continuously track Last.fm listening history for registered users.
         Checks every 1 second and posts updates to the dedicated channel when track changes.
         """
         try:
-            # Ensure the tracking channel exists
             channel = self.bot.get_channel(self.tracking_channel)
             if not channel:
                 print("Tracking channel not found.")
                 self.continuous_tracking.stop()
                 return
 
-            # Iterate through tracking users
             for user_id, lastfm_username in list(self.tracking_users.items()):
                 try:
-                    # Fetch recent tracks
                     data = await self.fetch_lastfm_data("user.getrecenttracks", {
                         "user": lastfm_username,
                         "limit": 1
@@ -1592,13 +1568,11 @@ class LastFM(commands.Cog):
 
                     track = data["recenttracks"]["track"]
                     
-                    # Ensure track data exists
                     if not track or not isinstance(track, list):
                         continue
                     
                     track = track[0] if track else {}
                     
-                    # Check if track is currently playing
                     is_now_playing = track.get('@attr', {}).get('nowplaying') == 'true'
                     
                     if is_now_playing:
@@ -1607,16 +1581,12 @@ class LastFM(commands.Cog):
                         album = track.get("album", {}).get("#text", "Unknown Album")
                         image_url = track.get("image", [{}])[-1].get("#text", None)
 
-                        # Create a unique track identifier
                         current_track_id = f"{artist} - {song}"
                         
-                        # Check if this track is different from the last tracked track
                         last_track_data = self.last_tracks.get(lastfm_username, {})
                         last_track = last_track_data.get('track')
 
-                        # Only send if track is different
                         if current_track_id != last_track:
-                            # Fetch additional track information
                             artist_data = await self.fetch_lastfm_data("artist.getInfo", {
                                 "artist": artist,
                                 "username": lastfm_username
@@ -1663,7 +1633,6 @@ class LastFM(commands.Cog):
                             try:
                                 await channel.send(embed=embed)
                                 
-                                # Update the last track for this user
                                 self.last_tracks[lastfm_username] = {
                                     'track': current_track_id
                                 }
@@ -1694,7 +1663,7 @@ class LastFM(commands.Cog):
 
             data = await self.fetch_lastfm_data("user.getrecenttracks", {
                 "user": username,
-                "limit": 2  # Get 2 tracks to filter out current track
+                "limit": 2
             })
 
             if not data or "error" in data:
@@ -1704,7 +1673,6 @@ class LastFM(commands.Cog):
             try:
                 tracks = data["recenttracks"]["track"]
                 
-                # Filter out the currently playing track
                 last_track = next((track for track in tracks if "@attr" not in track), None)
                 
                 if not last_track:
@@ -1716,10 +1684,8 @@ class LastFM(commands.Cog):
                 album = last_track.get("album", {}).get("#text", "Unknown Album")
                 image_url = last_track.get("image", [{}])[-1].get("#text", None)
                 
-                # Create Last.fm track URL
                 track_url = f"https://www.last.fm/music/{quote_plus(artist)}/_/{quote_plus(song)}"
                 
-                # Fetch additional track information
                 track_info = await self.fetch_lastfm_data("track.getInfo", {
                     "artist": artist,
                     "track": song,
@@ -1731,7 +1697,6 @@ class LastFM(commands.Cog):
                     "username": username
                 }) or {}
 
-                # Get user's play counts
                 user_track_plays = track_info.get("track", {}).get("userplaycount", "0")
                 user_artist_plays = artist_info.get("artist", {}).get("stats", {}).get("userplaycount", "0")
 
@@ -1740,7 +1705,6 @@ class LastFM(commands.Cog):
                     color=discord.Color.red()
                 )
 
-                # Set track cover as thumbnail
                 if image_url:
                     embed.set_thumbnail(url=image_url)
 

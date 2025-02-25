@@ -6,10 +6,9 @@ import aiohttp
 class RateLimit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # Create a limiter with a rate limit of 300 requests per minute
         self.limiter = AsyncLimiter(max_rate=300, time_period=60)
         self.is_paused = False
-        self.requests_made = 0  # Track number of requests
+        self.requests_made = 0
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -17,9 +16,9 @@ class RateLimit(commands.Cog):
             if "429" in str(error) or "rate limit" in str(error).lower():
                 self.is_paused = True
                 await ctx.send("```py\nRateLimit: Bot is cooling down. Commands will resume shortly.```")
-                await asyncio.sleep(60)  # Wait for a minute
+                await asyncio.sleep(60)
                 self.is_paused = False
-                self.requests_made = 0  # Reset counter
+                self.requests_made = 0
                 return
 
     @commands.Cog.listener()
@@ -28,13 +27,12 @@ class RateLimit(commands.Cog):
             await ctx.send("```py\nRateLimit: Bot is currently cooling down from rate limits. Please wait.```")
             raise commands.CommandError("Rate limit cooldown")
         
-        # Wait for rate limit before proceeding
         await self.limiter.acquire()
         self.requests_made += 1
 
     async def check_rate_limit(self):
         """Check if we're approaching rate limit"""
-        if self.requests_made >= (self.limiter.max_rate * 0.8):  # If we've used 80% of our rate limit
+        if self.requests_made >= (self.limiter.max_rate * 0.8):
             return True
         return False
 
@@ -44,14 +42,12 @@ class RateLimit(commands.Cog):
         try:
             message = await ctx.send("Testing rate limit... Sending 10 rapid requests")
             
-            # Try to make 10 rapid requests
             for i in range(10):
                 await self.limiter.acquire()
                 self.requests_made += 1
                 await message.edit(content=f"Request {i+1}/10 completed\nRequests made: {self.requests_made}/{self.limiter.max_rate}")
-                await asyncio.sleep(0.1)  # Small delay to make output readable
+                await asyncio.sleep(0.1)
             
-            # Check if we're close to rate limit
             is_limited = await self.check_rate_limit()
             
             if is_limited:

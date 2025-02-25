@@ -104,7 +104,6 @@ class Vanity(Cog):
                 continue
 
             for member in guild.members:
-                # Skip bot accounts
                 if member.bot:
                     continue
 

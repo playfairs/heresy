@@ -39,10 +39,8 @@ class AppleMusic(Cog):
     @apple_music_group.command(name="playing", aliases=["np", "now"])
     async def now_playing(self, ctx):
         """Show the currently playing track."""
-        # Look for Apple Music Rich Presence
         member = ctx.author
         
-        # Check for Apple Music activity in Rich Presence
         apple_music_activity = next((
             activity for activity in member.activities 
             if isinstance(activity, discord.Activity) and 
@@ -50,19 +48,15 @@ class AppleMusic(Cog):
             activity.name == "Apple Music"
         ), None)
 
-        # If no Apple Music activity found, try custom RPC
         if not apple_music_activity:
-            # Check if the user has a custom RPC that might be from Vencord
             custom_activity = next((
                 activity for activity in member.activities 
                 if isinstance(activity, discord.Activity) and 
                 activity.type == discord.ActivityType.custom
             ), None)
             
-            # If custom activity exists, try to parse Apple Music info
             if custom_activity and custom_activity.name:
                 try:
-                    # Attempt to parse track info from custom status
                     parts = custom_activity.name.split(" - ")
                     if len(parts) >= 2 and "on Apple Music" in custom_activity.name:
                         apple_music_activity = type('AppleMusicActivity', (), {
@@ -73,7 +67,7 @@ class AppleMusic(Cog):
                     apple_music_activity = None
 
         if apple_music_activity and hasattr(apple_music_activity, 'details') and hasattr(apple_music_activity, 'state'):
-            # Create an embed to display the track
+
             embed = discord.Embed(
                 title="🎵 Now Playing on Apple Music",
                 color=discord.Color.red()
@@ -84,7 +78,6 @@ class AppleMusic(Cog):
             
             await ctx.send(embed=embed)
         else:
-            # No music detected
             embed = discord.Embed(
                 title="🎵 No Music Detected",
                 description="Could not find any Apple Music activity.\n\n"
@@ -104,7 +97,6 @@ class AppleMusic(Cog):
             await ctx.send("Please provide your Apple Music username.")
             return
 
-        # Store user's tracking information
         self.user_tracking[str(ctx.author.id)] = {
             "username": apple_music_username,
             "tracking_method": "vencord"
@@ -168,7 +160,6 @@ class Playlist(commands.Cog):
             await ctx.send("No playlists available.")
             return
         
-        # Convert playlists to a list of tuples for easier pagination
         playlist_items = list(playlists.items())
         ITEMS_PER_PAGE = 10
         
@@ -194,20 +185,16 @@ class Playlist(commands.Cog):
                 
                 self.current_page = max(0, self.current_page - 1)
                 
-                # Update embed
                 embed = discord.Embed(
                     title="Available Playlists", 
                     color=discord.Color.blue()
                 )
                 
-                # Get page items
                 page_items = self.get_page_items()
                 
-                # Create description with multiple playlists
                 description = "\n".join([f"• [{keyword}]({url})" for keyword, url in page_items])
                 embed.description = description
                 
-                # Update footer with page info
                 embed.set_footer(text=f"Page {self.current_page + 1} of {self.max_pages + 1}")
                 
                 await interaction.response.edit_message(embed=embed, view=self)
@@ -220,44 +207,34 @@ class Playlist(commands.Cog):
                 
                 self.current_page = min(self.max_pages, self.current_page + 1)
                 
-                # Update embed
                 embed = discord.Embed(
                     title="Available Playlists", 
                     color=discord.Color.blue()
                 )
                 
-                # Get page items
                 page_items = self.get_page_items()
                 
-                # Create description with multiple playlists
                 description = "\n".join([f"• [{keyword}]({url})" for keyword, url in page_items])
                 embed.description = description
                 
-                # Update footer with page info
                 embed.set_footer(text=f"Page {self.current_page + 1} of {self.max_pages + 1}")
                 
                 await interaction.response.edit_message(embed=embed, view=self)
         
-        # Initial embed
         initial_embed = discord.Embed(
             title="Available Playlists", 
             color=discord.Color.blue()
         )
         
-        # Get first page items
         first_page_items = playlist_items[:ITEMS_PER_PAGE]
         
-        # Create description with multiple playlists
         initial_description = "\n".join([f"• [{keyword}]({url})" for keyword, url in first_page_items])
         initial_embed.description = initial_description
         
-        # Set footer with page info
         initial_embed.set_footer(text=f"Page 1 of {(len(playlist_items) - 1) // ITEMS_PER_PAGE + 1}")
         
-        # Create view
         view = PlaylistPaginatorView(playlist_items, ctx.author)
         
-        # Send initial message
         await ctx.send(embed=initial_embed, view=view)
 
     @playlist.command(name="add")
@@ -266,20 +243,16 @@ class Playlist(commands.Cog):
         """Add a new playlist (bot owner only)."""
         playlists = self.load_playlists()
         
-        # Validate URL (basic check)
         if not (url.startswith('http://') or url.startswith('https://')):
             await ctx.send("Invalid URL. Must start with http:// or https://")
             return
-        
-        # Convert keyword to lowercase for consistency
+
         keyword = keyword.lower()
         
-        # Check if keyword already exists
         if keyword in playlists:
             await ctx.send(f"Playlist '{keyword}' already exists. Use a different keyword.")
             return
         
-        # Add playlist
         playlists[keyword] = url
         self.save_playlists(playlists)
         

@@ -77,21 +77,16 @@ class Lore(commands.Cog):
         Shows the lorebook for a user with pagination. 
         If no user is mentioned, shows the invoking user's lorebook.
         """
-        # If no user is mentioned, use the command invoker
         user = user or ctx.author
 
-        # Load the user's lorebook
         lorebook = self.load_lorebook(user.id)
 
-        # Check if the lorebook is empty
         if not lorebook:
             await ctx.send(f"Congrats {user.mention}, you haven't been clipped yet..")
             return
 
-        # Create a view with pagination
         view = LoreView(lorebook, user)
         
-        # Send the first page
         await ctx.send(embed=view.get_embed(), view=view)
 
     @lore.command(name="add")
@@ -100,30 +95,23 @@ class Lore(commands.Cog):
         Adds a message to the lorebook of the user who sent the referenced message.
         Must be used by replying to a message.
         """
-        # Check if this is a reply
         if not ctx.message.reference:
             await ctx.send("You must reply to a message to add lore!")
             return
 
-        # Get the referenced message
         referenced_message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
         
-        # Set the user to the author of the referenced message
         user = referenced_message.author
         content = referenced_message.content
 
-        # Load the user's current lorebook
         lorebook = self.load_lorebook(user.id)
 
-        # Generate hash to check for duplicates
         entry_hash = self.generate_entry_hash(content)
         
-        # Check if this exact message has already been added
         if any(self.generate_entry_hash(entry.get('content', '')) == entry_hash for entry in lorebook):
             await ctx.send("This message has already been added to lorebook.")
             return
 
-        # Add the new entry
         lorebook.append({
             'content': content,
             'timestamp': referenced_message.created_at.isoformat(),
@@ -132,7 +120,6 @@ class Lore(commands.Cog):
             'channel_id': referenced_message.channel.id
         })
 
-        # Save the updated lorebook
         self.save_lorebook(user.id, lorebook)
 
         await ctx.send(f"Lore added for {user.mention}!")
@@ -143,22 +130,17 @@ class Lore(commands.Cog):
         """
         Removes a specific lore entry by its number.
         """
-        # If no user is mentioned, use the command invoker
         if user is None:
             user = ctx.author
 
-        # Load the user's lorebook
         lorebook = self.load_lorebook(user.id)
 
-        # Check if the entry number is valid
         if entry_number < 1 or entry_number > len(lorebook):
             await ctx.send(f"Invalid entry number. Please choose a number between 1 and {len(lorebook)}.")
             return
 
-        # Remove the entry (adjusting for 1-based indexing)
         removed_entry = lorebook.pop(entry_number - 1)
 
-        # Save the updated lorebook
         self.save_lorebook(user.id, lorebook)
 
         await ctx.send(f"Removed entry {entry_number} from {user.mention}'s lorebook.")
@@ -169,11 +151,9 @@ class Lore(commands.Cog):
         """
         Resets a user's entire lorebook.
         """
-        # If no user is mentioned, use the command invoker
         if user is None:
             user = ctx.author
 
-        # Reset the lorebook to an empty list
         self.save_lorebook(user.id, [])
 
         await ctx.send(f"Reset {user.mention}'s lorebook.")
@@ -185,19 +165,15 @@ class Lore(commands.Cog):
         If no user is mentioned, uses the command invoker.
         If entry number is out of range, shows a random entry.
         """
-        # If no user is mentioned, use the command invoker
         if user is None:
             user = ctx.author
 
-        # Load the user's lorebook
         lorebook = self.load_lorebook(user.id)
 
-        # Check if the lorebook is empty
         if not lorebook:
             await ctx.send(f"Congrats {user.mention}, you haven't been clipped yet..")
             return
 
-        # If entry number is out of range, choose a random entry
         import random
         if entry_number < 1 or entry_number > len(lorebook):
             entry_number = random.randint(1, len(lorebook))
@@ -205,7 +181,6 @@ class Lore(commands.Cog):
 
         entry = lorebook[entry_number - 1]
 
-        # Create an embed to display the entry
         embed = discord.Embed(
             title=f"{user.display_name}'s Lore - Entry {entry_number}",
             description=entry.get('content', 'No content'),
@@ -223,44 +198,33 @@ class Lore(commands.Cog):
         - ,lore search keyword
         - ,lore search keyword @user
         """
-        # If no query provided, send an error message
         if not query:
             await ctx.send("Please provide a keyword to search for.")
             return
 
-        # Try to extract a user mention from the query
-        user = ctx.author  # Default to command invoker
+        user = ctx.author
         parts = query.split()
         
-        # Check if the last part is a user mention
         if len(parts) > 1 and parts[-1].startswith('<@') and parts[-1].endswith('>'):
             try:
-                # Remove the mention from the query
                 query = ' '.join(parts[:-1])
-                # Convert mention to user
                 user = await commands.MemberConverter().convert(ctx, parts[-1])
             except commands.MemberNotFound:
-                # If conversion fails, keep the full query and use default user
                 query = ' '.join(parts)
-        
-        # Load the user's lorebook
+
         lorebook = self.load_lorebook(user.id)
 
-        # Convert keyword to lowercase for case-insensitive search
         query = query.lower()
 
-        # Find matching entries
         matching_entries = [
             (index + 1, entry) for index, entry in enumerate(lorebook) 
             if query in entry.get('content', '').lower()
         ]
 
-        # If no matches found
         if not matching_entries:
             await ctx.send(f"No lore entries found containing '{query}' for {user.display_name}.")
             return
 
-        # Create a paginated view for search results
         class SearchLoreView(discord.ui.View):
             def __init__(self, ctx, matching_entries, user, query):
                 super().__init__()
@@ -271,52 +235,42 @@ class Lore(commands.Cog):
                 self.current_page = 0
 
             def get_embed(self):
-                # Get the current entry
                 entry_number, entry = self.matching_entries[self.current_page]
 
-                # Create embed
                 embed = discord.Embed(
                     title=f"{self.user.display_name}'s Lore - Search Results",
                     description=f"Searching for '{self.query}'\nShowing result {self.current_page + 1} of {len(self.matching_entries)}",
                     color=0x000000
                 )
 
-                # Add entry content
                 embed.add_field(name=f"Entry {entry_number}", value=entry.get('content', 'No content'), inline=False)
                 
                 return embed
 
             def update_buttons(self):
-                # Disable previous button if on first page
                 self.previous.disabled = (self.current_page == 0)
-                # Disable next button if on last page
                 self.next.disabled = (self.current_page == len(self.matching_entries) - 1)
 
             @discord.ui.button(label="Previous", style=discord.ButtonStyle.blurple, emoji="<:left:1307448382326968330>")
             async def previous(self, interaction: discord.Interaction, button: discord.ui.Button):
-                # Check if the interaction user is the same as the command invoker
                 if interaction.user != self.ctx.author:
                     await interaction.response.send_message("You cannot use these buttons.", ephemeral=True)
                     return
 
-                # Move to previous page
                 if self.current_page > 0:
                     self.current_page -= 1
                     await interaction.response.edit_message(embed=self.get_embed(), view=self)
 
             @discord.ui.button(label="Next", style=discord.ButtonStyle.blurple, emoji="<:right:1307448399624405134>")
             async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
-                # Check if the interaction user is the same as the command invoker
                 if interaction.user != self.ctx.author:
                     await interaction.response.send_message("You cannot use these buttons.", ephemeral=True)
                     return
 
-                # Move to next page
                 if self.current_page < len(self.matching_entries) - 1:
                     self.current_page += 1
                     await interaction.response.edit_message(embed=self.get_embed(), view=self)
 
-        # Create and send the view
         view = SearchLoreView(ctx, matching_entries, user, query)
         await ctx.send(embed=view.get_embed(), view=view)
 
@@ -325,38 +279,30 @@ class Lore(commands.Cog):
         """
         Shows the top 10 users with the most lore entries.
         """
-        # Get all lorebook files
         import os
         import json
 
-        # Ensure the Lorebooks directory exists
         lorebooks_dir = self.lorebooks_dir
         if not os.path.exists(lorebooks_dir):
             await ctx.send("No lore entries found.")
             return
 
-        # Collect lore counts
         lore_counts = []
         for filename in os.listdir(lorebooks_dir):
             if filename.endswith('.json'):
                 try:
-                    # Extract user ID from filename
                     user_id = int(filename.split('.')[0])
                     
-                    # Load the lorebook
                     filepath = os.path.join(lorebooks_dir, filename)
                     with open(filepath, 'r') as f:
                         lorebook = json.load(f)
                     
-                    # Try to get the member
                     try:
                         member = await ctx.guild.fetch_member(user_id)
                         display_name = member.display_name
                     except:
-                        # Fallback to user ID if member not found
                         display_name = str(user_id)
                     
-                    # Add to lore counts
                     lore_counts.append({
                         'user_id': user_id,
                         'display_name': display_name,
@@ -365,17 +311,14 @@ class Lore(commands.Cog):
                 except Exception as e:
                     print(f"Error processing {filename}: {e}")
 
-        # Sort by lore count in descending order
         lore_counts.sort(key=lambda x: x['lore_count'], reverse=True)
 
-        # Create the embed
         embed = discord.Embed(
             title="Lore Leaderboard 📜",
             description="Top 10 users with the most lore entries",
             color=0x000000
         )
 
-        # Add leaderboard entries
         for i, entry in enumerate(lore_counts[:10], 1):
             embed.add_field(
                 name=f"{i}. {entry['display_name']}",
@@ -383,13 +326,11 @@ class Lore(commands.Cog):
                 inline=False
             )
 
-        # Try to set the bot's avatar as the thumbnail
         try:
             embed.set_thumbnail(url=ctx.bot.user.display_avatar.url)
         except:
             pass
 
-        # Send the embed
         await ctx.send(embed=embed)
 
     @lore.command(name='glb')
@@ -402,7 +343,6 @@ class Lore(commands.Cog):
             with open(lorebook_path, 'r') as f:
                 lore_data = json.load(f)
 
-            # Send the lorebook as a JSON file
             file_name = f"{ctx.author.name}_lorebook.json"
             with open(file_name, 'w') as json_file:
                 json.dump(lore_data, json_file, indent=4)
@@ -413,14 +353,11 @@ class Lore(commands.Cog):
     @lore.command(name='merge')
     @commands.has_permissions(administrator=True)
     async def merge(self, ctx, user1: discord.Member, user2: discord.Member):
-        # Fetch lore for both users
         lore1 = self.load_lorebook(user1.id)
         lore2 = self.load_lorebook(user2.id)
 
-        # Merge the lore
         merged_lore = lore1 + lore2
 
-        # Save the merged lore to both users' lorebooks
         self.save_lorebook(user1.id, merged_lore)
         self.save_lorebook(user2.id, merged_lore)
 
