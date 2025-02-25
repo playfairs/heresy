@@ -160,7 +160,7 @@ class HerseyHelp(MinimalHelpCommand):
                 ]
                 and (
                     "cogs" in cog.__module__
-                    or cog.qualified_name == "Jishaku"  # Include Jishaku
+                    or cog.qualified_name == "Jishaku"
                 )
             ]
         )

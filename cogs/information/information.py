@@ -105,7 +105,7 @@ class Information(Cog):
         if not member.avatar:
             await ctx.send(f"{member.mention} doesn't have an avatar, man, who runs around discord without an avatar.")
             return
-        
+
         embed = discord.Embed(title=f"{member.name}'s Avatar", color=discord.Color.blue())
         embed.set_image(url=member.avatar.url)
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else self.bot.user.avatar.url)
@@ -176,7 +176,7 @@ class Information(Cog):
         except Exception as e:
             await ctx.send("**Error**: Something went wrong.")
             raise e
-    
+
     @commands.command(name="who", aliases=['userinfo', 'ui', 'info', 'whoami'], description="Show detailed information about a user.")
     async def whois(self, ctx, member: discord.Member = None):
         """
@@ -192,43 +192,43 @@ class Information(Cog):
             badges = []
             if member.public_flags.staff:
                 badges.append("<:staff:1297931763229917246>")
-            
+
             if member.public_flags.partner:
                 badges.append("<:partner:1297931370357723198>")
-            
+
             if member.public_flags.hypesquad:
                 badges.append("<:hypesquad:1297930974633398293>")
-            
+
             if member.public_flags.bug_hunter_level_2:
                 badges.append("<:bug_hunter_level_2:1297931831521312850>")
             elif member.public_flags.bug_hunter:
                 badges.append("<:bug_hunter:1297931813121036321>")
-            
+
             if member.public_flags.early_supporter:
                 badges.append("<:early_supporter:1297931252158042283>")
-            
+
             if member.public_flags.verified_bot_developer:
                 badges.append("<:verified_bot_developer:1297931270139150338>")
-            
+
             if member.public_flags.discord_certified_moderator:
                 badges.append("<:certified_moderator:1297932110514098290>")
-            
+
             if member.public_flags.active_developer:
                 badges.append("<:active_developer:1297930880987431035>")
-            
+
             if member.public_flags.hypesquad_balance:
                 badges.append("<:hypesquad_balance:1297930998864019509>")
             if member.public_flags.hypesquad_bravery:
                 badges.append("<:hypesquad_bravery:1297931035421708358>")
             if member.public_flags.hypesquad_brilliance:
                 badges.append("<:hypesquad_brilliance:1297931072503418890>")
-            
+
             if member.premium_since:
                 badges.append("<:boost:1297931223972450488>")
-            
+
             if member == member.guild.owner:
                 badges.append("<:server_owner:1297930836368167015>")
-            
+
             if member.bot:
                 badges.append("<a:bot2:1323899876924198976>")
             if member.id == 785042666475225109:
@@ -298,7 +298,7 @@ class Information(Cog):
     @commands.command(name="si", help="Show the server info.")
     async def server_info(self, ctx):
         """Shows the server information in a red embed."""
-        
+
         if not ctx.guild.me.guild_permissions.embed_links:
             await ctx.send("I don't have permission to send embeds")
             return
@@ -307,11 +307,11 @@ class Information(Cog):
         owner = guild.owner
         verification_level = guild.verification_level
         boosts = guild.premium_subscription_count
-        
+
         total_members = guild.member_count
         bots = sum(1 for member in guild.members if member.bot)
         humans = total_members - bots
-        admins = sum(1 for member in guild.members 
+        admins = sum(1 for member in guild.members
                     if not member.bot and member.guild_permissions.administrator)
 
         text_channels = len(guild.text_channels)
@@ -551,7 +551,7 @@ class Information(Cog):
     async def show_bot_info(self, ctx):
         """Displays detailed information about the bot including stats and system info."""
         bot = self.bot
-        
+
         total_members = sum(guild.member_count for guild in bot.guilds)
         total_guilds = len(bot.guilds)
         total_commands = len(bot.commands)
@@ -576,14 +576,14 @@ class Information(Cog):
         total_files = 0
         total_imports = 0
         total_functions = 0
-        
+
         for root, _, files in os.walk("cogs"):
             for file in files:
                 if file.endswith('.py'):
                     total_files += 1
                     with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
                         content = f.read()
-                        
+
                     total_lines += len(content.splitlines())
                     total_imports += len([line for line in content.splitlines() if line.strip().startswith(('import ', 'from '))])
                     total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
@@ -600,14 +600,14 @@ class Information(Cog):
             value=f"**Users**: `{total_members:,}`\n**Servers**: `{total_guilds:,}`\n**Created**: `{bot.user.created_at.strftime('%B %d, %Y')}`",
             inline=True
         )
-        
+
         # Runtime Stats
         embed.add_field(
             name="**Runtime**",
             value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
             inline=True
         )
-        
+
         # Code Stats
         embed.add_field(
             name="**Code**",
@@ -617,7 +617,7 @@ class Information(Cog):
 
         embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg")
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
-        
+
         await ctx.send(embed=embed)
 
     @commands.command(name="ms", help="Shows mutual servers with another user")
@@ -629,7 +629,7 @@ class Information(Cog):
             return
 
         mutual_guilds = [guild for guild in ctx.bot.guilds if guild.get_member(target.id)]
-        
+
         if not mutual_guilds:
             await ctx.send(f"No mutual servers found with {target.name}.")
             return
@@ -645,8 +645,8 @@ class Information(Cog):
             chunk = mutual_guilds[i:i + 10]
             field_value = "\n".join(f"> **{guild.name}** (`{guild.id}`)" for guild in chunk)
             embed.add_field(
-                name=f"Servers {i+1}-{i+len(chunk)}", 
-                value=field_value, 
+                name=f"Servers {i+1}-{i+len(chunk)}",
+                value=field_value,
                 inline=False
             )
 
@@ -680,8 +680,8 @@ class Information(Cog):
             chunk = non_mutual_guilds[i:i + 10]
             field_value = "\n".join(f"> **{guild.name}** (`{guild.id}`)" for guild in chunk)
             embed.add_field(
-                name=f"Servers {i+1}-{i+len(chunk)}", 
-                value=field_value, 
+                name=f"Servers {i+1}-{i+len(chunk)}",
+                value=field_value,
                 inline=False
             )
 
@@ -718,18 +718,18 @@ class Information(Cog):
             # Get the bot's root directory and construct absolute path
             root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
             file_path = os.path.join(root_dir, cog_path.replace('.', os.sep) + '.py')
-            
+
             if not os.path.exists(file_path):
                 await ctx.send(f"```py\nFileNotFoundError: Could not find cog file '{file_path}'```")
                 return
 
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                
+
             total_lines = len(content.splitlines())
             blank_lines = len([line for line in content.splitlines() if not line.strip()])
             code_lines = total_lines - blank_lines
-            
+
             # Count specific types of lines
             imports = len([line for line in content.splitlines() if line.strip().startswith(('import ', 'from '))])
             functions = len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
@@ -740,13 +740,13 @@ class Information(Cog):
                 title=f"📊 Line Count for {cog_path}",
                 color=discord.Color.blue()
             )
-            
+
             embed.add_field(
                 name="Lines",
                 value=f"```\nTotal: {total_lines:,}\nCode: {code_lines:,}\nBlank: {blank_lines:,}```",
                 inline=True
             )
-            
+
             embed.add_field(
                 name="Components",
                 value=f"```\nImports: {imports}\nFunctions: {functions}\nClasses: {classes}\nComments: {comments}```",
@@ -776,13 +776,13 @@ class Information(Cog):
                 title=f"🔧 Permissions for {target.name}",
                 color=discord.Color.blue()
             )
-            
+
             embed.add_field(
                 name="Permissions",
                 value=f"```\n{permissions}```",
                 inline=False
             )
-            
+
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
 

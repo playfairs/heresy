@@ -117,7 +117,6 @@ class Utility(Cog):
         """Validate and normalize URLs for downloading"""
         import re
 
-        # YouTube URL patterns
         youtube_patterns = [
             r'https?://(www\.)?(youtube\.com|youtu\.be)/.+',
             r'https?://(?:www\.)?youtube\.com/watch\?v=.+',
@@ -125,7 +124,6 @@ class Utility(Cog):
             r'https?://(?:www\.)?youtube\.com/shorts/.+'
         ]
 
-        # TikTok URL patterns
         tiktok_patterns = [
             r'https?://(www\.)?tiktok\.com/.*',
             r'https?://vm\.tiktok\.com/.+',
@@ -133,7 +131,6 @@ class Utility(Cog):
             r'https?://(www\.)?tiktok\.com/t/.+'
         ]
 
-        # Check if URL matches any YouTube or TikTok pattern
         if any(re.match(pattern, url, re.IGNORECASE) for pattern in youtube_patterns + tiktok_patterns):
             return url
 
@@ -144,7 +141,6 @@ class Utility(Cog):
         """Set the AFK status with an optional reason."""
         user_id = ctx.author.id
         
-        # Set specific status for kms alias
         if ctx.invoked_with == "kms":
             reason = "probably killing themselves"
 
@@ -273,20 +269,16 @@ class Utility(Cog):
     async def download_mp3(self, ctx, url: str):
         """Download audio from a YouTube or TikTok video"""
         try:
-            # Validate and normalize URL
             try:
                 normalized_url = self.validate_and_normalize_url(url)
             except ValueError:
                 return await ctx.send("Please provide a valid YouTube or TikTok URL.")
 
-            # Send initial processing message
             processing_msg = await ctx.send("🔄 Processing your request...")
 
-            # Temporary directory for downloads
             import tempfile
             import os
 
-            # Configure yt-dlp for audio extraction
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'postprocessors': [{
@@ -300,48 +292,40 @@ class Utility(Cog):
                 'quiet': True
             }
 
-            # Download the audio
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(normalized_url, download=True)
                 audio_file = ydl.prepare_filename(info_dict)
                 audio_file = audio_file.rsplit(".", 1)[0] + ".mp3"
 
-            # Check file size
             file_size = os.path.getsize(audio_file)
-            if file_size > 8 * 1024 * 1024:  # 8MB limit
+            if file_size > 8 * 1024 * 1024:
                 os.remove(audio_file)
-                return await processing_msg.edit(content="❌ File is too large to upload.")
+                return await processing_msg.edit(content="File is too large to upload.")
 
-            # Send the audio file
             try:
                 await processing_msg.delete()
                 await ctx.send(file=discord.File(audio_file, filename=os.path.basename(audio_file)))
             finally:
-                # Clean up the temporary file
                 os.remove(audio_file)
 
         except Exception as e:
             print(f"MP3 Download Error: {e}")
-            await processing_msg.edit(content=f"❌ An error occurred: {str(e)}")
+            await processing_msg.edit(content=f"An error occurred: {str(e)}")
 
     @command(name="mp4")
     async def download_mp4(self, ctx, url: str):
         """Download video from a YouTube or TikTok video"""
         try:
-            # Validate and normalize URL
             try:
                 normalized_url = self.validate_and_normalize_url(url)
             except ValueError:
                 return await ctx.send("Please provide a valid YouTube or TikTok URL.")
 
-            # Send initial processing message
             processing_msg = await ctx.send("Processing your request...")
 
-            # Temporary directory for downloads
             import tempfile
             import os
 
-            # Configure yt-dlp for video download
             ydl_opts = {
                 'format': 'best[ext=mp4]',
                 'outtmpl': os.path.join(tempfile.gettempdir(), '%(title)s.%(ext)s'),
@@ -350,28 +334,24 @@ class Utility(Cog):
                 'quiet': True
             }
 
-            # Download the video
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(normalized_url, download=True)
                 video_file = ydl.prepare_filename(info_dict)
 
-            # Check file size
             file_size = os.path.getsize(video_file)
-            if file_size > 8 * 1024 * 1024:  # 8MB limit
+            if file_size > 8 * 1024 * 1024:
                 os.remove(video_file)
-                return await processing_msg.edit(content="❌ File is too large to upload.")
+                return await processing_msg.edit(content="File is too large to upload.")
 
-            # Send the video file
             try:
                 await processing_msg.delete()
                 await ctx.send(file=discord.File(video_file, filename=os.path.basename(video_file)))
             finally:
-                # Clean up the temporary file
                 os.remove(video_file)
 
         except Exception as e:
             print(f"MP4 Download Error: {e}")
-            await processing_msg.edit(content=f"❌ An error occurred: {str(e)}")
+            await processing_msg.edit(content=f"An error occurred: {str(e)}")
 
     @command(name="time")
     async def time(self, ctx, user: discord.User = None):
@@ -408,7 +388,6 @@ class Utility(Cog):
         sticker = message.stickers[0] if message.stickers else None
 
         if sticker:
-            # Download the sticker
             async with aiohttp.ClientSession() as session:
                 async with session.get(sticker.url) as resp:
                     if resp.status != 200:
@@ -416,15 +395,11 @@ class Utility(Cog):
                         return
                     sticker_bytes = await resp.read()
 
-            # Validate sticker size (Discord limit is 256 KB)
             if len(sticker_bytes) > 256 * 1024:
                 await ctx.send("Sticker is too large to fetch (max 256 KB).")
                 return
 
-            # Determine the file format based on whether the sticker is animated
             file_format = 'gif' if sticker.url.endswith('.gif') else 'png'
-
-            # Send the sticker as a downloadable file
             await ctx.send(file=discord.File(io.BytesIO(sticker_bytes), filename=f"sticker.{file_format}"))
         else:
             await ctx.send("No sticker found in the replied message.")
@@ -436,24 +411,19 @@ class Utility(Cog):
         Steal a sticker from a replied message and add it to the server.
         Requires Manage Emojis permission.
         """
-        # Check if the command is a reply
         if not ctx.message.reference:
             await ctx.send("Please reply to a message with a sticker you want to steal.")
             return
 
         try:
-            # Fetch the referenced message
             referenced_message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
 
-            # Check if the message has any stickers
             if not referenced_message.stickers:
                 await ctx.send("The replied message does not have any stickers.")
                 return
 
-            # Get the first sticker
             sticker = referenced_message.stickers[0]
 
-            # Download the sticker
             async with aiohttp.ClientSession() as session:
                 async with session.get(sticker.url) as resp:
                     if resp.status != 200:
@@ -461,17 +431,15 @@ class Utility(Cog):
                         return
                     sticker_bytes = await resp.read()
 
-            # Validate sticker size (Discord limit is 256 KB)
             if len(sticker_bytes) > 256 * 1024:
                 await ctx.send("Sticker is too large to steal (max 256 KB).")
                 return
 
-            # Add the sticker to the server
             try:
                 new_sticker = await ctx.guild.create_sticker(
                     name=sticker.name.lower().replace(' ', '_'), 
                     description=f"Stolen sticker from {referenced_message.author.name}", 
-                    emoji="😀",  # Default emoji, can be changed later
+                    emoji="😀",
                     file=discord.File(io.BytesIO(sticker_bytes), filename=f"{sticker.name.lower().replace(' ', '_')}.png")
                 )
                 await ctx.send(f"Sticker `{sticker.name}` successfully stolen and added to the server!")
@@ -491,7 +459,7 @@ class Utility(Cog):
 
         afk_data = self.get_afk_status(member.id)
         if afk_data:
-            self.remove_afk(member.id)  # Logic to remove AFK status
+            self.remove_afk(member.id)
             await ctx.send(f"{member.mention} is no longer AFK.")
         else:
             await ctx.send(f"{member.mention} is not AFK.")
@@ -551,8 +519,6 @@ class Utility(Cog):
             )
             await message.channel.send(embed=embed)
         
-        # Check if the bot is AFK
         if message.author.id == self.bot.user.id:
-            # Remove AFK status
-            self.remove_afk(self.bot.user.id)  # Remove AFK status for the bot
+            self.remove_afk(self.bot.user.id)
             await message.channel.send(f"{self.bot.user.mention} was AFK, removing AFK as this shouldn't be possible.")
