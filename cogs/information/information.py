@@ -21,6 +21,8 @@ class Information(Cog):
         self.developer_id = 785042666475225109
         self.bot_id = 593921296224747521
         self.start_time = datetime.now(timezone.utc)
+        self.mutual_servers = 0
+
 #        self.user_message_count = {}
 #        self.channel_message_count = {}
 
@@ -247,12 +249,15 @@ class Information(Cog):
             if member.bot:
                 badges.append("<a:bot2:1323899876924198976>")
             if member.id == 785042666475225109:
-                badges.append("<:heresyicon:1338845590033006744>")
+                badges.append("<:python:1344022861530009650>")
+            if member.id == 1284037026672279635:
+                badges.append("<:python:1344022861530009650>")
             if member.id == 1284037026672279635:
                 badges.append("<:heresyicon:1338845590033006744>")
 
             custom_emojis = " ".join(badges) if badges else "No badges"
 
+            mutual_server = len(member.mutual_guilds)
             activities = member.activities
             listening = None
             playing = None
@@ -288,7 +293,12 @@ class Information(Cog):
             else:
                 footer_avatar_url = self.bot.user.avatar.url if self.bot.user.avatar else self.bot.user.default_avatar.url
 
-            embed = discord.Embed(color=discord.Color.dark_purple(), timestamp=datetime.utcnow())
+            if member.color:
+                embed_color = member.color
+            else:
+                embed_color = discord.Color.default()
+
+            embed = discord.Embed(color=embed_color, timestamp=datetime.utcnow())
             embed.set_author(name=f"{member.display_name}{developer_title}", icon_url=avatar_url)
             embed.set_thumbnail(url=avatar_url)
             embed.add_field(name="Badges", value=custom_emojis, inline=False)
@@ -302,7 +312,7 @@ class Information(Cog):
 
             embed.add_field(name="Roles", value=roles_string, inline=False)
 
-            embed.set_footer(text=f"User ID: {member.id}")
+            embed.set_footer(text=f"User ID: {member.id} | Shared Servers: {mutual_server}")
 
             await ctx.send(embed=embed)
 
@@ -599,21 +609,18 @@ class Information(Cog):
             timestamp=datetime.utcnow()
         )
 
-        # Basic Stats
         embed.add_field(
             name="**Basic**",
             value=f"**Users**: `{total_members:,}`\n**Servers**: `{total_guilds:,}`\n**Created**: `{bot.user.created_at.strftime('%B %d, %Y')}`",
             inline=True
         )
 
-        # Runtime Stats
         embed.add_field(
             name="**Runtime**",
             value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
             inline=True
         )
 
-        # Code Stats
         embed.add_field(
             name="**Code**",
             value=f"**Files**: `{total_files}`\n**Lines**: `{total_lines:,}`\n**Functions**: `{total_functions}`\n**Library**: `discord.py {discord.__version__}`",
@@ -624,6 +631,29 @@ class Information(Cog):
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed)
+
+    @commands.command(name="sbanner", description="Show your server banner.")
+    async def sbanner(self, ctx, member: discord.Member = None):
+        """Displays the server banner of the specified user or yourself if no one is mentioned."""
+        member = member or ctx.author
+
+        if member.guild_banner:
+            embed = discord.Embed(title=f"{member.name}'s Server Banner", color=discord.Color.blue())
+            embed.set_image(url=member.guild_banner.url)
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"{member.mention} does not have a server banner.")
+
+    @commands.command(name="bots", description="Shows the number of bots in the server.")
+    async def bots(self, ctx):
+        """Shows the number of bots in the server."""
+        total_bots = sum(1 for member in ctx.guild.members if member.bot)
+        await ctx.send(embed=discord.Embed(
+            title=f"Bots in {ctx.guild.name}",
+            description=f"Total Bots: {total_bots}",
+            color=discord.Color.blue()
+        ))
 
     @commands.command(name="ms", help="Shows mutual servers with another user")
     async def mutual_servers(self, ctx, user: discord.User = None):
@@ -691,28 +721,6 @@ class Information(Cog):
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
         await ctx.send(embed=embed)
 
-    @commands.command(name="sbanner", description="Show your server banner.")
-    async def sbanner(self, ctx, member: discord.Member = None):
-        """Displays the server banner of the specified user or yourself if no one is mentioned."""
-        member = member or ctx.author
-
-        if member.guild_banner:
-            embed = discord.Embed(title=f"{member.name}'s Server Banner", color=discord.Color.blue())
-            embed.set_image(url=member.guild_banner.url)
-            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"{member.mention} does not have a server banner.")
-
-    @commands.command(name="bots", description="Shows the number of bots in the server.")
-    async def bots(self, ctx):
-        """Shows the number of bots in the server."""
-        total_bots = sum(1 for member in ctx.guild.members if member.bot)
-        await ctx.send(embed=discord.Embed(
-            title=f"Bots in {ctx.guild.name}",
-            description=f"Total Bots: {total_bots}",
-            color=discord.Color.blue()
-        ))
 
     @commands.command(name="lines")
     async def count_lines(self, ctx, *, cog_path: str):
@@ -732,7 +740,6 @@ class Information(Cog):
             blank_lines = len([line for line in content.splitlines() if not line.strip()])
             code_lines = total_lines - blank_lines
 
-            # Count specific types of lines
             imports = len([line for line in content.splitlines() if line.strip().startswith(('import ', 'from '))])
             functions = len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
             classes = len([line for line in content.splitlines() if line.strip().startswith('class ')])
@@ -775,7 +782,7 @@ class Information(Cog):
                 return await ctx.send("Invalid target. Please specify a member or role.")
 
             embed = discord.Embed(
-                title=f"🔧 Permissions for {target.name}",
+                title=f"Permissions for {target.name}",
                 color=discord.Color.blue()
             )
 
@@ -816,3 +823,13 @@ class Information(Cog):
 #        embed = discord.Embed(title=f"Stats for #{channel.name}", color=discord.Color.blue())
 #        embed.add_field(name="Messages Sent", value=f"```\n{messages}```", inline=True)
 #        await ctx.send(embed=embed)
+
+    @commands.command(name="fastfetch")
+    async def fastfetch(self, ctx: Context):
+        """Runs Fastfetch Shell command"""
+        process = subprocess.Popen(['fastfetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+        if process.returncode != 0:
+            await ctx.send(f"```shell\n{stderr.decode('utf-8')}```")
+        else:
+            await ctx.send(f"```shell\n{stdout.decode('utf-8')}```")
