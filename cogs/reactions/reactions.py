@@ -138,6 +138,9 @@ class Reactions(Cog):
             ],
             "yoy": [
                 "yoy"
+            ],
+            "zip it nigga": [
+                "https://media.discordapp.net/attachments/1063022232378552350/1170779048214024243/ezgif.com-gif-maker.gif?ex=67c0a2f5&is=67bf5175&hm=d96d6cd1e101e1718f25a9d9aae0f27690594da9fe0dab0e3becfb75e562b783&"
             ]
         }
 
