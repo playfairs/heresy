@@ -71,7 +71,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed.set_author(
             name=f"{ctx.bot.user.name}",
-            icon_url="https://playfairs.cc/heresy.jpg",
+            icon_url="https://playfairs.cc/heresy.png",
             # url=config.CLIENT.SUPPORT_URL,
         )
         embed.set_footer(text="Select a category from the dropdown menu below")

@@ -13,6 +13,8 @@ from discord import Embed, Color
 from discord import app_commands
 from main import heresy
 from typing import Union
+import time
+import random
 
 
 class Information(Cog):
@@ -833,3 +835,36 @@ class Information(Cog):
             await ctx.send(f"```shell\n{stderr.decode('utf-8')}```")
         else:
             await ctx.send(f"```shell\n{stdout.decode('utf-8')}```")
+
+    @commands.command(name="rtt", aliases=['ping'])
+    async def rtt(self, ctx: commands.Context):
+        """Check the round-trip time (RTT) of the bot."""
+        random_phrases = [
+            "the whitehouse",
+            "japan",
+            "your mothers basement",
+            "your WiFi router",
+            "your television",
+            "the terminal",
+            "the toaster",
+            "your mom"
+        ]
+
+        random_ping = random.choice(random_phrases)
+
+        start_time = time.time()
+        message = await ctx.send(f"Pinging...")
+        end_time = time.time()
+
+        websocket_latency = round(self.bot.latency * 1000, 2)
+        embed = discord.Embed(
+            title="RTT",
+            description=(
+                f" **RTT**: `{round((end_time - start_time) * 1000)}ms`\n"
+                f" **Took `{round((end_time - start_time), 2)}s` to ping *{random_ping}* and "
+                f"`{round((end_time - start_time) * 2)}s` to edit the message.**\n"
+                f" **Websocket latency**: `{websocket_latency}ms`"
+            ),
+            color=discord.Color.from_rgb(255, 255, 255),
+        )
+        await message.edit(embed=embed)

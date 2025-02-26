@@ -17,7 +17,6 @@ import shutil
 import random
 import string
 import json
-from datetime import time
 import time
 
 class Owner(
@@ -590,16 +589,16 @@ class Owner(
             else:
                 await ctx.send(f"No server found with ID `{guild_id}`.")
 
-    @commands.command(name="rtt", aliases=['ping'])
-    async def rtt(self, ctx: Context):
-        """Check the round-trip time (RTT) of the bot."""
-        start_time = time.time()
-        message = await ctx.send("Pinging...")
-        end_time = time.time()
-        websocket_latency = round(self.bot.latency * 1000, 2)
-        embed = discord.Embed(
-            title="RTT",
-            description=f" **RTT**: `{round((end_time - start_time) * 1000)}ms`\n **Took `{round((end_time - start_time), 2)}s` to respond and `{round((end_time - start_time) * 2)}s` to edit the message.**\n **Websocket latency**: `{websocket_latency}ms`",
-            color=discord.Color.from_rgb(255, 255, 255),
-        )
-        await message.edit(embed=embed)
+#    @commands.command(name="rtt", aliases=['ping'])
+#    async def rtt(self, ctx: Context):
+#        """Check the round-trip time (RTT) of the bot."""
+#        start_time = time.time()
+#        message = await ctx.send("Pinging...")
+#        end_time = time.time()
+#        websocket_latency = round(self.bot.latency * 1000, 2)
+#        embed = discord.Embed(
+#            title="RTT",
+#            description=f" **RTT**: `{round((end_time - start_time) * 1000)}ms`\n **Took `{round((end_time - start_time), 2)}s` to ping and `{round((end_time - start_time) * 2)}s` to edit the message.**\n **Websocket latency**: `{websocket_latency}ms`",
+#            color=discord.Color.from_rgb(255, 255, 255),
+#        )
+#        await message.edit(embed=embed)
