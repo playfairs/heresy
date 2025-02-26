@@ -5,8 +5,8 @@ from discord.ext.commands import Cog, command, Context
 from discord import Member
 from cogs.config.classes import ServersView
 from main import heresy
+import asyncio
 import subprocess
-import pyperclip
 import pyperclip
 import os
 import tempfile
@@ -599,7 +599,7 @@ class Owner(
         websocket_latency = round(self.bot.latency * 1000, 2)
         embed = discord.Embed(
             title="RTT",
-            description=f" RTT: `{round((end_time - start_time) * 1000)}ms`\n Took `{round((end_time - start_time), 2)}s` to respond and `{round((end_time - start_time) * 2)}s` to edit the message.\n Websocket latency: `{websocket_latency}ms`",
+            description=f" **RTT**: `{round((end_time - start_time) * 1000)}ms`\n **Took `{round((end_time - start_time), 2)}s` to respond and `{round((end_time - start_time) * 2)}s` to edit the message.**\n **Websocket latency**: `{websocket_latency}ms`",
             color=discord.Color.from_rgb(255, 255, 255),
         )
         await message.edit(embed=embed)
