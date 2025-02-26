@@ -16,6 +16,9 @@ import asyncio
 import shutil
 import random
 import string
+import json
+from datetime import time
+import time
 
 class Owner(
     Cog,
@@ -27,39 +30,10 @@ class Owner(
         self.reports_dir = './Reports'
         if not os.path.exists(self.reports_dir):
             os.makedirs(self.reports_dir)
-        self.blacklisted_guilds = set()
+        
 
     async def cog_check(self, ctx: Context) -> bool:
         return ctx.author.id in self.bot.owner_ids
-
-    @command(name="servers")
-    async def servers(self, ctx: Context):
-        servers = self.bot.guilds
-        custom_emojis = {
-            "left": "<:left:1307448382326968330>",
-            "right": "<:right:1307448399624405134>",
-            "close": "<:cancel:1307448502913204294>"
-        }
-        view = ServersView(servers, ctx.author, custom_emojis)
-        embed = view.get_embed()
-        await ctx.send(embed=embed, view=view)
-
-    @command(name="getinvite")
-    async def invite(self, ctx: Context, guild_id: int):
-        """
-        Generates an invite link for the specified guild (server).
-        Usage: ,invite <guild_id>
-        """
-        guild = self.bot.get_guild(guild_id)
-        if not guild:
-            await ctx.reply("I could not find the server with the given ID, which means I'm probably not in there.", mention_author=True)
-            return
-        try:
-            invite = await guild.text_channels[0].create_invite(max_uses=1, unique=True, temporary=True)
-            invite_url = invite.url
-            await ctx.reply(f"{invite_url}")
-        except Exception as e:
-            await ctx.reply(f"Could not generate an invite for **{guild.name}**. Error: {e}")
 
     @command()
     async def changeavatar(self, ctx: Context, url: str):
@@ -176,59 +150,6 @@ class Owner(
         os.remove(issue_file)
         await ctx.send(f"Issue `{case_number}` has been patched and removed from the reports.")
 
-    @command()
-    async def status(self, ctx: Context, *, status: str):
-        """Set the bot's custom status (activity)."""
-        try:
-            custom_activity = discord.CustomActivity(name=status)
-            await self.bot.change_presence(activity=custom_activity)
-            await ctx.send(f"Custom status set to: `{status}`")
-        except Exception as e:
-            await ctx.send(f"Failed to set status: {str(e)}")
-
-    @command()
-    async def clearstatus(self, ctx: Context):
-        """Clear the custom status."""
-        try:
-            await self.bot.change_presence(activity=None)
-            await ctx.send("Custom status cleared.")
-        except Exception as e:
-            await ctx.send(f"Failed to clear status: {str(e)}")
-
-    @command()
-    async def revoke(self, ctx: Context, guild_id: int = None):
-        """
-        Makes the bot leave a server.
-        - If no guild ID is provided, it leaves the current server.
-        - If a guild ID is provided, it leaves the specified server.
-        """
-        if guild_id is None:
-            guild = ctx.guild
-            await ctx.send(f"Leaving the current server: `{guild.name}` ({guild.id}).")
-            await guild.leave()
-        else:
-            guild = self.bot.get_guild(guild_id)
-            if guild:
-                await ctx.send(f"Leaving server: `{guild.name}` ({guild.id}).")
-                await guild.leave()
-            else:
-                await ctx.send(f"No server found with ID `{guild_id}`.")
-
-    @command()
-    async def blacklist(self, ctx: Context, guild_id: int):
-        """
-        Blacklists a server by its ID.
-        If the bot is already in the server, it leaves immediately.
-        """
-        self.blacklisted_guilds.add(guild_id)
-
-        guild = self.bot.get_guild(guild_id)
-        if guild:
-            await ctx.send(f"Guild `{guild.name}` ({guild.id}) has been blacklisted and will be left immediately.")
-            await guild.leave()
-        else:
-            await ctx.send(f"Guild with ID `{guild_id}` has been blacklisted. The bot will leave if it is added.")
-
     @command(name="sname")
     async def change_server_name(self, ctx, *args):
         """Change the name of a server.
@@ -322,52 +243,6 @@ class Owner(
 
             import traceback
             print(f"Prefix change error: {traceback.format_exc()}")
-
-    @command(name="rollback", aliases=["rlbck"])
-    async def rollback_cog(self, ctx, cog: str = None):
-        """
-        Rollback a cog to its last committed state or all cogs if no specific cog is provided.
-        
-        Usage:
-        ,jsk rollback - Rollback all cogs
-        ,jsk rollback cogs.example - Rollback a specific cog
-        """
-        if ctx.author.id != self.bot.owner_id:
-            return await ctx.send("Only the bot owner can use this command.")
-        
-        try:
-            import subprocess
-            import os
-            
-            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            os.chdir(project_root)
-            
-            if not cog:
-                cmd = "git reset --hard HEAD"
-                result = subprocess.run(cmd.split(), capture_output=True, text=True)
-                
-                if result.returncode == 0:
-                    await ctx.send(f"```\nSuccessfully rolled back all changes:\n{result.stdout}```")
-                else:
-                    await ctx.send(f"```\nError rolling back:\n{result.stderr}```")
-                return
-            
-            cog_path = cog.replace('.', '/')
-            full_cog_path = os.path.join(project_root, cog_path + '.py')
-            
-            if not os.path.exists(full_cog_path):
-                return await ctx.send(f"Cog file not found: {full_cog_path}")
-            
-            cmd = f"git checkout HEAD -- {full_cog_path}"
-            result = subprocess.run(cmd.split(), capture_output=True, text=True)
-            
-            if result.returncode == 0:
-                await ctx.send(f"```\nSuccessfully rolled back {cog}:\n{result.stdout}```")
-            else:
-                await ctx.send(f"```\nError rolling back {cog}:\n{result.stderr}```")
-        
-        except Exception as e:
-            await ctx.send(f"An error occurred: {str(e)}")
 
     @command(name="clipboard", aliases=["cb"])
     async def show_clipboard(self, ctx):
@@ -546,3 +421,185 @@ class Owner(
             await ctx.send(f"{random_member.mention}")
         else:
             await ctx.send("no ones offline")
+
+    @commands.group(name="status", invoke_without_command=True)
+    async def status(self, ctx, *, status: str = None):
+        """Change the bot's status."""
+        if status is None:
+            await ctx.send("Use `status set` to set a custom status.")
+        else:
+            await self.set(ctx, status)
+
+    @status.command()
+    async def set(self, ctx: Context, *, status: str):
+        """Set the custom status."""
+        try:
+            custom_activity = discord.CustomActivity(name=status)
+            await self.bot.change_presence(activity=custom_activity)
+            await ctx.send(f"Custom status set to: `{status}`")
+        except Exception as e:
+            await ctx.send(f"Failed to set status: {str(e)}")
+
+    @status.command(name='rotate')
+    async def status_rotate(self, ctx: Context, *, args: str):
+        """Rotate the custom status.
+        
+        Usage:
+        ,status rotate example, example 2, example 3 --seconds 5
+        """
+        try:
+            parts = args.split('--seconds')
+            statuses = [arg.strip() for arg in parts[0].split(',')]
+            
+            seconds = 30
+            
+            if len(parts) > 1:
+                seconds_str = parts[1].strip()
+                if seconds_str.isdigit():
+                    seconds = int(seconds_str)
+                else:
+                    await ctx.send("Invalid seconds value provided. Using default value of 5 seconds.")
+            
+            if len(statuses) == 0:
+                await ctx.send("No statuses provided.")
+                return
+            
+            self.status_rotation_task = self.bot.loop.create_task(self.rotate_status(ctx, statuses, seconds))
+            await ctx.send(f"Set custom status to rotate every {seconds} seconds.")
+        except Exception as e:
+            await ctx.send(f"Failed to set status: {str(e)}")
+
+    async def rotate_status(self, ctx: Context, statuses: list, seconds: int):
+        while True:
+            for status in statuses:
+                custom_activity = discord.CustomActivity(name=status)
+                await self.bot.change_presence(activity=custom_activity)
+                await asyncio.sleep(seconds)
+
+    @status.command(name='clear')
+    async def status_clear(self, ctx: Context):
+        """Clear the custom status."""
+        try:
+            if hasattr(self, 'status_rotation_task') and self.status_rotation_task is not None:
+                self.status_rotation_task.cancel()
+                self.status_rotation_task = None
+                await ctx.send("Status rotation has been cleared.")
+            else:
+                await ctx.send("No status rotation is currently active.")
+        except Exception as e:
+            await ctx.send(f"Failed to clear status: {str(e)}")
+
+    @commands.group(name="servers", aliases=["server"], invoke_without_command=True)
+    async def servers(self, ctx):
+        """Server management and Blacklist"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @servers.command(name="list")
+    async def list_servers(self, ctx: Context):
+        servers = self.bot.guilds
+        custom_emojis = {
+            "left": "<:left:1307448382326968330>",
+            "right": "<:right:1307448399624405134>",
+            "close": "<:cancel:1307448502913204294>"
+        }
+        view = ServersView(servers, ctx.author, custom_emojis)
+        embed = view.get_embed()
+        await ctx.send(embed=embed, view=view)
+
+    @servers.command(name="invite")
+    async def invite(self, ctx: Context, guild_id: int):
+        """
+        Generates an invite link for the specified guild (server).
+        Usage: ,invite <guild_id>
+        """
+        guild = self.bot.get_guild(guild_id)
+        if not guild:
+            await ctx.reply("I could not find the server with the given ID, which means I'm probably not in there.", mention_author=True)
+            return
+        try:
+            invite = await guild.text_channels[0].create_invite(max_uses=1, unique=True, temporary=True)
+            invite_url = invite.url
+            await ctx.reply(f"{invite_url}")
+        except Exception as e:
+            await ctx.reply(f"Could not generate an invite for **{guild.name}**. Error: {e}")
+
+    @servers.command()
+    async def revoke(self, ctx: Context, guild_id: int = None):
+        """
+        Makes the bot leave a server.
+        - If no guild ID is provided, it leaves the current server.
+        - If a guild ID is provided, it leaves the specified server.
+        """
+        if guild_id is None:
+            guild = ctx.guild
+            await ctx.send(f"Leaving the current server: `{guild.name}` ({guild.id}).")
+            await guild.leave()
+        else:
+            guild = self.bot.get_guild(guild_id)
+            if guild:
+                await ctx.send(f"Leaving server: `{guild.name}` ({guild.id}).")
+                await guild.leave()
+            else:
+                await ctx.send(f"No server found with ID `{guild_id}`.")
+
+    @servers.command()
+    async def blacklist(self, ctx: Context, guild_id: int = None):
+        """
+        Adds a server to the blacklist.
+        Usage: ,blacklist <guild_id>
+        """
+        if guild_id is None:
+            guild = ctx.guild
+            await ctx.send(f"Blacklisting the current server: `{guild.name}` ({guild.id}).")
+            data = self.load_json(self.blacklist_file)
+            data["blacklisted_servers"].append(guild.id)
+            self.save_json(data, self.blacklist_file)
+            await guild.leave()
+        else:
+            guild = self.bot.get_guild(guild_id)
+            if guild:
+                await ctx.send(f"Blacklisting server: `{guild.name}` ({guild.id}).")
+                data = self.load_json(self.blacklist_file)
+                data["blacklisted_servers"].append(guild.id)
+                self.save_json(data, self.blacklist_file)
+                if guild in self.bot.guilds:
+                    await guild.leave()
+            else:
+                await ctx.send(f"No server found with ID `{guild_id}`.")
+
+    @servers.command()
+    async def whitelist(self, ctx: Context, guild_id: int = None):
+        """
+        Removes a server from the blacklist.
+        Usage: ,whitelist <guild_id>
+        """
+        if guild_id is None:
+            guild = ctx.guild
+            await ctx.send(f"Whitelisting the current server: `{guild.name}` ({guild.id}).")
+            data = self.load_json(self.blacklist_file)
+            data["blacklisted_servers"].remove(guild.id)
+            self.save_json(data, self.blacklist_file)
+        else:
+            guild = self.bot.get_guild(guild_id)
+            if guild:
+                await ctx.send(f"Whitelisting server: `{guild.name}` ({guild.id}).")
+                data = self.load_json(self.blacklist_file)
+                data["blacklisted_servers"].remove(guild.id)
+                self.save_json(data, self.blacklist_file)
+            else:
+                await ctx.send(f"No server found with ID `{guild_id}`.")
+
+    @commands.command(name="rtt", aliases=['ping'])
+    async def rtt(self, ctx: Context):
+        """Check the round-trip time (RTT) of the bot."""
+        start_time = time.time()
+        message = await ctx.send("Pinging...")
+        end_time = time.time()
+        websocket_latency = round(self.bot.latency * 1000, 2)
+        embed = discord.Embed(
+            title="RTT",
+            description=f" RTT: `{round((end_time - start_time) * 1000)}ms`\n Took `{round((end_time - start_time), 2)}s` to respond and `{round((end_time - start_time) * 2)}s` to edit the message.\n Websocket latency: `{websocket_latency}ms`",
+            color=discord.Color.from_rgb(255, 255, 255),
+        )
+        await message.edit(embed=embed)

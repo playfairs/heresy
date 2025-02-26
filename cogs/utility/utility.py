@@ -481,7 +481,7 @@ class Utility(Cog):
             self.remove_afk(message.author.id)
 
             embed = discord.Embed(
-                description=f"👋 Welcome back, {message.author.mention}! You went AFK {self.format_time_ago(afk_data[1])}.",
+                description=f"<a:FlutterWave:1325184569447678049> Welcome back, {message.author.mention}! You went AFK `{self.format_time_ago(afk_data[1])}`.",
                 color=discord.Color.green()
             )
             await message.channel.send(embed=embed)
@@ -491,7 +491,7 @@ class Utility(Cog):
             if afk_data:
                 reason, afk_time = afk_data
                 embed = discord.Embed(
-                    description=f"{mentioned_user.mention} went AFK {self.format_time_ago(afk_time)}: **{reason}**",
+                    description=f"{mentioned_user.mention} went AFK `{self.format_time_ago(afk_time)}`: **{reason}**",
                     color=discord.Color.red()
                 )
                 await message.channel.send(embed=embed)
@@ -501,7 +501,7 @@ class Utility(Cog):
         afk_data = self.get_afk_status(before.author.id)
         if afk_data:
             embed = discord.Embed(
-                description=f"{before.author.mention} is currently AFK: **{afk_data[0]}**.",
+                description=f"{before.author.mention} edited a message, but is still AFK: **{afk_data[0]}**.",
                 color=discord.Color.red()
             )
             await after.channel.send(embed=embed)
@@ -514,7 +514,7 @@ class Utility(Cog):
         afk_data = self.get_afk_status(message.author.id)
         if afk_data:
             embed = discord.Embed(
-                description=f"{message.author.mention} is AFK: **{afk_data[0]}**.",
+                description=f"{message.author.mention} deleted a message, but is still AFK: **{afk_data[0]}**.",
                 color=discord.Color.red()
             )
             await message.channel.send(embed=embed)

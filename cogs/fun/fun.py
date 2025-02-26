@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta
 import aiohttp
 import random
 from database import db_manager
-from typing import Optional
+from typing import Optional, Union, Literal
 
 from discord import app_commands
 from discord.app_commands import Choice
@@ -846,3 +846,32 @@ class Fun(Cog):
             ]
         
         await ctx.send(random.choice(responses))
+
+    @commands.group()
+    async def e(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @e.command(name="dance")
+    async def _dance(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://c.tenor.com/P3hR4lCXM-QAAAAd/tenor.gif")
+        await ctx.send(embed=embed)
+
+    @e.command(name="mouse")
+    async def _mouse(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/mouse.gif")
+        await ctx.send(embed=embed)
+
+    @e.command(name="fox")
+    async def _fox(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/fox.gif")
+        await ctx.send(embed=embed)
+
+    @e.command(name="ochra")
+    async def _ochra(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/ochra.png")
+        await ctx.send(embed=embed)

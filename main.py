@@ -44,7 +44,7 @@ class heresy(commands.AutoShardedBot):
             ),
         )
         self.owner_ids = DISCORD.OWNER_IDS
-    
+
     def run(self) -> None:
         log.info("Starting the bot...")
 
