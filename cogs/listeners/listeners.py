@@ -99,6 +99,8 @@ class Listeners(Cog):
             parts[2].lower() != 'is'):
             return
 
+        command_name = ' '.join(parts[3:])
+
         command_name = parts[3]
 
         for cog_name, cog in self.bot.cogs.items():
@@ -110,7 +112,7 @@ class Listeners(Cog):
                         with open(file_path, 'r') as f:
                             lines = f.readlines()
                             for i, line in enumerate(lines):
-                                if f"def {cmd.name}" in line:
+                                if f"async def {cmd.name}" in line:
                                     start_line = i + 1
                                     break
                             else:
@@ -128,10 +130,12 @@ class Listeners(Cog):
                     await message.channel.send(response)
                     return
 
-        await message.channel.send(f"Could not find a command named `{command_name}`.")
-
+        await message.channel.send("I don't know where that command is located, or it doesn't exist.")
+        
     @Cog.listener('on_message')
     async def greet(self, message):
+        if message.author == self.bot.user:
+            return
         if message.author == self.bot.user:
             return
 

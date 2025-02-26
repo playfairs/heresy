@@ -363,7 +363,7 @@ class Information(Cog):
         embed = discord.Embed(
             title=f"{guild.name}",
             description=server_description,
-            color=discord.Color.red()
+            color=discord.Color(0xf8c9ff)
         )
 
         if server_icon_url:
