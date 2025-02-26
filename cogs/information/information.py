@@ -826,16 +826,6 @@ class Information(Cog):
 #        embed.add_field(name="Messages Sent", value=f"```\n{messages}```", inline=True)
 #        await ctx.send(embed=embed)
 
-    @commands.command(name="fastfetch")
-    async def fastfetch(self, ctx: Context):
-        """Runs Fastfetch Shell command"""
-        process = subprocess.Popen(['fastfetch'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
-        if process.returncode != 0:
-            await ctx.send(f"```shell\n{stderr.decode('utf-8')}```")
-        else:
-            await ctx.send(f"```shell\n{stdout.decode('utf-8')}```")
-
     @commands.command(name="rtt", aliases=['ping'])
     async def rtt(self, ctx: commands.Context):
         """Check the round-trip time (RTT) of the bot."""

@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord import Intents, AllowedMentions
 from core.client.help import HerseyHelp
 import jishaku
+import redis
 
 from config import DISCORD
 
@@ -16,6 +17,8 @@ jishaku.Flags.NO_UNDERSCORE = True
 jishaku.Flags.FORCE_PAGINATOR = True
 
 log = logging.getLogger(__name__)
+r = redis.Redis(host='localhost', port=6379, decode_responses=True)
+pool = redis.ConnectionPool(host='localhost', port=6379)
 
 class heresy(commands.AutoShardedBot):
     
