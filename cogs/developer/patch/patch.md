@@ -1,17 +1,20 @@
 ## What's New?
-- Fastfetch: Simply executes the shell command fastfetch and outputs it to the user.
-- Stats: Added a stats command with 2 types, channel and user, shows how many messages a user or channel has sent/contains.
+- RTT: New ping command, mocks what Jishaku RTT would do.
+- E: Command group for gifs, or images, run `,e` for list of e commands.
+- Server: Owner only command for Server management and Blacklisting/Whitelisting servers.
+- Added a fuck command. `,fuck`
 
 
 
 ## Playfairs.cc
-- Nothing new has changed to playfairs.cc
+- Nothing new.
 
 
 ## Improvements
 - Jishaku: Updated some Jishaku commands, mostly just adding aliases.
-- Updated `ui` to show mutual servers in the footer, also readded `ms` and `nms`.
-- Along with adding mutual servers to `ui`, the embed color now matches a users role color, if none, then default, and also added a new badge for developers, which is exclusive to anyone working on the bot.
+- AFK: Updated some small things to the AFK messages when a user comes back, gets pinged, and when they edit/delete a message.
+- Status: Updated the status command(s) into being a command group, can only be ran by Developers.
+
 
 
 ## Known Issues
