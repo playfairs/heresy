@@ -5,8 +5,15 @@ from pathlib import Path
 from discord.ext import commands
 from discord import Intents, AllowedMentions
 from core.client.help import HerseyHelp
+import jishaku
 
 from config import DISCORD
+
+jishaku.Flags.HIDE = True
+jishaku.Flags.RETAIN = True
+jishaku.Flags.NO_DM_TRACEBACK = True
+jishaku.Flags.NO_UNDERSCORE = True
+jishaku.Flags.FORCE_PAGINATOR = True
 
 log = logging.getLogger(__name__)
 
@@ -18,7 +25,7 @@ class heresy(commands.AutoShardedBot):
             **kwargs,
             command_prefix=DISCORD.PREFIX,
             help_command=HerseyHelp(),
-            shard_count=5,
+            shard_count=2,
             intents=Intents(
                 guilds=True,
                 members=True,

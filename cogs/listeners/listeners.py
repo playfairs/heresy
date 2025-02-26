@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 from discord.ext.commands import Cog
 from main import heresy
 import os
@@ -11,6 +12,10 @@ class Listeners(Cog):
         self.consecutive_messages = 0
         self.owner_id = 785042666475225109
         self.bot_id = 1284037026672279635
+
+    MENTIONED_USERS = {
+        "playfairs": 785042666475225109
+    }
 
     @Cog.listener('on_guild_join')
     async def join_logger(self, guild):
@@ -135,3 +140,17 @@ class Listeners(Cog):
 
         if message.content.lower() == "hi heresy" or message.content.lower() == "hi <@1284037026672279635>" or message.content.lower() == "hello heresy" or message.content.lower() == "hello <@1284037026672279635>":
             await message.channel.send(f"Hi, {message.author.mention}")
+
+    @Cog.listener('on_message')
+    async def mention_users(self, message):
+        if message.author.bot:
+            return
+        
+        for word, user_id in MENTIONED_USERS.items():
+            if word in message.content.lower():
+                user = await self.bot.fetch_user(user_id)
+                if user:
+                    await message.channel.send(f"{user.mention}, {message.author.mention} mentioned you.")
+                break
+
+        await self.bot.process_commands(message)

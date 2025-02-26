@@ -56,10 +56,16 @@ class Config(Cog):
         with open(self.join_log_file, 'w') as f:
             json.dump(self.join_log_settings, f, indent=4)
 
-    @command(name="gate", aliases= ["joinlogs"])
+    @command(name="gate", aliases= ["joinlogs"], invoke_without_command=True)
     @has_permissions(administrator=True)
-    async def set_join_logs(self, ctx: Context, channel: discord.TextChannel):
+    async def set_join_logs(self, ctx: Context, channel: discord.TextChannel = None):
         """Sets the join log channel for the current server."""
+        if channel is None:
+            await ctx.send(f"Current gate is set to <#{self.join_log_settings[str(ctx.guild.id)].get('channel_id')}>.")
+            return
+        if channel.id == self.join_log_settings[str(ctx.guild.id)].get('channel_id'):
+            await ctx.send(f"Gate is already set to <#{channel.id}>.")
+            return
         server_id = str(ctx.guild.id)
         if server_id not in self.join_log_settings:
             self.join_log_settings[server_id] = {}
