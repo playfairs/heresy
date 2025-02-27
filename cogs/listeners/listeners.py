@@ -33,15 +33,15 @@ class Listeners(Cog):
 
         if inviter:
             embed = discord.Embed(
-                title="Thanks for Choosing heresy!",
+                title="Thanks for inviting heresy!",
                 description=(
                     "Hello! Thank you for inviting heresy to your server.\n"
                     "To see all available commands, use `,help`.\n\n"
-                    "If you have any questions, join discord.gg/heresy for more info on heresy."
+                    "If you have any questions, join <https://discord.gg/heresy> for more info on heresy."
                 ),
                 color=discord.Color(0xFFFFFF)
             )
-            embed.set_footer(text="I am in your walls.")
+            embed.set_footer(text="The owner knows you did this.")
             try:
                 await inviter.send(embed=embed)
             except Exception as e:

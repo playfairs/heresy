@@ -156,7 +156,9 @@ class HerseyHelp(MinimalHelpCommand):
                     "Hog",
                     "Developer",
                     "RateLimit",
-                    "Jishaku"
+                    "Jishaku",
+                    "AppleMusic",
+                    "Playlist"
                 ]
                 and (
                     "cogs" in cog.__module__

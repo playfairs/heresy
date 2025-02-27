@@ -586,3 +586,61 @@ class Owner(
                 self.save_json(data, self.blacklist_file)
             else:
                 await ctx.send(f"No server found with ID `{guild_id}`.")
+
+    @commands.group(name="bp", invoke_without_command=True)
+    async def bp(self, ctx):
+        """Base command for purging only the bots messages."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @bp.command()
+    async def after(self, ctx: Context, message_id: int):
+        """Purges only messages sent after the specified message."""
+        try:
+            message = await ctx.channel.fetch_message(message_id)
+            if message.author == self.bot.user:
+                    await message.delete()
+            await ctx.send("Deleted messages after the given ID.", delete_after=5)
+        except discord.NotFound:
+            await ctx.send("Message not found.", delete_after=5)
+        except discord.Forbidden:
+            await ctx.send("I do not have permission to delete my own messages.. man what happened to free will.", delete_after=5)
+
+    @bp.command()
+    async def before(self, ctx: Context, message_id: int):
+        """Purges only messages sent before the specified message."""
+        try:
+            message = await ctx.channel.fetch_message(message_id)
+            if message.author == self.bot.user:
+                    await message.delete()
+            await ctx.send("Deleted messages before the given ID.", delete_after=5)
+        except discord.NotFound:
+            await ctx.send("Message not found.", delete_after=5)
+        except discord.Forbidden:
+            await ctx.send("I do not have permission to delete my own messages.. man what happened to free will.", delete_after=5)
+
+    @bp.command(name="amnt", aliases=["amount", "number"])
+    async def amnt(self, ctx: Context, amount: int):
+        """Purges a specified amount of messages from the channel."""
+        deleted = 0
+        async for message in ctx.channel.history(limit=amount):
+            if message.author == self.bot.user:
+                await message.delete()
+                deleted += 1
+
+        await ctx.send(f"Deleted {deleted} messages.", delete_after=5)
+
+    @bp.command()
+    async def specific(self, ctx: Context, message_id: int):
+        """Purges only the specified message."""
+        try:
+            message = await ctx.channel.fetch_message(message_id)
+            if message.author == self.bot.user:
+                await message.delete()
+                await ctx.send("Deleted the specified message.", delete_after=5)
+            else:
+                await ctx.send("The specified message was not sent by the bot.", delete_after=5)
+        except discord.NotFound:
+            await ctx.send("Message not found.", delete_after=5)
+        except discord.Forbidden:
+            await ctx.send("I do not have permission to delete my own messages.. man what happened to free will.", delete_after=5)

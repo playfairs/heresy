@@ -39,11 +39,11 @@ class Vanity(Cog):
         with open(CONFIG_FILE, "w") as f:
             json.dump(self.config, f, indent=4)
 
-    @commands.group(name="vanity")
+    @commands.group(name="vanity", invoke_without_command=True)
     async def vanity_group(self, ctx):
         """Group of commands to manage vanity settings."""
         if ctx.invoked_subcommand is None:
-            await ctx.send("Use `vanity set`, `vanity pic`, or `vanity logs`.")
+            await ctx.send_help(ctx.command)
 
     @vanity_group.command(name="set")
     @commands.has_permissions(administrator=True)
