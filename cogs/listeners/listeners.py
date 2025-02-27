@@ -25,9 +25,9 @@ class Listeners(Cog):
         """
         inviter = None
         try:
-            audit_logs = await guild.audit_logs(limit=1, action=discord.AuditLogAction.bot_add).flatten()
-            if audit_logs:
-                inviter = audit_logs[0].user
+            async for entry in guild.audit_logs(limit=1, action=discord.AuditLogAction.bot_add):
+                inviter = entry.user
+                break
         except Exception as e:
             print(f"Could not retrieve inviter for {guild.name}: {e}")
 
@@ -39,7 +39,7 @@ class Listeners(Cog):
                     "To see all available commands, use `,help`.\n\n"
                     "If you have any questions, join discord.gg/heresy for more info on heresy."
                 ),
-                color=discord.Color.green()
+                color=discord.Color(0xFFFFFF)
             )
             embed.set_footer(text="I am in your walls.")
             try:
@@ -159,4 +159,4 @@ class Listeners(Cog):
                 break
 
         if mentioned_user:
-            await message.channel.send(f'{mentioned_user.mention}, {message.author.mention} mentioned you.')
+            await message.channel.send(f'{mentioned_user.mention}, {message.author.mention} mentioned your name.')
