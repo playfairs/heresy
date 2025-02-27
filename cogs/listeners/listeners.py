@@ -14,10 +14,7 @@ class Listeners(Cog):
         self.bot_id = 1284037026672279635
         self.users_listen = {
             "playfairs": 785042666475225109,
-            "playfair": 785042666475225109,
-            "lina": 757355424621133914,
-            "nova": 1265662059056463976,
-            "ochra": 812606857742647298
+            "playfair": 785042666475225109
         }
 
 
