@@ -126,7 +126,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed.set_footer(
             text=f"Module: {command.cog_name or 'No Category'}",
-            icon_url=self.context.author.display_avatar.url,
+            icon_url="https://playfairs.cc/heresy.png",
         )
 
         await self.context.reply(embed=embed)
@@ -139,7 +139,7 @@ class HerseyHelp(MinimalHelpCommand):
         bot = self.context.bot
 
         embed = self.create_main_help_embed(self.context)
-        embed.set_thumbnail(url=bot.user.display_avatar.url)
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
 
         categories = sorted(
             [
@@ -185,7 +185,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         async def select_callback(interaction: Interaction):
             if interaction.user.id != self.context.author.id:
-                await interaction.warn("You cannot interact with this menu!")  # type: ignore
+                await interaction.warn("Nghhh~ Don't touch my buttons.. it turns me on..")  # type: ignore
                 return
 
             selected_category = interaction.data["values"][0]  # type: ignore
@@ -310,7 +310,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         main_embed.set_footer(
             text=f"Module: {group.cog_name} • Page 1/{len(group.commands) + 1}",
-            icon_url=self.context.author.display_avatar.url
+            icon_url="https://playfairs.cc/heresy.png"
         )
 
         pages.append(main_embed)
@@ -363,7 +363,7 @@ class HerseyHelp(MinimalHelpCommand):
 
             cmd_embed.set_footer(
                 text=f"Module: {group.cog_name} • Page {i + 1}/{len(group.commands) + 1}",
-                icon_url=self.context.author.display_avatar.url
+                icon_url="https://playfairs.cc/heresy.png"
             )
 
             pages.append(cmd_embed)
@@ -399,7 +399,7 @@ class HerseyHelp(MinimalHelpCommand):
             )
             overview.set_footer(
                 text=f"Page 1/{len(cog.get_commands()) + 1}",
-                icon_url=self.context.author.display_avatar.url
+                icon_url="https://playfairs.cc/heresy.png"
             )
             pages.append(overview)
 
@@ -437,7 +437,7 @@ class HerseyHelp(MinimalHelpCommand):
 
                 embed.set_footer(
                     text=f"Page {i + 1}/{len(cog.get_commands()) + 1}",
-                    icon_url=self.context.author.display_avatar.url
+                    icon_url="https://playfairs.cc/heresy.png"
                 )
                 pages.append(embed)
 
@@ -460,7 +460,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed.set_footer(
             text=f"Module: {cog.qualified_name}",
-            icon_url=self.context.author.display_avatar.url
+            icon_url="https://playfairs.cc/heresy.png"
         )
 
         await self.context.reply(embed=embed)
@@ -566,7 +566,7 @@ class HerseyHelp(MinimalHelpCommand):
 
                     embed.set_footer(
                         text=f"Module: Jishaku • Use ◀ ▶ to view all commands",
-                        icon_url=self.context.author.display_avatar.url
+                        icon_url="https://playfairs.cc/heresy.png"
                     )
                     pages.append(embed)
 
@@ -672,7 +672,7 @@ class HerseyHelp(MinimalHelpCommand):
 
         embed.set_footer(
             text=f"Module: {command.cog_name}",
-            icon_url=self.context.author.display_avatar.url
+            icon_url="https://playfairs.cc/heresy.png"
         )
 
         await self.context.reply(embed=embed)

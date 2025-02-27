@@ -90,21 +90,6 @@ class Information(Cog):
         embed.set_footer(text="More details can be found in the about.me")
         await interaction.response.send_message(embed=embed)
 
-    @commands.command(name="abt", hidden=True)
-    async def about_bot(self, ctx):
-        """Displays information about the bot."""
-        embed = discord.Embed(
-            title="About This Bot",
-            description="heresy is a Discord Bot packed with a whole bunch of commands, designed for versatility (NOT HOSTED 24/7)",
-            color=0x3498db
-        )
-        embed.add_field(name="Developer", value="@playfairs", inline=False)
-        embed.add_field(name="Language", value="Python", inline=True)
-        embed.add_field(name="Library", value="discord.py", inline=True)
-        embed.add_field(name="Purpose", value="Meant for managing and adding a bit of fun to your server(s)!", inline=False)
-        embed.set_footer(text="Thanks for using heresy, if you have any questions about the bot then hit up the developer and ask your questions!")
-        await ctx.send(embed=embed)
-
     @app_commands.command(name="userinfo", description="Get information about a user")
     async def userinfo(self, interaction: discord.Interaction, member: discord.Member = None):
         """Displays basic information about the specified user or the interaction user if no member is specified."""
@@ -573,7 +558,7 @@ class Information(Cog):
             else:
                 await ctx.reply(f"{ctx.author.mention}, `{misspelled_command}` is not a command. Use `{ctx.prefix}help` to see all available commands.", mention_author=True)
 
-    @commands.command(name="bi", aliases=['botinfo'], help="Shows detailed information about the bot.")
+    @commands.command(name="bi", aliases=['botinfo', 'abt'], help="Shows detailed information about the bot.")
     async def show_bot_info(self, ctx):
         """Displays detailed information about the bot including stats and system info."""
         bot = self.bot
@@ -868,3 +853,20 @@ class Information(Cog):
             color=discord.Color.from_rgb(255, 255, 255),
         )
         await message.edit(embed=embed)
+
+    @commands.command(name="invite", aliases=["inv", "oauth2", "botlink"])
+    async def invite(self, ctx: commands.Context):
+        """Generates an invite link for the bot."""
+        try:
+            app_info = await self.bot.application_info()
+            client_id = app_info.id
+            permissions = discord.Permissions(8).value
+
+            invite_url = (
+                f"https://discord.com/oauth2/authorize?"
+                f"client_id={client_id}&permissions={permissions}&scope=bot"
+            )
+
+            await ctx.send(f"{invite_url}")
+        except Exception as e:
+            await ctx.send(f"```py\n{type(e).__name__}: {str(e)}```")
