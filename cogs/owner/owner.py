@@ -424,10 +424,8 @@ class Owner(
     @commands.group(name="status", invoke_without_command=True)
     async def status(self, ctx, *, status: str = None):
         """Change the bot's status."""
-        if status is None:
-            await ctx.send("Use `status set` to set a custom status.")
-        else:
-            await self.set(ctx, status)
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
 
     @status.command()
     async def set(self, ctx: Context, *, status: str):

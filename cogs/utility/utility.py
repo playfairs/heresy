@@ -136,7 +136,7 @@ class Utility(Cog):
 
         raise ValueError("Unsupported or invalid URL")
 
-    @command(name='afk', aliases= ["kms", "despawn", "idle", "akf", "dies", "oof"])
+    @command(name='afk', aliases= ["kms", "despawn", "idle", "akf", "dies", "oof", "bye"])
     async def afk(self, ctx: Context, *, reason: str = "AFK"):
         """Set the AFK status with an optional reason."""
         user_id = ctx.author.id
@@ -158,6 +158,9 @@ class Utility(Cog):
 
         if ctx.invoked_with == "dies":
             reason = "oh ok"
+
+        if ctx.invoked_with == "bye":
+            reason = "ok bye then bitch"
 
         self.set_afk(user_id, reason)
 
