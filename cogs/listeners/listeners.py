@@ -37,7 +37,7 @@ class Listeners(Cog):
                 description=(
                     "Hello! Thank you for inviting heresy to your server.\n"
                     "To see all available commands, use `,help`.\n\n"
-                    "If you have any questions, join <https://discord.gg/heresy> for more info on heresy."
+                    "If you have any questions, join the Support Server for more info on heresy."
                 ),
                 color=discord.Color(0xFFFFFF)
             )

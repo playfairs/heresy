@@ -572,7 +572,8 @@ class Information(Cog):
         total_members = sum(guild.member_count for guild in bot.guilds)
         total_guilds = len(bot.guilds)
         total_commands = len(bot.commands)
-        total_cogs = len(bot.cogs)
+        # total_cogs = len(bot.cogs)
+        total_modules = len(list(bot.extensions.keys()))
 
         if platform.system() == "Darwin":
             host = "MacOS " + platform.mac_ver()[0]
@@ -606,7 +607,7 @@ class Information(Cog):
                     total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
 
         embed = discord.Embed(
-            description=f"Developed and maintained by <@{self.developer_id}>\n`{total_commands}` commands | `{total_cogs}` cogs",
+            description=f"Developed and maintained by <@{self.developer_id}>\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
             color=discord.Color.purple(),
             timestamp=datetime.utcnow()
         )
@@ -629,7 +630,7 @@ class Information(Cog):
             inline=True
         )
 
-        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg")
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed)

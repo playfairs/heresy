@@ -15,9 +15,12 @@
             "vanity": "uf8s"
         },
         "1335978165385953292": {
-            "vanity": ".gg/isolation",
+            "vanity": "/isolation",
             "log_channel": 1344730168165531785,
             "pic_role": 1344725011780341851
+        },
+        "1290693045716779078": {
+            "vanity": "/fbm"
         }
     }
 }
