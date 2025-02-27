@@ -318,11 +318,16 @@ class Information(Cog):
 
             await ctx.send(embed=embed)
 
+        except discord.MemberNotFound:
+            await ctx.send("User not found, or does not exist in the server.")
+        except discord.Forbidden:
+            await ctx.send("I do not have permission to send embeds.")
         except Exception as e:
             await ctx.send(f"**Error**: Something went wrong - User Profile does not contain displayable information // or does not exist")
             raise e
 
     @commands.command(name="si", help="Show the server info.")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def server_info(self, ctx):
         """Shows the server information in a red embed."""
 
@@ -403,6 +408,7 @@ class Information(Cog):
 
 
     @commands.command(name="mc")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def member_count(self, ctx):
         guild = ctx.guild
         bots = sum(1 for member in guild.members if member.bot)
@@ -417,6 +423,7 @@ class Information(Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="serverbanner")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def server_banner(self, ctx):
         """Shows the server banner in an embed."""
         if ctx.guild.banner:
@@ -427,6 +434,7 @@ class Information(Cog):
             await ctx.send("This server does not have a banner set.")
 
     @commands.command(name="sicon")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def server_icon(self, ctx):
         """Shows the server icon in an embed."""
         if ctx.guild.icon:
@@ -437,6 +445,7 @@ class Information(Cog):
             await ctx.send("This server does not have an icon set.")
 
     @commands.command(name="splash")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def server_splash(self, ctx):
         """Shows the server splash (invite banner) in an embed."""
         if ctx.guild.splash:

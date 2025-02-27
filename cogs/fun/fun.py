@@ -853,25 +853,36 @@ class Fun(Cog):
             await ctx.send_help(ctx.command)
 
     @e.command(name="dance")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def _dance(self, ctx):
         embed = discord.Embed()
         embed.set_image(url="https://c.tenor.com/P3hR4lCXM-QAAAAd/tenor.gif")
         await ctx.send(embed=embed)
 
     @e.command(name="mouse")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def _mouse(self, ctx):
         embed = discord.Embed()
         embed.set_image(url="https://playfairs.cc/mouse.gif")
         await ctx.send(embed=embed)
 
     @e.command(name="fox")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def _fox(self, ctx):
         embed = discord.Embed()
         embed.set_image(url="https://playfairs.cc/fox.gif")
         await ctx.send(embed=embed)
 
     @e.command(name="ochra")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def _ochra(self, ctx):
         embed = discord.Embed()
         embed.set_image(url="https://playfairs.cc/ochra.png")
+        await ctx.send(embed=embed)
+
+    @e.command(name="yippee", aliases=["yipie", "yippe"], help="Replacement for yippee autoresponse.")
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def _yippee(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://media1.tenor.com/m/FKtdcMXKBhsAAAAd/yippee-happy.gif")
         await ctx.send(embed=embed)

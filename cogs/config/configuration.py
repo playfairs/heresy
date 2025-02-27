@@ -169,7 +169,7 @@ class Config(Cog):
         elif message_type.value == "leave":
             leave_message = self.join_log_settings[server_id].get(
                 "leave_message",
-                "damn, they prolly wont be back",
+                "bye",
             )
             await channel.send(f"{leave_message} {interaction.user.mention}")
             await interaction.response.send_message("Leave message tested.", ephemeral=True)

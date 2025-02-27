@@ -39,9 +39,6 @@ class Reactions(Cog):
             "type shit": [
                 "type shit"
             ],
-            "yippe": [
-                "https://tenor.com/view/yippee-happy-yippee-creature-yippee-meme-yippee-gif-gif-1489386840712152603"
-            ],
             "i literally made you": [
                 "'i brought u into this world and i will take you out of it' head ass 😭"
             ],
@@ -80,15 +77,6 @@ class Reactions(Cog):
             ],
             "i keep a baby glock i aint fightin w no random, period 😭✌️": [
                 "i keep a baby glock i aint fightin w no random, period 😭✌️"
-            ],
-            "yippie": [
-                "https://tenor.com/view/yippee-happy-yippee-creature-yippee-meme-yippee-gif-gif-1489386840712152603"
-            ],
-            "yippe": [
-                "https://tenor.com/view/yippee-happy-yippee-creature-yippee-meme-yippee-gif-gif-1489386840712152603"
-            ],
-            "yipie": [
-                "https://tenor.com/view/yippee-happy-yippee-creature-yippee-meme-yippee-gif-gif-1489386840712152603"
             ],
             "get back to work": [
                 "Slavery is the practice of owning another person as property, usually for their labor. People who are enslaved are called slaves or enslaved people. They are treated as property with few or no rights, and are often forced to work",
