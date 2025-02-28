@@ -525,3 +525,58 @@ class Utility(Cog):
         if message.author.id == self.bot.user.id:
             self.remove_afk(self.bot.user.id)
             await message.channel.send(f"{self.bot.user.mention} was AFK, removing AFK as this shouldn't be possible.")
+
+    @commands.group(name="emoji")
+    async def emoji(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @emoji.command(name="add", aliases=["create"])
+    async def emoji_add(self, ctx, name: str, emoji: discord.PartialEmoji = None):
+        if not emoji:
+            if not ctx.message.attachments:
+                await ctx.send("No emoji provided.")
+                return
+            emoji = ctx.message.attachments[0].url
+        try:
+            new_emoji = await ctx.guild.create_emoji(name=name, image=emoji)
+            await ctx.send(f"Emoji `{new_emoji}` created successfully!")
+        except discord.HTTPException as e:
+            await ctx.send(f"Failed to create emoji: {e}")
+
+    @emoji.command(name="copy", aliases=["steal"])
+    async def emoji_copy(self, ctx, emoji: discord.PartialEmoji = None):
+        if not emoji and ctx.message.reference:
+            try:
+                referenced_message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+                if not referenced_message.stickers:
+                    emoji = referenced_message.embeds[0].image.url if referenced_message.embeds else None
+                else:
+                    emoji = referenced_message.stickers[0]
+            except discord.NotFound:
+                await ctx.send("Failed to find the referenced message.")
+                return
+        elif not emoji and ctx.message.attachments:
+            emoji = ctx.message.attachments[0].url
+        elif not emoji:
+            await ctx.send("No emoji provided.")
+            return
+        try:
+            new_emoji = await ctx.guild.create_custom_emoji(name=emoji.name, image=emoji.url if isinstance(emoji, discord.PartialEmoji) else emoji)
+            await ctx.send(f"Emoji `{new_emoji}` created successfully!")
+        except discord.HTTPException as e:
+            await ctx.send(f"Failed to create emoji: {e}")
+
+    @emoji.command(name="escape")
+    async def emoji_escape(self, ctx, *, emojis: str = None):
+        if not emojis:
+            await ctx.send("No emojis provided.")
+            return
+        emojis = emojis.split()
+        response = ""
+        for emoji in emojis:
+            if isinstance(emoji, discord.PartialEmoji):
+                response += f"\\{emoji} ({emoji.name} {emoji.id})\n"
+            else:
+                response += f"\\{emoji}\n"
+        await ctx.send(response)
