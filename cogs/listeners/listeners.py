@@ -33,31 +33,40 @@ class Listeners(Cog):
 
         if inviter:
             embed = discord.Embed(
-                title="Thanks for inviting heresy!",
+                title="Thanks for inviting Heresy!",
                 description=(
-                    "Hello! Thank you for inviting heresy to your server.\n"
-                    "To see all available commands, use `,help`.\n\n"
-                    "If you have any questions, join the Support Server for more info on heresy."
+                    "Hello! Thank you for inviting Heresy to your server.\n"
+                    "To see all available commands, use `,h`.\n\n"
+                    "If you have any questions, join the [Support Server](https://discord.com/invite/heresy) for more info on Heresy."
                 ),
                 color=discord.Color(0xFFFFFF)
             )
-            embed.set_footer(text="The owner knows you did this.")
-            try:
-                await inviter.send(embed=embed)
-            except Exception as e:
-                print(f"Could not DM inviter {inviter}: {e}")
+            embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
+        embed.add_field(
+            name="Resources",
+            value="**[invite](https://discordapp.com/oauth2/authorize?client_id=1284037026672279635&scope=bot+applications.commands&permissions=8)**  • "
+            "**[server](https://discord.gg/heresy)**  • "
+            "**[website](https://playfairs.cc/heresy)**  ",
+            inline=False,
+        )
+        embed.set_footer(text="I'm in your fucking walls.")
+        try:
+            await inviter.send(embed=embed)
+        except Exception as e:
+            print(f"Could not DM inviter {inviter}: {e}")
 
         invite_link = "Unable to generate invite"
         try:
-            invite = await guild.text_channels[0].create_invite(max_age=3600, max_uses=1, unique=True)
+            invite = await guild.text_channels[0].create_invite(max_age=604800, max_uses=1, unique=True)
             invite_link = invite.url
         except Exception as e:
             print(f"Could not create invite for {guild.name}: {e}")
 
         owner_dm_content = (
-            f"Hello <@785042666475225109>, I was added to **{guild.name}** by "
+            f"Hello <@785042666475225109>, I was added to `{guild.name}` by "
             f"{inviter.mention if inviter else 'an unauthorized user'}.\n\n"
-            f"If you did not authorize this action, feel free to revoke access. Invite link: {invite_link}"
+            f"If you did not authorize this action, feel free to revoke access.\n\n"
+            f"**Invite link**: {invite_link}"
         )
         try:
             owner_user = await self.bot.fetch_user(self.owner_id)
