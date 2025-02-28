@@ -118,7 +118,7 @@ class Vanity(Cog):
                         await member.add_roles(role)
                         embed = discord.Embed(
                             title="Vanity Update",
-                            description=f"Gave pic perms to {member.mention}, user has '{vanity}' in status.",
+                            description=f"Gave pic perms to {member.mention}, user has `{vanity}` in status.",
                             color=discord.Color.green(),
                         )
                         await log_channel.send(embed=embed)
@@ -127,7 +127,7 @@ class Vanity(Cog):
                         await member.remove_roles(role)
                         embed = discord.Embed(
                             title="Vanity Update", 
-                            description=f"Removed pic perms from {member.mention}, user no longer has '{vanity}' in status.",
+                            description=f"Removed pic perms from {member.mention}, user no longer has `{vanity}` in status.",
                             color=discord.Color.red(),
                         )
                         await log_channel.send(embed=embed)
@@ -185,7 +185,6 @@ class Vanity(Cog):
         count = 0
         async with ctx.typing():
             for member in ctx.guild.members:
-                # Skip bot accounts
                 if member.bot:
                     continue
 
@@ -202,7 +201,7 @@ class Vanity(Cog):
                     await member.remove_roles(role)
                     count += 1
 
-        await ctx.send(f"Updated roles for {count} members.")
+        await ctx.send(f"Updated roles for `{count}` members.")
 
 async def setup(bot):
     await bot.add_cog(Vanity(bot))

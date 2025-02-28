@@ -870,3 +870,8 @@ class Information(Cog):
             await ctx.send(f"{invite_url}")
         except Exception as e:
             await ctx.send(f"```py\n{type(e).__name__}: {str(e)}```")
+
+    @commands.command(name="heresy")
+    async def heresy(self, ctx: commands.Context):
+        """Completely useless command, just here to show off the bot's name."""
+        await ctx.message.add_reaction("😭")

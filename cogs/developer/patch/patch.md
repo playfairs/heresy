@@ -1,9 +1,8 @@
 ## What's New?
-- RTT: New ping command, mocks what Jishaku RTT would do.
-- E: Command group for gifs, or images, run `,e` for list of e commands.
-- Server: Owner only command for Server management and Blacklisting/Whitelisting servers.
-- Added a fuck command. `,fuck`
-
+- LastFM: Updated `plays` commands such as `sp`, `ap` and `plays`, this is now a command group, running just `plays` runs the normal plays command, invoking with `track` or `artist` shows plays for those artists or songs.
+- bp: This command purges messages sent by the bot in DM's, this can only be ran by the owner.
+- e: Added a new gif to the `e` command group.
+- Invite: Allows users to now add they bot to a server by sending `invite`, this was available on the website, but found it much easier this way.
 
 
 ## Playfairs.cc
@@ -11,9 +10,9 @@
 
 
 ## Improvements
-- Jishaku: Updated some Jishaku commands, mostly just adding aliases.
-- AFK: Updated some small things to the AFK messages when a user comes back, gets pinged, and when they edit/delete a message.
-- Status: Updated the status command(s) into being a command group, can only be ran by Developers.
+- on_guild_join: Updated the embed the Bot sends to a User when they add the Bot to a server.
+- abt: Removed the original `abt` commmand and added the alias to `botinfo`.
+
 
 
 

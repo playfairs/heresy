@@ -28,6 +28,7 @@ class ArtistPaginator(View):
 
         self.prev_page.disabled = True
         self.next_page.disabled = self.max_page <= 1
+        
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user.id != self.author_id:
@@ -330,35 +331,6 @@ class LastFM(commands.Cog):
         cmd = self.bot.get_command('fm')
         if cmd:
             await ctx.invoke(cmd)
-
-    @commands.command(name="plays")
-    async def plays(self, ctx, user: Optional[discord.Member] = None):
-        """Shows total Last.fm scrobbles for a user"""
-        async with ctx.typing():
-            target = user or ctx.author
-            username = await self.get_lastfm_username(target.id)
-
-            if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
-                return
-
-            data = await self.fetch_lastfm_data("user.getInfo", {
-                "user": username
-            })
-
-            if not data or "error" in data:
-                await self.error_embed(ctx, "Error fetching data from Last.fm")
-                return
-
-            try:
-                total_plays = int(data["user"]["playcount"])
-                embed = discord.Embed(
-                    description=f"{target.mention} has {total_plays:,} total scrobbles",
-                    color=discord.Color.red()
-                )
-                await ctx.send(embed=embed)
-            except (KeyError, ValueError):
-                await self.error_embed(ctx, "Error parsing Last.fm data")
 
     @commands.command(name="ap")
     async def artist_plays(self, ctx, *, artist_name: Optional[str] = None):
@@ -905,114 +877,6 @@ class LastFM(commands.Cog):
                 )
 
             await ctx.send(embed=embed)
-
-    @commands.command(name="sp")
-    async def song_plays(self, ctx, *, song_name: Optional[str] = None):
-        """Shows plays for current/specified song"""
-        async with ctx.typing():
-            username = await self.get_lastfm_username(ctx.author.id)
-
-            if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
-                return
-
-            current_artist = None
-            data = await self.fetch_lastfm_data("user.getrecenttracks", {
-                "user": username,
-                "limit": 1
-            })
-
-            if data and "recenttracks" in data and data["recenttracks"]["track"]:
-                current_artist = data["recenttracks"]["track"][0]["artist"]["#text"]
-
-            if not song_name:
-                track = data["recenttracks"]["track"][0]
-                artist_name = track["artist"]["#text"]
-                song_name = track["name"]
-            else:
-                tracks = []
-                if current_artist:
-                    tracks = await self.search_tracks(song_name, username, artist=current_artist)
-                
-                if not tracks:
-                    tracks = await self.search_tracks(song_name, username)
-                
-                if not tracks:
-                    await self.error_embed(ctx, f"No tracks found matching '{song_name}'")
-                    return
-                
-                best_match = tracks[0]
-                song_name = best_match["name"]
-                artist_name = best_match["artist"]
- 
-                if len(tracks) > 1:
-                    selection_embed = discord.Embed(
-                        title="Multiple Tracks Found",
-                        description="Please select a track by typing its number:",
-                        color=discord.Color.blue()
-                    )
-                    
-                    for i, track in enumerate(tracks[:5], 1):
-                        selection_embed.add_field(
-                            name=f"{i}. {track['name']}", 
-                            value=f"Artist: {track['artist']}", 
-                            inline=False
-                        )
-                    
-                    selection_embed.set_footer(text="You have 30 seconds to respond.")
-                    
-                    await ctx.send(embed=selection_embed)
-                    
-                    def check(m):
-                        return m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit()
-                    
-                    try:
-                        response = await self.bot.wait_for('message', check=check, timeout=30.0)
-                        index = int(response.content) - 1
-                        
-                        if 0 <= index < len(tracks):
-                            best_match = tracks[index]
-                            song_name = best_match["name"]
-                            artist_name = best_match["artist"]
-                        else:
-                            await ctx.send(embed=discord.Embed(
-                                description="Invalid selection. Using the first result.", 
-                                color=discord.Color.orange()
-                            ))
-                    except asyncio.TimeoutError:
-                        await ctx.send(embed=discord.Embed(
-                            description="No selection made. Using the first result.", 
-                            color=discord.Color.orange()
-                        ))
-
-            track_data = await self.fetch_lastfm_data("track.getInfo", {
-                "track": song_name,
-                "artist": artist_name,
-                "username": username
-            })
-
-            if not track_data or "track" not in track_data:
-                await self.error_embed(ctx, f"Could not find track: {song_name} by {artist_name}")
-                return
-
-            try:
-                plays = int(track_data["track"].get("userplaycount", 0))
-                song_name = track_data["track"]["name"]
-                artist_name = track_data["track"]["artist"]["name"]
-                
-                embed = discord.Embed(
-                    description=f"You have {plays:,} plays for {song_name} by {artist_name}",
-                    color=discord.Color.red()
-                )
-                
-                if track_data["track"].get("album") and track_data["track"]["album"].get("image"):
-                    image_url = track_data["track"]["album"]["image"][-1]["#text"]
-                    if image_url:
-                        embed.set_thumbnail(url=image_url)
-                
-                await ctx.send(embed=embed)
-            except (KeyError, ValueError):
-                await self.error_embed(ctx, "Error parsing Last.fm data")
 
     @commands.command(name="spotify", aliases=["spot"])
     async def spotify_link(self, ctx):
@@ -1719,6 +1583,189 @@ class LastFM(commands.Cog):
 
             except (KeyError, IndexError):
                 await self.error_embed(ctx, "No last track found.")
+
+    @commands.group(name="plays", aliases=["p", "scrobbles"], invoke_without_command=True)
+    async def plays(self, ctx, user: discord.Member = None):
+        """Shows total Last.fm scrobbles for a user"""
+        if ctx.invoked_subcommand is None:
+            pass
+        target = user or ctx.author
+        username = await self.get_lastfm_username(target.id)
+
+        if not username:
+            await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+            return
+
+        async with ctx.typing():
+            data = await self.fetch_lastfm_data("user.getInfo", {
+                "user": username
+            })
+
+            if not data or "error" in data:
+                await self.error_embed(ctx, "Error fetching data from Last.fm")
+                return
+
+            try:
+                total_plays = int(data["user"]["playcount"])
+                embed = discord.Embed(
+                    description=f"{target.mention} has {total_plays:,} total scrobbles",
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
+            except (KeyError, ValueError):
+                await self.error_embed(ctx, "Error parsing Last.fm data")
+        
+    @plays.command(name="artist", aliases= ["a"])
+    async def artist_plays(self, ctx, *, artist_name: Optional[str] = None):
+        """Shows plays for current/specified artist"""
+        async with ctx.typing():
+            username = await self.get_lastfm_username(ctx.author.id)
+
+            if not username:
+                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                return
+
+            if not artist_name:
+                data = await self.fetch_lastfm_data("user.getrecenttracks", {
+                    "user": username,
+                    "limit": 1
+                })
+
+                if not data or "error" in data or not data["recenttracks"]["track"]:
+                    await self.error_embed(ctx, "No currently playing track found.")
+                    return
+
+                track = data["recenttracks"]["track"][0]
+                artist_name = track["artist"]["#text"]
+
+            data = await self.fetch_lastfm_data("artist.getInfo", {
+                "artist": artist_name,
+                "username": username
+            })
+
+            if not data or "error" in data:
+                await self.error_embed(ctx, f"Could not find artist: {artist_name}")
+                return
+
+            try:
+                artist_plays = int(data["artist"]["stats"]["userplaycount"])
+                artist_name = data["artist"]["name"]
+                embed = discord.Embed(
+                    description=f"You have `{artist_plays:,}` plays for *{artist_name}*",
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
+            except (KeyError, ValueError):
+                await self.error_embed(ctx, "Error parsing Last.fm data")
+
+
+    @plays.command(name="song", aliases= ["s", "track"])
+    async def song_plays(self, ctx, *, song_name: Optional[str] = None):
+        """Shows plays for current/specified song"""
+        async with ctx.typing():
+            username = await self.get_lastfm_username(ctx.author.id)
+
+            if not username:
+                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                return
+
+            current_artist = None
+            data = await self.fetch_lastfm_data("user.getrecenttracks", {
+                "user": username,
+                "limit": 1
+            })
+
+            if data and "recenttracks" in data and data["recenttracks"]["track"]:
+                current_artist = data["recenttracks"]["track"][0]["artist"]["#text"]
+
+            if not song_name:
+                track = data["recenttracks"]["track"][0]
+                artist_name = track["artist"]["#text"]
+                song_name = track["name"]
+            else:
+                tracks = []
+                if current_artist:
+                    tracks = await self.search_tracks(song_name, username, artist=current_artist)
+                
+                if not tracks:
+                    tracks = await self.search_tracks(song_name, username)
+                
+                if not tracks:
+                    await self.error_embed(ctx, f"No tracks found matching '{song_name}'")
+                    return
+                
+                best_match = tracks[0]
+                song_name = best_match["name"]
+                artist_name = best_match["artist"]
+ 
+                if len(tracks) > 1:
+                    selection_embed = discord.Embed(
+                        title="Multiple Tracks Found",
+                        description="Please select a track by typing its number:",
+                        color=discord.Color.blue()
+                    )
+                    
+                    for i, track in enumerate(tracks[:5], 1):
+                        selection_embed.add_field(
+                            name=f"{i}. {track['name']}", 
+                            value=f"Artist: {track['artist']}", 
+                            inline=False
+                        )
+                    
+                    selection_embed.set_footer(text="You have 30 seconds to respond.")
+                    
+                    await ctx.send(embed=selection_embed)
+                    
+                    def check(m):
+                        return m.author == ctx.author and m.channel == ctx.channel and m.content.isdigit()
+                    
+                    try:
+                        response = await self.bot.wait_for('message', check=check, timeout=30.0)
+                        index = int(response.content) - 1
+                        
+                        if 0 <= index < len(tracks):
+                            best_match = tracks[index]
+                            song_name = best_match["name"]
+                            artist_name = best_match["artist"]
+                        else:
+                            await ctx.send(embed=discord.Embed(
+                                description="Invalid selection. Using the first result.", 
+                                color=discord.Color.orange()
+                            ))
+                    except asyncio.TimeoutError:
+                        await ctx.send(embed=discord.Embed(
+                            description="No selection made. Using the first result.", 
+                            color=discord.Color.orange()
+                        ))
+
+            track_data = await self.fetch_lastfm_data("track.getInfo", {
+                "track": song_name,
+                "artist": artist_name,
+                "username": username
+            })
+
+            if not track_data or "track" not in track_data:
+                await self.error_embed(ctx, f"Could not find track: {song_name} by {artist_name}")
+                return
+
+            try:
+                plays = int(track_data["track"].get("userplaycount", 0))
+                song_name = track_data["track"]["name"]
+                artist_name = track_data["track"]["artist"]["name"]
+                
+                embed = discord.Embed(
+                    description=f"You have `{plays:,}` plays for *{song_name}* by *{artist_name}*",
+                    color=discord.Color.red()
+                )
+                
+                if track_data["track"].get("album") and track_data["track"]["album"].get("image"):
+                    image_url = track_data["track"]["album"]["image"][-1]["#text"]
+                    if image_url:
+                        embed.set_thumbnail(url=image_url)
+                
+                await ctx.send(embed=embed)
+            except (KeyError, ValueError):
+                await self.error_embed(ctx, "Error parsing Last.fm data")
 
 async def setup(bot):
     await bot.add_cog(LastFM(bot))
