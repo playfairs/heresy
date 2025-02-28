@@ -129,6 +129,12 @@ class Reactions(Cog):
             ],
             "zip it nigga": [
                 "https://media.discordapp.net/attachments/1063022232378552350/1170779048214024243/ezgif.com-gif-maker.gif?ex=67c0a2f5&is=67bf5175&hm=d96d6cd1e101e1718f25a9d9aae0f27690594da9fe0dab0e3becfb75e562b783&"
+            ],
+            "heresy": [
+                "hi"
+            ],
+            "kys": [
+                "hey be nice!"
             ]
         }
 
@@ -461,7 +467,7 @@ class Reactions(Cog):
                 await message.add_reaction("<:pov_ochra:1317632496636002344>")
 
             if "heresy" in content or "1291967026788831232" in content:
-                await message.add_reaction("<:heresy:1291967026788831232>")
+                await message.add_reaction("<:heresyicon:1338845590033006744>")
 
             if "nova" in content or "1320964930387709973" in content:
                 await message.add_reaction("<:nova:1320964930387709973>")

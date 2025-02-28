@@ -149,9 +149,9 @@ class Information(Cog):
         member = member or ctx.author
         user = await self.bot.fetch_user(member.id)
 
-        if user.guild_avatar:
+        if member.guild_avatar:
             embed = discord.Embed(title=f"{user.name}'s Server Avatar", color=discord.Color.blue())
-            embed.set_image(url=user.guild_avatar.url)
+            embed.set_image(url=member.guild_avatar.url)
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
         else:
