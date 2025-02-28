@@ -847,6 +847,41 @@ class Fun(Cog):
         
         await ctx.send(random.choice(responses))
 
+    @commands.command(name="touch", aliases=["fondle"])
+    async def touch(self, ctx, user: Optional[discord.Member] = None):
+        if user is None:
+            user = ctx.author
+
+        if user.bot:
+            bot_responses = [
+                "Bots can't be fondled.",
+                "why are you trying to touch a bot..",
+                "*clank, clank, clank*"
+            ]
+            await ctx.send(random.choice(bot_responses))
+            return
+
+        if user == ctx.author:
+            responses = [
+                "can i watch?",
+                "holy fuck lois..",
+                "oh yes",
+                "u like that u little freaky fuck",
+                "i have a video of that..",
+                "can someone record this.."
+            ]
+            await ctx.send(random.choice(responses))
+
+        else:
+            responses = [
+                "oh my god their gonna fuck",
+                f"{user.mention} u just gonna take that?",
+                f"{user.mention} is getting absolutely fingerblasted rn",
+                f"{user.mention} learned some fucking kung fu.. holy shit..",
+                f"{user.mention} is now preggy?? they only fingered.."
+            ]
+            await ctx.send(random.choice(responses))
+
     @commands.group()
     async def e(self, ctx):
         if ctx.invoked_subcommand is None:

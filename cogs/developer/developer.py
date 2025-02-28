@@ -8,7 +8,7 @@ import string
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.1.4"
+        self.version = "v5.1.5"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
 

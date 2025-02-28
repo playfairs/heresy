@@ -595,7 +595,7 @@ class Moderation(commands.Cog):
             await conn.execute(query, ctx.guild.id, member.id, ctx.author.id, reason or "No reason provided")
         await ctx.send(f"{member.mention} has been warned for {reason or 'No reason provided'}.")
 
-    @command(name='timeout', aliases=['to', 'bdsm', 'ballgag', 'stfu', 'sybau', 'touch', 'smd'], help='Times out a member (e.g. ,to @user 7d, 24h, 60m)')
+    @command(name='timeout', aliases=['to', 'bdsm', 'ballgag', 'stfu', 'sybau', 'smd'], help='Times out a member (e.g. ,to @user 7d, 24h, 60m)')
     @has_permissions(moderate_members=True)
     async def timeout(self, ctx, member: discord.Member = None, duration: str = "5m"):
         if not member:
@@ -656,13 +656,28 @@ class Moderation(commands.Cog):
         except discord.HTTPException:
             await ctx.send("Failed to remove timeout from the user.")
 
-    @command(name="nick")
+    @commands.group(name="nick", invoke_without_command=True)
     @has_permissions(manage_nicknames=True)
-    async def nick(self, ctx, member: discord.Member, *, new_nick: str = None):
+    async def nick(self, ctx, member: discord.Member = None, *, new_nick: str = None):
+        if ctx.invoked_subcommand is None:
+            if member is None:
+                member = ctx.author
+            elif isinstance(member, str):  
+                member = discord.utils.get(ctx.guild.members, name=member)  
+            if member is None:
+                await ctx.send("Member not found. Please mention a valid user or provide a correct name.")
+                return
+            await self.set_nickname(ctx, member, new_nick=new_nick)
+            
+    @nick.command(name="set", aliases=['change'])
+    async def set_nickname(self, ctx, member: discord.Member = None, *, new_nick: str = None):
         """Changes or resets the nickname of the mentioned user."""
         if new_nick in ["playfair", "playfairs"]:
             await ctx.send("No.")
             return
+        
+        if member is None:
+            member = ctx.author
         
         try:
             await member.edit(nick=new_nick)
@@ -673,14 +688,24 @@ class Moderation(commands.Cog):
         except discord.HTTPException:
             await ctx.send("Failed to change the nickname. Please try again.")
 
-    @command(name="forcenick", aliases=['fn'])
+    @nick.command(name="remove", aliases=['reset', 'clear'])
+    async def remove_nickname(self, ctx, member: discord.Member = None):
+        if not self.can_moderate(ctx.author, member):
+            return await ctx.send("You cannot change the nickname of this user due to role hierarchy!")
+
+        if not member:
+            return await ctx.send("You must specify a user to change the nickname (mention or User ID).")
+
+        try:
+            await member.edit(nick=None)
+            await ctx.send(f"Nickname for {member.mention} has been reset.")
+        except discord.HTTPException:
+            await ctx.send("Failed to reset the nickname. Please try again.")
+
+    @nick.command(name="force", aliases=['forcenick', 'fn'])
     @has_permissions(administrator=True)
     async def forcenick(self, ctx, member: discord.Member = None, *, forced_nick: Optional[str] = None):
         """Forces a nickname on a user that cannot be changed. If no nickname is provided, removes the forced nickname."""
-
-        if member is None:
-            await ctx.send("Did you mean ,fm or are you saying fuck nigga.")
-            return
 
         try:
             filename = f"{self.config_folder}/{ctx.guild.name}_forced_nicks.json"

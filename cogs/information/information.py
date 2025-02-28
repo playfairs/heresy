@@ -129,14 +129,29 @@ class Information(Cog):
         else:
             await ctx.send(f"{member.mention} does not have a banner.")
 
+    @commands.command(name="sbanner", aliases=["memberbanner"])
+    async def member_banner(self, ctx, member: discord.Member = None):
+        """Displays the server specific banner of the specified user or yourself if no one is mentioned."""
+        member = member or ctx.author
+        user = await self.bot.fetch_user(member.id)
+
+        if member.guild_banner:
+            embed = discord.Embed(title=f"{user.name}'s Server Banner", color=discord.Color.blue())
+            embed.set_image(url=member.guild_banner.url)
+            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f"{member.mention} does not have a server banner.")
+
     @commands.command(name="sav", description="Show your server avatar.")
     async def sav(self, ctx, member: discord.Member = None):
         """Displays the server avatar of the specified user or yourself if no one is mentioned."""
         member = member or ctx.author
+        user = await self.bot.fetch_user(member.id)
 
-        if member.guild_avatar:
-            embed = discord.Embed(title=f"{member.name}'s Server Avatar", color=discord.Color.blue())
-            embed.set_image(url=member.guild_avatar.url)
+        if user.guild_avatar:
+            embed = discord.Embed(title=f"{user.name}'s Server Avatar", color=discord.Color.blue())
+            embed.set_image(url=user.guild_avatar.url)
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
         else:
@@ -628,19 +643,6 @@ class Information(Cog):
         embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
 
         await ctx.send(embed=embed)
-
-    @commands.command(name="sbanner", description="Show your server banner.")
-    async def sbanner(self, ctx, member: discord.Member = None):
-        """Displays the server banner of the specified user or yourself if no one is mentioned."""
-        member = member or ctx.author
-
-        if member.guild_banner:
-            embed = discord.Embed(title=f"{member.name}'s Server Banner", color=discord.Color.blue())
-            embed.set_image(url=member.guild_banner.url)
-            embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"{member.mention} does not have a server banner.")
 
     @commands.command(name="bots", description="Shows the number of bots in the server.")
     async def bots(self, ctx):
