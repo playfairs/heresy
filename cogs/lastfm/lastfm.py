@@ -339,7 +339,7 @@ class LastFM(commands.Cog):
             username = await self.get_lastfm_username(ctx.author.id)
 
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             if not artist_name:
@@ -382,7 +382,7 @@ class LastFM(commands.Cog):
             username = await self.get_lastfm_username(ctx.author.id)
 
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             if not artist_name:
@@ -451,7 +451,7 @@ class LastFM(commands.Cog):
         username = await self.get_lastfm_username(ctx.author.id)
 
         if not username:
-            await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+            await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
             return
 
         if not album_name:
@@ -602,7 +602,7 @@ class LastFM(commands.Cog):
         async with ctx.typing():
             username = await self.get_lastfm_username(ctx.author.id)
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             data = await self.fetch_lastfm_data("user.getrecenttracks", {
@@ -679,7 +679,7 @@ class LastFM(commands.Cog):
         async with ctx.typing():
             username = await self.get_lastfm_username(ctx.author.id)
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             if not artist_name:
@@ -749,7 +749,7 @@ class LastFM(commands.Cog):
         async with ctx.typing():
             username = await self.get_lastfm_username(ctx.author.id)
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             if not track_name:
@@ -818,7 +818,7 @@ class LastFM(commands.Cog):
         async with ctx.typing():
             username = await self.get_lastfm_username(ctx.author.id)
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             data = await self.fetch_lastfm_data("user.getrecenttracks", {
@@ -1083,7 +1083,7 @@ class LastFM(commands.Cog):
         username = await self.get_lastfm_username(target.id)
 
         if not username:
-            await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+            await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
             return
 
         data = await self.fetch_lastfm_data("user.getrecenttracks", {
@@ -1132,7 +1132,7 @@ class LastFM(commands.Cog):
         username = await self.get_lastfm_username(target.id)
 
         if not username:
-            await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+            await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
             return
 
         period_map = {
@@ -1259,7 +1259,7 @@ class LastFM(commands.Cog):
         async with ctx.typing():
             username = await self.get_lastfm_username(ctx.author.id)
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             if not artist:
@@ -1522,7 +1522,7 @@ class LastFM(commands.Cog):
             username = await self.get_lastfm_username(target.id)
 
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             data = await self.fetch_lastfm_data("user.getrecenttracks", {
@@ -1593,7 +1593,7 @@ class LastFM(commands.Cog):
         username = await self.get_lastfm_username(target.id)
 
         if not username:
-            await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+            await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
             return
 
         async with ctx.typing():
@@ -1622,7 +1622,7 @@ class LastFM(commands.Cog):
             username = await self.get_lastfm_username(ctx.author.id)
 
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             if not artist_name:
@@ -1666,7 +1666,7 @@ class LastFM(commands.Cog):
             username = await self.get_lastfm_username(ctx.author.id)
 
             if not username:
-                await self.error_embed(ctx, "No Last.fm username set. Use `,set <username>` to set one.")
+                await self.error_embed(ctx, "No Last.fm username set. Use `,lf set <username>` to set one.")
                 return
 
             current_artist = None
