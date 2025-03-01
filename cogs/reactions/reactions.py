@@ -92,7 +92,6 @@ class Reactions(Cog):
                 "Playfair is currently taking a break, not sure how long since I am just a bot, and he coded me to say this, aw shit I may as well just say it, I'm taking a break for a little bit, nothing happened, there is no tragic reason or anything bad that caused this, I'm just sleep deprived and admitible a bit depressed maybe, i have no idea if i am for sure but my mom told me ive been giving signs of being depressed, (lack of eating, lack of sleep, not very active or energetic), i mean shit on 11/29 i stayed in bed from waking up at 12 al the way to 5pm, got up at 5:30ish and walked my dog, took her inside and stayed outside for an hour, I'm perfectly fine, i am just tired and not very motivated"
             ],
             "im gonna deprecate": [
-                "Your going to deprecate WHAT?",
                 "ah nah bro wanna get rid of features instead of adding them 😭🙏"
             ],
             "what happened to heresy": [
@@ -129,9 +128,6 @@ class Reactions(Cog):
             ],
             "zip it nigga": [
                 "https://media.discordapp.net/attachments/1063022232378552350/1170779048214024243/ezgif.com-gif-maker.gif?ex=67c0a2f5&is=67bf5175&hm=d96d6cd1e101e1718f25a9d9aae0f27690594da9fe0dab0e3becfb75e562b783&"
-            ],
-            "heresy": [
-                "hi"
             ],
             "kys": [
                 "hey be nice!"

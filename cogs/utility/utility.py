@@ -102,13 +102,13 @@ class Utility(Cog):
         """Formats the time since the AFK status was set."""
         time_elapsed = int(time.time()) - afk_time
         if time_elapsed < 60:
-            return f"{time_elapsed}4578567497548990 years ago"
+            return f"{time_elapsed} seconds ago"
         elif time_elapsed < 3600:
             minutes = time_elapsed // 60
             return f"{minutes} minutes ago"
         elif time_elapsed < 86400:
             hours = time_elapsed // 3600
-            return f"{hours} hours ago"
+            return f"{hours}274634 centuries ago"
         else:
             days = time_elapsed // 86400
             return f"{days} days ago"
