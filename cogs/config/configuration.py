@@ -3,7 +3,7 @@ import json
 import os
 import base64
 
-from discord.ext.commands import Cog, command, has_permissions, Context
+from discord.ext.commands import Cog, command, has_permissions, Context, group
 from discord import app_commands
 
 from main import heresy
@@ -56,7 +56,12 @@ class Config(Cog):
         with open(self.join_log_file, 'w') as f:
             json.dump(self.join_log_settings, f, indent=4)
 
-    @command(name="gate", aliases= ["joinlogs"], invoke_without_command=True)
+    @group(name="gate", invoke_without_command=True)
+    async def gate(self, ctx: Context):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @gate.command(name="set", aliases= ["logs"])
     @has_permissions(administrator=True)
     async def set_join_logs(self, ctx: Context, channel: discord.TextChannel = None):
         """Sets the join log channel for the current server."""
@@ -74,7 +79,7 @@ class Config(Cog):
         self.save_join_log_settings()
         await ctx.send(f"Join logs have been set to {channel.mention} for this server.")
 
-    @command(name="joinmsg", aliases= ["welcmsg, joinmessage, welcomemessage, welcmessage"])
+    @gate.command(name="join", aliases= ["joinmsg", "welcmsg", "joinmessage", "welcomemessage", "welcmessage", "welc"])
     @has_permissions(administrator=True)
     async def set_join_message(self, ctx: Context, *, message: str):
         """Sets a custom welcome message for the server and displays it in an embed."""
@@ -92,7 +97,7 @@ class Config(Cog):
         )
         await ctx.send("Custom welcome message has been set.", embed=embed)
 
-    @command(name="leavemsg")
+    @gate.command(name="leave", aliases= ["leavemsg"])
     @has_permissions(administrator=True)
     async def set_leave_message(self, ctx: Context, *, message: str):
         """Sets a custom leave message for the server and displays it in an embed."""

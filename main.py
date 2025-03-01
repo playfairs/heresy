@@ -99,7 +99,7 @@ class heresy(commands.AutoShardedBot):
         print("Bot is ready and connected.")
 
     async def get_context(self, message, *, cls=commands.Context):
-        message.content = message.content.lower()
+        # message.content = message.content.lower()
         # message.content = message.content.split(" ")[0].lower() + " " + " ".join(message.content.split(" ")[1:])
         return await super().get_context(message, cls=cls)
 

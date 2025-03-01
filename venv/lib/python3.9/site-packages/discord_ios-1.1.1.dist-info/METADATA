@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: discord-ios
+Version: 1.1.1
+Summary: get your discord.py bots appear as like its on a phone.
+Home-page: https://github.com/4rshww/Discord_Phone/
+Author: 4rshww
+Author-email: ouglasord@gmail.com
+License: MIT License
+Keywords: discord.py,discord ios,discord ios status,discord bot mobile status,discord mobile bot status
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+

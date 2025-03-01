@@ -36,5 +36,10 @@
     },
     "1335978165385953292": {
         "leave_message": "bye"
+    },
+    "1342158784113672292": {
+        "welcome_message": "hi",
+        "channel_id": 1342158784113672295,
+        "leave_message": "bye"
     }
 }

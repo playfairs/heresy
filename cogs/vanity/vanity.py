@@ -4,7 +4,7 @@ import json
 import asyncio
 
 from discord.ext import commands,tasks
-from discord.ext.commands import Cog, Bot
+from discord.ext.commands import Cog, Bot, group, has_permissions
 
 CONFIG_FILE = "config.json"
 
@@ -39,7 +39,7 @@ class Vanity(Cog):
         with open(CONFIG_FILE, "w") as f:
             json.dump(self.config, f, indent=4)
 
-    @commands.group(name="vanity", invoke_without_command=True)
+    @group(name="vanity", invoke_without_command=True)
     async def vanity_group(self, ctx):
         """Group of commands to manage vanity settings."""
         if ctx.invoked_subcommand is None:
@@ -57,7 +57,7 @@ class Vanity(Cog):
         self.save_config()
         await ctx.send(f"Vanity keyword set to `{vanity}` for this server.")
 
-    @vanity_group.command(name="pic")
+    @vanity_group.command(name="role")
     @commands.has_permissions(administrator=True)
     async def set_pic_role(self, ctx, role: discord.Role):
         """Set the pic permissions role for the server."""
