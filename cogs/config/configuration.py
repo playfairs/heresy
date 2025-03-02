@@ -90,9 +90,10 @@ class Config(Cog):
         self.join_log_settings[server_id]["welcome_message"] = message
         self.save_join_log_settings()
 
+        message = message.replace("{user.mention}", "")
         embed = discord.Embed(
             title="Welcome Message Set",
-            description=f"{message} {ctx.author.mention}",
+            description=message,
             color=discord.Color.green()
         )
         await ctx.send("Custom welcome message has been set.", embed=embed)
@@ -108,13 +109,13 @@ class Config(Cog):
         self.join_log_settings[server_id]["leave_message"] = message
         self.save_join_log_settings()
 
+        message = message.replace("{user.mention}", "")
         embed = discord.Embed(
             title="Leave Message Set",
-            description=f"{message} {ctx.author.mention}",
+            description=message,
             color=discord.Color.red()
         )
         await ctx.send("Custom leave message has been set.", embed=embed)
-
     @Cog.listener()
     async def on_member_join(self, member):
         server_id = str(member.guild.id)
@@ -122,12 +123,12 @@ class Config(Cog):
             channel_id = self.join_log_settings[server_id].get("channel_id")
             welcome_message = self.join_log_settings[server_id].get(
                 "welcome_message",
-                f"hi {member.mention}",
+                f"hi",
             )
             channel = self.bot.get_channel(channel_id)
             
             if channel:
-                await channel.send(f"{welcome_message} {member.mention}")
+                await channel.send((welcome_message.replace("{user.mention}", f"{member.mention}") if "{user.mention}" in welcome_message else welcome_message))
 
     @Cog.listener()
     async def on_member_remove(self, member):
@@ -136,14 +137,14 @@ class Config(Cog):
             channel_id = self.join_log_settings[server_id].get("channel_id")
             leave_message = self.join_log_settings[server_id].get(
                 "leave_message",
-                f"damn, {member.mention} left, they prolly wont be back",
+                f"damn, they prolly wont be back",
             )
             channel = self.bot.get_channel(channel_id)
             
             if channel:
-                await channel.send(f"{leave_message} {member.mention}")
+                await channel.send((leave_message.replace("{user.mention}", f"{member.mention}") if "{user.mention}" in leave_message else leave_message))
 
-    @command(name="testmsg")
+    @gate.command(name="testmsg")
     @has_permissions(administrator=True)
     @app_commands.choices(
         message_type=[

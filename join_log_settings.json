@@ -1,8 +1,8 @@
 {
     "961097369817071626": {
         "channel_id": 1282060391475581009,
-        "welcome_message": "hi",
-        "leave_message": "bye"
+        "welcome_message": "hi {user.mention}, invite friends and boost 4 perms if you can",
+        "leave_message": "bye {user.mention}"
     },
     "1297027051110531133": {
         "welcome_message": "hi",
@@ -38,8 +38,8 @@
         "leave_message": "bye"
     },
     "1342158784113672292": {
-        "welcome_message": "hi",
+        "welcome_message": "hi {user.mention} rep /camup 4 pic",
         "channel_id": 1342158784113672295,
-        "leave_message": "bye"
+        "leave_message": "bye {user.mention}"
     }
 }

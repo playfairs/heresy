@@ -1162,36 +1162,7 @@ class Moderation(commands.Cog):
             self.exempt_channels.add(channel.id)
             await ctx.send(f"✅ {channel.mention} will now be ignored during lockdown.")
 
-    @command(name="jail-setup")
-    @has_permissions(administrator=True)
-    async def jail_setup(self, ctx):
-        """Sets up the jail system with required roles and channels."""
-        guild = ctx.guild
-
-        jail_category = discord.utils.get(guild.categories, name="Jail")
-        if not jail_category:
-            jail_category = await guild.create_category("Jail")
-        
-        jail_channel = discord.utils.get(guild.text_channels, name="jail")
-        if not jail_channel:
-            jail_channel = await jail_category.create_text_channel("jail")
-        
-        jail_logs_channel = discord.utils.get(guild.text_channels, name="jail-logs")
-        if not jail_logs_channel:
-            jail_logs_channel = await jail_category.create_text_channel("jail-logs")
-
-        jailed_role = discord.utils.get(guild.roles, name="Jailed")
-        if not jailed_role:
-            jailed_role = await guild.create_role(name="Jailed")
-
-        for channel in guild.channels:
-            await channel.set_permissions(jailed_role, read_messages=False, send_messages=False)
-        
-        await jail_channel.set_permissions(jailed_role, read_messages=True, send_messages=True)
-
-        await ctx.send("Jail setup completed successfully.")
-
-    @command(name="jail")
+    @commands.group(name="jail", invoke_without_command=True)
     @has_permissions(moderate_members=True)
     async def jail(self, ctx, member: discord.Member, *, reason="No reason provided"):
         """Jails a user, applying the jailed role and logging the event."""
@@ -1223,6 +1194,57 @@ class Moderation(commands.Cog):
         ))
         await jail_logs_channel.send(embed=embed)
         await ctx.send("👍")
+
+    @jail.command(name="setup")
+    @has_permissions(administrator=True)
+    async def jail_setup(self, ctx):
+        """Sets up the jail system with required roles and channels."""
+        guild = ctx.guild
+
+        jail_category = discord.utils.get(guild.categories, name="Jail")
+        if not jail_category:
+            jail_category = await guild.create_category("Jail")
+
+        jail_channel = discord.utils.get(guild.text_channels, name="jail")
+        if not jail_channel:
+            jail_channel = await jail_category.create_text_channel("jail")
+        
+        jail_logs_channel = discord.utils.get(guild.text_channels, name="jail-logs")
+        if not jail_logs_channel:
+            jail_logs_channel = await jail_category.create_text_channel("jail-logs")
+
+        jailed_role = discord.utils.get(guild.roles, name="Jailed")
+        if not jailed_role:
+            jailed_role = await guild.create_role(name="Jailed")
+
+        for channel in guild.channels:
+            await channel.set_permissions(jailed_role, read_messages=False, send_messages=False)
+        
+        await jail_channel.set_permissions(jailed_role, read_messages=True, send_messages=True)
+
+        await ctx.send("Jail setup completed successfully.")
+
+    @jail.command(name="set-channel")
+    async def manual_set_channel(self, ctx, channel: discord.TextChannel):
+        """Sets the jail channel for the jail system."""
+        self.jail_channel_id = channel.id
+        await ctx.send(f"Jail channel set to {channel.mention}.")
+
+    @jail.command(name="set-role")
+    async def manual_set_role(self, ctx, role: discord.Role):
+        """Sets the jailed role for the jail system."""
+        guild = ctx.guild
+        jail_channel = guild.get_channel(self.jail_channel_id)
+        if not jail_channel:
+            await ctx.send("Jail channel is not set. Run `,jail set-channel` first.")
+            return
+        
+        await jail_channel.set_permissions(role, read_messages=True, send_messages=True)
+
+        for channel in guild.channels:
+            await channel.set_permissions(role, read_messages=False, send_messages=False)
+
+        await ctx.send("Jail setup completed successfully.")
 
     @command(name="unjail")
     @has_permissions(moderate_members=True)
