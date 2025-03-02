@@ -100,8 +100,12 @@ class Lore(commands.Cog):
             return
 
         referenced_message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-        
         user = referenced_message.author
+
+        if user.id == 1003843669528424468:
+            await ctx.send("This user is immune to the lore command.")
+            return
+
         content = referenced_message.content
 
         lorebook = self.load_lorebook(user.id)

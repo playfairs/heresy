@@ -847,7 +847,7 @@ class Fun(Cog):
         
         await ctx.send(random.choice(responses))
 
-    @commands.command(name="touch", aliases=["fondle"])
+    @commands.command(name="touch", aliases=["fondle", "finger"])
     async def touch(self, ctx, user: Optional[discord.Member] = None):
         if user is None:
             user = ctx.author

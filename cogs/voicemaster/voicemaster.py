@@ -5,6 +5,8 @@ import yt_dlp
 import asyncio
 from discord import FFmpegPCMAudio
 from discord.utils import get
+from discord.ext import tasks, commands
+from discord.ext.commands import group, has_permissions
 import os
 import numpy as np
 
@@ -313,3 +315,9 @@ class VoiceMaster(commands.Cog):
             await ctx.send("no means no bruh")
         except Exception as e:
             await ctx.send(f"no means no bruh")
+
+    @commands.group(name="voicemaster", aliases= ["vc", "voice"], invoke_without_command=True)
+    async def voicemaster(self, ctx):
+        """VoiceMaster commands."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)

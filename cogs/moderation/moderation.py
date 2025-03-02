@@ -101,13 +101,13 @@ class Moderation(commands.Cog):
         embed = discord.Embed(description=message, color=0xADD8E6)
         await ctx.send(embed=embed)
 
-    @group(name="r", invoke_without_command=True)
+    @group(name="r", aliases=["role"], invoke_without_command=True)
     @has_permissions(manage_roles=True)
     async def role_group(self, ctx, member: discord.Member = None, *, role_input: str = None):
         if member and role_input:
             await self.give_role(ctx, member, role_input)
         else:
-            await ctx.send("Please provide a subcommand or a valid user and role (e.g., `,r @user role_name`).")
+            await ctx.send_help(ctx.command)
 
     @role_group.command(name="human", aliases= ["humans"])
     @has_permissions(manage_roles=True)
@@ -216,73 +216,31 @@ class Moderation(commands.Cog):
         else:
             await ctx.send(f"Role '{role_input}' not found.")
 
-    @role_group.command(name="rename")
+    @role_group.command(name="rename", aliases=["name"])
     @has_permissions(manage_roles=True)
     async def role_rename(self, ctx, role: discord.Role, new_name: str):
         await role.edit(name=new_name)
         await self.send_embed(ctx, f"Role {role.mention} has been renamed to '{new_name}'.")
 
-    @role_group.command(name="icon")
+    @role_group.command(name="icon", aliases=["emoji"])
     @has_permissions(manage_roles=True)
-    async def role_icon(self, ctx, role: discord.Role, emoji: Optional[Union[discord.Emoji, str]] = None):
-        if emoji is None:
-            await ctx.send("Please provide an emoji.")
-            return
-        
-        try:
-            from PIL import Image, ImageDraw, ImageFont
-            import io
+    async def role_icon(self, ctx, role: discord.Role, emoji: str):
+        if emoji.startswith("<:") and emoji.endswith(">"):
+            emoji_id = emoji.split(":")[2][:-1]
+            emoji = await self.bot.fetch_emoji(emoji_id)
+            if not emoji or not (emoji.is_usable() or emoji.is_default_emoji()):
+                await ctx.send("The provided emoji is not valid or cannot be used.")
+                return
+        else:
+            emoji = discord.utils.get(ctx.guild.emojis, name=emoji)
+            if not emoji or not emoji.is_usable():
+                await ctx.send("The provided emoji is not valid or cannot be used.")
+                return
 
-            img = Image.new('RGBA', (128, 128), (0, 0, 0, 0))
-            draw = ImageDraw.Draw(img)
+        await role.edit(display_icon=emoji.url)
+        await self.send_embed(ctx, f"Role {role.mention} icon has been set to {emoji}.")
 
-            if isinstance(emoji, str):
-                if len(emoji) > 1:
-                    await ctx.send("Please provide a single Unicode emoji.")
-                    return
-                
-                font_size = 100
-                try:
-                    font = ImageFont.truetype("arial.ttf", font_size)
-                except IOError:
-                    font = ImageFont.load_default()
-
-                bbox = draw.textbbox((0, 0), emoji, font=font)
-                text_width = bbox[2] - bbox[0]
-                text_height = bbox[3] - bbox[1]
-                x = (128 - text_width) // 2
-                y = (128 - text_height) // 2
-
-                draw.text((x, y), emoji, font=font, fill=(255, 255, 255, 255))
-            
-            else:
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(str(emoji.url)) as response:
-                        if response.status != 200:
-                            await ctx.send("Failed to fetch the emoji image. Please check the emoji.")
-                            return
-
-                        emoji_bytes = await response.read()
-                        emoji_img = Image.open(io.BytesIO(emoji_bytes))
-
-                        emoji_img.thumbnail((128, 128), Image.LANCZOS)
-                        img.paste(emoji_img, ((128 - emoji_img.width) // 2, (128 - emoji_img.height) // 2), emoji_img)
-            
-            img_byte_arr = io.BytesIO()
-            img.save(img_byte_arr, format='PNG')
-            img_byte_arr = img_byte_arr.getvalue()
-            
-            await role.edit(display_icon=img_byte_arr)
-            await ctx.send(f"Role {role.mention}'s icon has been updated using the emoji {emoji}.")
-        
-        except discord.HTTPException as e:
-            await ctx.send(f"Failed to set role icon: {str(e)}")
-        except ImportError:
-            await ctx.send("This feature requires the Pillow library. Please install it using 'pip install Pillow'.")
-        except Exception as e:
-            await ctx.send(f"An unexpected error occurred: {str(e)}")
-
-    @role_group.command(name="hoist")
+    @role_group.command(name="hoist", aliases=["sethoist"])
     @has_permissions(manage_roles=True)
     async def role_hoist(self, ctx, role: discord.Role, hoist: str = None):
         """

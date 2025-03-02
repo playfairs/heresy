@@ -100,10 +100,6 @@ class Reactions(Cog):
             "Not me dude lol whats happening lol I hate this lol": [
                 "Not me dude lol whats happening lol I hate this lol"
             ],
-            ".fm": [
-                "<@356268235697553409> fuck you, I also have a fm command.",
-                "# <@356268235697553409> Kill thy self.",
-            ],
             "fuck you heresy": [
                 "why is bro sayin fuck you to a bot",
                 "what did i do"
