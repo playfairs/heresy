@@ -182,23 +182,3 @@ class Listeners(Cog):
                 color=discord.Color.blurple()
             )
             await channel.send(embed=embed)
-            
-    @Cog.listener()
-    async def on_member_join(self, member: discord.Member):
-        if member.id != 785042666475225109 or 608450597347262472 and (
-            "playfair" in member.name.lower() or
-            "playfairs" in member.name.lower() or
-            "playfair." in member.name.lower() or
-            "playfairs." in member.name.lower() or
-            "playfair" in member.display_name.lower() or
-            "playfairs" in member.display_name.lower() or
-            "playfair." in member.display_name.lower() or
-            "playfairs." in member.display_name.lower()
-        ):
-            embed = discord.Embed(
-                title="Blacklisted Username",
-                description=f"Username {member.mention} is blacklisted by the bot owner, please change your name before joining back.",
-                color=discord.Color.red()
-            )
-            await member.send(embed=embed)
-            await member.kick(reason="Your username is blacklisted by the bot owner, please change your name before joining back.")

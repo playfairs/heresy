@@ -644,3 +644,21 @@ class Owner(
             await ctx.send("Message not found.", delete_after=5)
         except discord.Forbidden:
             await ctx.send("I do not have permission to delete my own messages.. man what happened to free will.", delete_after=5)
+
+    @commands.command(name="nvim", aliases=["neovim", "nvm", "vim"])
+    async def nvim(self, ctx: Context):
+        """Opens Neovim in a new terminal"""
+        await ctx.send("Opening Neovim in a new terminal.")
+        os.system("open -g -a goneovim")
+
+    @commands.command(name="terminal", aliases=["term", "cmd"])
+    async def terminal(self, ctx: Context):
+        """Opens Kitty Terminal"""
+        await ctx.send("Opening Kitty Terminal.")
+        os.system("open -na kitty")
+
+    @commands.command(name="open", aliases=["openapp"])
+    async def open(self, ctx: Context, app: str):
+        """Opens the specified application."""
+        await ctx.send(f"Opening {app}.")
+        os.system(f"open -g -a {app}")

@@ -127,6 +127,21 @@ class Reactions(Cog):
             ],
             "kys": [
                 "hey be nice!"
+            ],
+            "nigger": [
+                "hey you can't say that!",
+                "hey thats a no no word",
+                "bad kitten we don't say those words herey!"
+            ],
+            "yesn't": [
+                "which one is it you fucking nigger",
+                "make up ur mind u albino faggot",
+                "u albino faggot is it yes or no"
+            ],
+            "yesnt": [
+                "which one is it you fucking nigger",
+                "make up ur mind u albino faggot",
+                "u albino faggot is it yes or no"
             ]
         }
 
