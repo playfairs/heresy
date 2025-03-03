@@ -1060,7 +1060,7 @@ class LastFM(commands.Cog):
                 )
 
                 embed.set_author(
-                    name=f"Now playing - {lastfm_username}", 
+                    name=f"Now playing - {ctx.author.display_name}", 
                     icon_url=avatar_url,
                     url=lastfm_profile_url
                 )

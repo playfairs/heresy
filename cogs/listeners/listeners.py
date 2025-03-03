@@ -169,6 +169,7 @@ class Listeners(Cog):
 
 #        if mentioned_user:
 #            await message.channel.send(f'{mentioned_user.mention}, {message.author.mention} mentioned your name.')
+
     @Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
         if before.name != after.name:
@@ -178,7 +179,6 @@ class Listeners(Cog):
             embed = discord.Embed(
                 title=f"{before.name} has been dropped",
                 description=f"Username **{before.name}** will be available in 14 days.",
-                timestamp=datetime.now(),
                 color=discord.Color.blurple()
             )
             await channel.send(embed=embed)

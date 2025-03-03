@@ -372,4 +372,3 @@ class Config(Cog):
         if changes:
             embed.add_field(name="**Changes**", value="\n".join(changes), inline=False)
             await self.send_log(after.id, embed)
-

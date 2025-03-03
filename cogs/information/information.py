@@ -46,7 +46,7 @@ class Information(Cog):
     @app_commands.choices(
         option=[
             app_commands.Choice(name="Playfair", value="playfair"),
-            app_commands.Choice(name="heresy", value="heresy"),
+            app_commands.Choice(name="Heresy", value="heresy"),
         ]
     )
     async def about(self, interaction: discord.Interaction, option: app_commands.Choice[str]):
@@ -64,14 +64,14 @@ class Information(Cog):
 
         elif option_value == 'heresy':
             embed = discord.Embed(
-                title="About heresy",
-                description="An all-in-one Discord Bot meant to enhance your Discord Server. Developed and Maintained by <@785042666475225109>.",
+                title="About Heresy",
+                description="An all-in-one Discord Bot meant to enhance your Discord Server. Developed and Maintained by Playfair.",
                 color=discord.Color.green()
             )
-            embed.add_field(name="Developer", value="<@785042666475225109>", inline=False)
-            embed.add_field(name="Description", value="heresy, originally heresy, is a all-in-one Discord Bot created by <@785042666475225109>, built for versatility", inline=False)
+            embed.add_field(name="Developer", value="Playfair", inline=False)
+            embed.add_field(name="Description", value="heresy, originally heresy, is a all-in-one Discord Bot created by Playfair, built for versatility", inline=False)
             embed.add_field(name="Useful Links", value="[Server](https://discord.gg/heresy) | [Website](https://playfairs.cc) | [Invite](https://discord.com/oauth2/authorize?client_id=1284037026672279635&permissions=8&integration_type=0&scope=bot)", inline=False)
-            embed.set_footer(text="For more information, DM @playfairs, or check ,help for more info.")
+            embed.set_footer(text="For more information, DM Playfair, or check ,help for more info.")
 
         await interaction.response.send_message(embed=embed)
 
