@@ -9,6 +9,7 @@ from discord.ext import tasks, commands
 from discord.ext.commands import group, has_permissions
 import os
 import numpy as np
+import uwuipy
 
 YOUTUBE_API_KEY = "key"
 

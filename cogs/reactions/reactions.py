@@ -142,6 +142,9 @@ class Reactions(Cog):
                 "which one is it you fucking nigger",
                 "make up ur mind u albino faggot",
                 "u albino faggot is it yes or no"
+            ],
+            "oh yea": [
+                "https://tenor.com/view/oh-yeah-oh-yeah-gif-oh-yeah-meme-kool-aid-kool-aid-man-gif-18211119326397565445"
             ]
         }
 

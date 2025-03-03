@@ -5,7 +5,7 @@ import asyncio
 import discord
 import requests
 from discord.ext import commands
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, Context, command, has_permissions
 import json
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
@@ -27,7 +27,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 MERRIAM_WEBSTER_API_KEY = (
     os.getenv("MERRIAM_WEBSTER_API_KEY") or "32b24f5f-8518-4520-9225-b6ce2d9f728a"
 )
-
+CREATE_TABLE_UWULOCK = """CREATE TABLE IF NOT EXISTS uwulock (
+    user_id BIGINT,
+    guild_id BIGINT
+)"""
 
 class Fun(Cog):
     def __init__(self, bot: commands.Bot):
@@ -250,75 +253,6 @@ class Fun(Cog):
                 text = text.replace(old, new)
 
             return text + " uwu"
-
-    @commands.group(name="uwu", invoke_without_command=True)
-    async def uwu_group(self, ctx, *, text: str = None):
-        """UwU command group"""
-        if ctx.author.id != self.owner_id:
-            await ctx.send("Only the bot owner can use this command.")
-            return
-
-        if not text:
-            embed = discord.Embed(
-                title="Language Translation Commands",
-                description=(
-                    "**Available Subcommands:**\n"
-                    "- `uwulock <user> [language]`: Lock a user's messages\n"
-                    "- `uwureset [user]`: Reset translation locks\n\n"
-                    "**Available Languages:**\n"
-                    "- lolcat\n- uwu\n- pirate"
-                ),
-                color=discord.Color.blue(),
-            )
-            await ctx.send(embed=embed)
-            return
-
-        translated = self.translate_text(text, "uwu")
-        await ctx.send(translated)
-
-    @commands.command(name="uwulock")
-    async def uwu_lock(self, ctx, member: discord.Member, language: str = "lolcat"):
-        """Lock a user's messages and translate them"""
-        if ctx.author.id != self.owner_id:
-            await ctx.send("Only the bot owner can use this command.")
-            return
-
-        valid_languages = ["lolcat", "pirate", "shakespeare", "chef"]
-        if language.lower() not in valid_languages:
-            await ctx.send(
-                f"Invalid language. Choose from: {', '.join(valid_languages)}"
-            )
-            return
-
-        if not hasattr(self.bot, "uwu_locks"):
-            self.bot.uwu_locks = {}
-
-        self.bot.uwu_locks[member.id] = {
-            "language": language.lower(),
-            "channel_id": ctx.channel.id,
-        }
-        await ctx.send(f"Locked {member.mention}'s messages in {language} mode.")
-
-    @commands.command(name="uwureset")
-    async def uwu_reset(self, ctx, member: discord.Member = None):
-        """Reset translation lock for a user or all users"""
-        if ctx.author.id != self.owner_id:
-            await ctx.send("Only the bot owner can use this command.")
-            return
-
-        if not member:
-            if hasattr(self.bot, "uwu_locks"):
-                self.bot.uwu_locks.clear()
-            await ctx.send("All translation locks have been reset!")
-            return
-
-        if hasattr(self.bot, "uwu_locks") and member.id in self.bot.uwu_locks:
-            del self.bot.uwu_locks[member.id]
-            await ctx.send(f"Translation lock for {member.mention} has been reset!")
-        else:
-            await ctx.send(
-                f"{member.mention} does not have an active translation lock."
-            )
 
     @commands.command(name="f")
     async def flip_table(self, ctx):
@@ -921,3 +855,43 @@ class Fun(Cog):
         embed = discord.Embed()
         embed.set_image(url="https://media1.tenor.com/m/FKtdcMXKBhsAAAAd/yippee-happy.gif")
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def uwulock(self, ctx: Context, *, member: discord.Member):
+
+        record = await self.bot.db.fetchrow(
+            """
+            SELECT user_id FROM uwulock 
+            WHERE user_id = $1 
+            AND guild_id = $2
+            """,
+            member.id, 
+            ctx.guild.id
+        )
+
+        if record is None:
+            
+            await self.bot.db.execute(
+                """
+                INSERT INTO uwulock 
+                VALUES ($1,$2)
+                """, 
+                ctx.guild.id, 
+                member.id
+            )
+
+            return await ctx.send("Uwulocked")
+
+        else:
+            await self.bot.db.execute(
+                """
+                DELETE FROM uwulock 
+                WHERE user_id = $1
+                AND guild_id = $2
+                """,
+                member.id, 
+                ctx.guild.id
+            )
+
+        return await ctx.send("Unuwulocked")

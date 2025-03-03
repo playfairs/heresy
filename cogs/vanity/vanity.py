@@ -156,7 +156,7 @@ class Vanity(Cog):
                 server_config = config.get("servers", {}).get(guild_id, {})
                 vanity = server_config.get("vanity", "/vanity")
                 
-                await message.channel.send(f"rep `{vanity}` 4 pic perms")
+                await message.channel.send(f"rep `{vanity}` 4 pic perms ||and maybe some spicy pics >_<||")
             except Exception as e:
                 print(f"Error getting vanity for guild {guild_id}: {e}")
 
