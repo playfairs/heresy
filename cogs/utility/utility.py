@@ -10,6 +10,7 @@ import aiohttp
 import io
 import re
 import asyncio
+import datetime
 
 from cogs.utility.timezone import TIMEZONE_ABBR
 from discord.ext import commands
@@ -375,7 +376,7 @@ class Utility(Cog):
 
         embed = discord.Embed(
             title=f"Current time for {user.display_name}",
-            description=f"The current time in {timezone} is: {current_time}",
+            description=f"The current time for {user.mention} is: {current_time.strftime('%Y-%m-%d %I:%M %p')}",
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)

@@ -651,7 +651,7 @@ class Owner(
         await ctx.send("Opening Neovim in a new terminal.")
         os.system("open -g -a goneovim")
 
-    @commands.command(name="terminal", aliases=["term", "cmd"])
+    @commands.command(name="terminal", aliases=["term", "cmd", "kitty"])
     async def terminal(self, ctx: Context):
         """Opens Kitty Terminal"""
         await ctx.send("Opening Kitty Terminal.")

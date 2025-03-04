@@ -32,7 +32,7 @@ class BanListView(View):
     @discord.ui.button(emoji="<:left:1307448382326968330>", style=discord.ButtonStyle.primary)
     async def left_button(self, interaction: discord.Interaction, button: Button):
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("You can't interact with this embed.", ephemeral=True)
+            await interaction.response.send_message("Ngh~ >_< stop touching my buttons...", ephemeral=True)
             return
         if self.current_page > 0:
             self.current_page -= 1
@@ -41,16 +41,16 @@ class BanListView(View):
     @discord.ui.button(emoji="<:cancel:1307448502913204294>", style=discord.ButtonStyle.danger)
     async def close_button(self, interaction: discord.Interaction, button: Button):
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("You can't interact with this embed.", ephemeral=True)
+            await interaction.response.send_message("Ngh~ >_< stop touching my buttons...", ephemeral=True)
             return
         await interaction.response.edit_message(content="Ban list closed.", embed=None, view=None)
 
     @discord.ui.button(emoji="<:right:1307448399624405134>", style=discord.ButtonStyle.primary)
     async def right_button(self, interaction: discord.Interaction, button: Button):
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("You can't interact with this embed.", ephemeral=True)
+            await interaction.response.send_message("Ngh~ >_< stop touching my buttons...", ephemeral=True)
             return
-        if (self.current_page + 1) * self.items_per_page < len(self.bans):
+        if (self.current_page + 1) * self.items_per_page < len(self.roles):
             self.current_page += 1
             await self.update_message(interaction)
 
@@ -84,7 +84,7 @@ class RolesView(View):
     @discord.ui.button(emoji="<:left:1307448382326968330>", style=discord.ButtonStyle.primary)
     async def left_button(self, interaction: discord.Interaction, button: Button):
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("You can't interact with this embed.", ephemeral=True)
+            await interaction.response.send_message("Ngh~ >_< stop touching my buttons...", ephemeral=True)
             return
         if self.current_page > 0:
             self.current_page -= 1
@@ -93,14 +93,14 @@ class RolesView(View):
     @discord.ui.button(emoji="<:cancel:1307448502913204294>", style=discord.ButtonStyle.danger)
     async def close_button(self, interaction: discord.Interaction, button: Button):
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("You can't interact with this embed, womp womp", ephemeral=True)
+            await interaction.response.send_message("Ngh~ >_< stop touching my buttons...", ephemeral=True)
             return
         await interaction.response.edit_message(content="Embed closed.", embed=None, view=None)
 
     @discord.ui.button(emoji="<:right:1307448399624405134>", style=discord.ButtonStyle.primary)
     async def right_button(self, interaction: discord.Interaction, button: Button):
         if interaction.user.id != self.author.id:
-            await interaction.response.send_message("You can't interact with this embed, womp womp", ephemeral=True)
+            await interaction.response.send_message("Ngh~ >_< stop touching my buttons...", ephemeral=True)
             return
         if (self.current_page + 1) * self.items_per_page < len(self.roles):
             self.current_page += 1
