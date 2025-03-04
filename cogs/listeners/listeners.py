@@ -37,7 +37,7 @@ class Listeners(Cog):
                 description=(
                     "Hello! Thank you for inviting Heresy to your server.\n"
                     "To see all available commands, use `,h`.\n\n"
-                    "If you have any questions, join the [Support Server](https://discord.com/invite/heresy) for more info on Heresy."
+                    "If you have any questions, join the [Discord Server](https://discord.gg/heresy) for more info on Heresy."
                 ),
                 color=discord.Color(0xFFFFFF)
             )
@@ -49,7 +49,7 @@ class Listeners(Cog):
             "**[website](https://playfairs.cc/heresy)**  ",
             inline=False,
         )
-        embed.set_footer(text="I'm in your fucking walls.")
+        embed.set_footer(text="Please note that Heresy is still in developement, and may have some minor issues, or lack commands.")
         try:
             await inviter.send(embed=embed)
         except Exception as e:
@@ -61,16 +61,21 @@ class Listeners(Cog):
             invite_link = invite.url
         except Exception as e:
             print(f"Could not create invite for {guild.name}: {e}")
-
-        owner_dm_content = (
-            f"Hello <@785042666475225109>, I was added to `{guild.name}` by "
-            f"{inviter.mention if inviter else 'an unauthorized user'}.\n\n"
-            f"If you did not authorize this action, feel free to revoke access.\n\n"
-            f"**Invite link**: {invite_link}"
+        embed = discord.Embed(
+            title="New Guild.",
+            description=f"I was added to `{guild.name}` by "
+            f"{inviter.mention if inviter else 'an unauthorized user'}.",
+            color=discord.Color(0xFFFFFF)
+        )
+        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
+        embed.add_field(
+            name="Invite Link",
+            value=invite_link,
+            inline=False
         )
         try:
             owner_user = await self.bot.fetch_user(self.owner_id)
-            await owner_user.send(owner_dm_content)
+            await owner_user.send(embed=embed)
         except Exception as e:
             print(f"Could not DM owner: {e}")
 
