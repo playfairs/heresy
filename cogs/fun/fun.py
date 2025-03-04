@@ -856,6 +856,20 @@ class Fun(Cog):
         embed.set_image(url="https://media1.tenor.com/m/FKtdcMXKBhsAAAAd/yippee-happy.gif")
         await ctx.send(embed=embed)
 
+    @e.command(name="nova")
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def _nova(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/nova.png")
+        await ctx.send(embed=embed)
+
+    @e.command(name="nochra")
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def _nochra(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/nochra.png")
+        await ctx.send(embed=embed)
+
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def uwulock(self, ctx: Context, *, member: discord.Member):
