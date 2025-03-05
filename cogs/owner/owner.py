@@ -19,6 +19,12 @@ import string
 import json
 import time
 
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.options import Options
+from io import BytesIO
+
 class Owner(
     Cog,
     command_attrs=dict(hidden=True)
@@ -349,51 +355,6 @@ class Owner(
         embed = discord.Embed(title="Root Info", description=access_info, color=0x000000)
         await ctx.send(embed=embed)
 
-    @commands.command(name='ss')
-    @commands.is_owner()
-    async def ss(self, ctx, url: str, delay: int = 0):  
-        """Takes a screenshot of the provided URL with an optional delay."""
-        try:
-            if not (shutil.which('firefox') or shutil.which('brave')):
-                await ctx.send("Neither Firefox nor Brave is installed. Please install one of them to use this command.")
-                return
-
-            screenshot_path = os.path.join(os.getcwd(), f"screenshot_{url.split('//')[-1].replace('/', '_')}.png")
-
-            from selenium import webdriver
-            from selenium.webdriver.firefox.service import Service
-            from webdriver_manager.firefox import GeckoDriverManager
-            from selenium.webdriver.chrome.service import Service as ChromeService
-            from webdriver_manager.chrome import ChromeDriverManager
-            from selenium.webdriver.chrome.options import Options
-            from selenium.webdriver.firefox.options import Options as FirefoxOptions
-
-            if shutil.which('firefox'):
-                options = FirefoxOptions()
-                options.add_argument('--headless')
-                driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
-            else:
-                options = Options()
-                options.add_argument('--headless')
-                driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-
-            driver.get(url)
-
-            await asyncio.sleep(delay)
-
-            driver.save_screenshot(screenshot_path)
-            driver.quit()
-
-            with open(screenshot_path, "rb") as ss_file:
-                await ctx.send(
-                    file=discord.File(ss_file, filename="screenshot.png"),
-                )
-
-            os.remove(screenshot_path)
-
-        except Exception as e:
-            await ctx.send(f"An error occurred: {str(e)}")
-
     @Cog.listener()
     async def on_ready(self):
         rpc_setting = getattr(self.bot, 'stored_rpc', None)
@@ -687,3 +648,22 @@ class Owner(
             return
         await ctx.send(f"Sending direct message to {user}.")
         await user.send(message)
+        await ctx.message.delete()
+
+    @commands.command(name="screenshot", aliases=["ss"])
+    async def screenshot(self, ctx: commands.Context, *, url: str):
+        """Takes a screenshot of the specified URL and sends it."""
+        options = Options()
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+
+        driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
+        driver.set_window_size(1920, 1080)
+
+        driver.get(url)
+        screenshot = driver.get_screenshot_as_png()
+        driver.quit()
+
+        file = discord.File(BytesIO(screenshot), filename="screenshot.png")
+        await ctx.send(file=file)
