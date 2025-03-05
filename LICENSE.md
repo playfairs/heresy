@@ -1,3 +1,5 @@
-#### Copyright © [2025] [Playfairs]. All rights reserved.
+## Copyright [2025] [Playfairs]. All rights reserved.
 
-###### Permission is not granted to use, copy, modify, distribute, or sell this software or its source code without explicit permission from the copyright holder.
+This software is provided "as-is," without any express or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
+
+Permission is explicitly denied to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this software or its source code.
