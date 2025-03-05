@@ -662,3 +662,9 @@ class Owner(
         """Opens the specified application."""
         await ctx.send(f"Opening {app}.")
         os.system(f"open -g -a {app}")
+
+    @commands.command(name="ball")
+    async def ball(self, ctx: Context):
+        """Opens the Ball application."""
+        await ctx.send(f"Opening Ball.")
+        os.system(f"open -g -a Ball")

@@ -991,7 +991,7 @@ class LastFM(commands.Cog):
             """, user_id, emoji)
             self.custom_commands[user_id] = emoji
 
-    @commands.command(name="np", aliases=["nowplaying", "fm"])
+    @commands.command(name="np", aliases=["nowplaying", "fm", "mf"])
     async def now_playing(self, ctx, user: Optional[discord.Member] = None):
         """Show currently playing track"""
         async with ctx.typing():
@@ -1042,7 +1042,7 @@ class LastFM(commands.Cog):
                 total_scrobbles = int(user_info.get("user", {}).get("playcount", 0))
 
                 description = [
-                    f"[{song}]({track_url})",
+                    f"**[{song}]({track_url})**",
                     f"{artist} · {album}" if album else artist
                 ]
 
@@ -1060,7 +1060,7 @@ class LastFM(commands.Cog):
                 )
 
                 embed.set_author(
-                    name=f"Now playing - {ctx.author.display_name}", 
+                    name=f"Now playing - {ctx.author.display_name}",
                     icon_url=avatar_url,
                     url=lastfm_profile_url
                 )

@@ -58,7 +58,8 @@ class HerseyHelp(MinimalHelpCommand):
     def create_main_help_embed(self, ctx):
 
         embed = Embed(
-            description="**information**\n> [ ] = optional, < > = required\n",
+            description="**information**\n> [ ] = optional, < > = required\n"
+            "> Type `,h {command}` for more information about a command.\n"
         )
 
         embed.add_field(

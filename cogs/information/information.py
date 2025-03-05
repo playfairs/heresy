@@ -356,6 +356,8 @@ class Information(Cog):
 
         server_description = guild.description or "No server description set"
         creation_time = guild.created_at.strftime("%B %d, %Y %I:%M %p")
+        emojis = len(guild.emojis)
+        stickers = len(guild.stickers)
 
         now = datetime.now(timezone.utc)
         created_at = guild.created_at
@@ -367,8 +369,9 @@ class Information(Cog):
 
         embed = discord.Embed(
             title=f"{guild.name}",
-            description=server_description,
-            color=discord.Color(0xf8c9ff)
+            description=f"{server_description}\n\n"
+                        f"**Created:** {creation_time}",
+            color=discord.Color(0xffffff)
         )
 
         if server_icon_url:
@@ -376,28 +379,30 @@ class Information(Cog):
 
         embed.add_field(
             name="**Server**",
-            value=(f"> Owner: {owner.mention}\n"
-                  f"> Verification: {verification_level}\n"
-                  f"> Boosts: {boosts}\n"
-                  f"> Vanity: {vanity_url}"),
+            value=(f"> **Owner**: {owner.mention}\n"
+                  f"> **Verification**: {verification_level}\n"
+                  f"> **Boosts**: {boosts}\n"
+                  f"> **Level**: {guild.premium_tier}\n"
+                  f"> **Vanity**: {vanity_url}"),
             inline=True
         )
 
         embed.add_field(
             name="**Members**",
-            value=(f"> Total: {total_members:,}\n"
-                  f"> Humans: {humans:,}\n"
-                  f"> Bots: {bots:,}\n"
-                  f"> Admins: {admins:,}"),
+            value=(f"> **Total**: {total_members:,}\n"
+                  f"> **Humans**: {humans:,}\n"
+                  f"> **Bots**: {bots:,}\n"
+                  f"> **Admins**: {admins:,}"),
             inline=True
         )
 
         embed.add_field(
             name="**Structure**",
-            value=(f"> Channels: {text_channels:,}\n"
-                  f"> Voice: {voice_channels:,}\n"
-                  f"> Categories: {categories:,}\n"
-                  f"> Roles: {roles:,}"),
+            value=(f"> **Channels**: {text_channels:,}\n"
+                  f"> **Voice**: {voice_channels:,}\n"
+                  f"> **Categories**: {categories:,}\n"
+                  f"> **Roles**: {roles:,}\n"
+                  f"> **Emotes**: {emojis + stickers}"),
             inline=True
         )
 
@@ -405,7 +410,6 @@ class Information(Cog):
         embed.set_footer(text=f"Guild ID: {guild.id} | Today at {current_time}")
 
         await ctx.send(embed=embed)
-
 
     @commands.command(name="mc")
     @commands.cooldown(1, 3, commands.BucketType.user)
