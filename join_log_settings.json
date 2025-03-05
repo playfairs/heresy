@@ -31,7 +31,7 @@
     },
     "1271976967381712989": {
         "channel_id": 1333059678137221210,
-        "welcome_message": "hi {user.mention}",
+        "welcome_message": "hi {user.mention}, welcome to Unix Community, server is still semi new, so please try to be patient with activity! Also boost and invite your friends if you can!",
         "leave_message": "bye {user.mention}"
     },
     "1335978165385953292": {

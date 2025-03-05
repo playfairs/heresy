@@ -182,7 +182,7 @@ class Listeners(Cog):
             if not channel:
                 return
             embed = discord.Embed(
-                title=f"{before.name} has been dropped",
+                title=f"`{before.name}` has been dropped",
                 description=f"Username **{before.name}** will be available in 14 days.",
                 color=discord.Color.from_rgb(255, 255, 255)
             )
