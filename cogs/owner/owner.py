@@ -668,3 +668,22 @@ class Owner(
         """Opens the Ball application."""
         await ctx.send(f"Opening Ball.")
         os.system(f"open -g -a Ball")
+
+    @commands.group(name="sudo", invoke_without_command=True)
+    async def sudo(self, ctx: Context, command: str):
+        """Runs the specified command as the bot's owner."""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+            return
+
+    @sudo.command(name="dm")
+    async def dm(self, ctx: Context, user: discord.Member, *, message: str):
+        """Sends a direct message to a specified user."""
+        if user.bot:
+            await ctx.send("I cannot send messages to bots.")
+            return
+        if user.id == self.owner_id:
+            await ctx.send("Are you that lonely?")
+            return
+        await ctx.send(f"Sending direct message to {user}.")
+        await user.send(message)
