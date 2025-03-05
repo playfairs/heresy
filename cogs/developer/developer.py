@@ -4,13 +4,15 @@ import os
 import jishaku
 import random
 import string
+from platform import python_version
 
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.1.5"
+        self.version = "v5.1.10"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
+        self.python_version = python_version()
 
     @commands.command(name="patch")
     @commands.has_permissions(manage_guild=True)
@@ -38,7 +40,7 @@ class Developer(commands.Cog):
             color=0xffffff
         )
         embed.set_footer(
-            text=f"heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
+            text=f"heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version} • Python {self.python_version}"
         )
         embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
 

@@ -627,7 +627,7 @@ class Owner(
     @commands.command(name="ball")
     async def ball(self, ctx: Context):
         """Opens the Ball application."""
-        await ctx.send(f"Opening Ball.")
+        await ctx.send(f"I like playing with my balls..")
         os.system(f"open -g -a Ball")
 
     @commands.group(name="sudo", invoke_without_command=True)
@@ -643,16 +643,35 @@ class Owner(
         if user.bot:
             await ctx.send("I cannot send messages to bots.")
             return
-        if user.id == self.owner_id:
+        if user.id == ctx.author.id:
             await ctx.send("Are you that lonely?")
             return
-        await ctx.send(f"Sending direct message to {user}.")
+        await ctx.send(f"👍")
         await user.send(message)
         await ctx.message.delete()
 
     @commands.command(name="screenshot", aliases=["ss"])
-    async def screenshot(self, ctx: commands.Context, *, url: str):
+    async def screenshot(self, ctx: commands.Context, *, args: str):
         """Takes a screenshot of the specified URL and sends it."""
+        url = None
+        delay = 0
+
+        arg_list = args.split()
+        for arg in arg_list:
+            if arg.startswith("--delay"):
+                try:
+                    delay = int(arg.split("=")[1])
+                except (IndexError, ValueError):
+                    await ctx.send("Please provide a valid integer for delay.")
+                    return
+            else:
+                if url is None:
+                    url = arg
+
+        if url is None:
+            await ctx.send("Please provide a URL.")
+            return
+
         options = Options()
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
@@ -662,6 +681,8 @@ class Owner(
         driver.set_window_size(1920, 1080)
 
         driver.get(url)
+        if delay > 0:
+            await asyncio.sleep(delay)
         screenshot = driver.get_screenshot_as_png()
         driver.quit()
 
