@@ -7,6 +7,7 @@ import json
 import traceback
 from datetime import datetime, timedelta
 from typing import Optional, Union
+import difflib
 
 from discord.ext import commands, tasks
 from discord.ext.commands import command, group, has_permissions, Context, Cog
@@ -798,15 +799,13 @@ class Moderation(commands.Cog):
         if sniped_edit:
             before, after = sniped_edit
             embed = discord.Embed(
-                title=f"Edited message from {before.author}",
-                color=discord.Color.orange()
+                title=f"Edited message by {before.author}",
+                description=f"**Before:**\n```-{before.content}```\n\n**After:**\n```+{after.content}```"
             )
-            embed.add_field(name="Before", value=before.content, inline=False)
-            embed.add_field(name="After", value=after.content, inline=False)
-            embed.set_footer(text=f"Sniped by {ctx.author}", icon_url=ctx.author.avatar.url)
+            embed.set_footer(text=f"Original message ID: {before.id}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
         else:
-            await ctx.send("There's no recently edited message to snipe.")
+            await ctx.send("No edited messages found in the past 2 hours!")
 
     @command(name="cs")
     @has_permissions(manage_messages=True)

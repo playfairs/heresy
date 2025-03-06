@@ -365,9 +365,9 @@ class Owner(
                 name=rpc_setting,
                 url="https://twitch.tv/creepfully"
             )
-            await self.bot.change_presence(activity=activity, status=discord.Status.invisible)
+            await self.bot.change_presence(activity=activity, status=discord.Status.dnd)
         else:
-            await self.bot.change_presence(activity=None, status=discord.Status.invisible)
+            await self.bot.change_presence(activity=None, status=discord.Status.dnd)
 
     @commands.command(name='pingrandom')
     async def pingrandom(self, ctx):
