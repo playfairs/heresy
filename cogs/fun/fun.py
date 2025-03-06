@@ -870,6 +870,13 @@ class Fun(Cog):
         embed.set_image(url="https://playfairs.cc/nochra.png")
         await ctx.send(embed=embed)
 
+    @e.command(name="rape")
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def _rape(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://media.discordapp.net/attachments/1221242977830043668/1224110120020082830/caption.gif?ex=67c96ca3&is=67c81b23&hm=8ce660c0acb2187c044b620819508c914a7053e4553c742a769a52c5c70e830c&size=1000x1000&hl=en&fr=t2w")
+        await ctx.send(embed=embed)
+
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def uwulock(self, ctx: Context, *, member: discord.Member):
