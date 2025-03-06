@@ -33,7 +33,7 @@ class AppleMusic(
         with open(self.db_path, 'w') as f:
             json.dump(self.user_tracking, f, indent=4)
 
-    @commands.group(name="applemusic", aliases=["am"])
+    @commands.group(name="applemusic")
     async def apple_music_group(self, ctx):
         """Apple Music tracking commands."""
         if ctx.invoked_subcommand is None:

@@ -6,7 +6,7 @@ from main import heresy
 from discord.ext.commands import has_permissions
 
 
-class Misc(Cog):
+class Misc(Cog, description="View commands in Misc."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.reports_dir = './Reports'

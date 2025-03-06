@@ -171,7 +171,7 @@ class WhoKnowsPaginator(View):
             item.disabled = True
         await self.message.edit(view=self)
 
-class LastFM(commands.Cog):
+class LastFM(commands.Cog, description="View commands in LastFM."):
     def __init__(self, bot):
         self.bot = bot
         self.api_key = "15ee566c9ee0781f498674b14c17dc7e"

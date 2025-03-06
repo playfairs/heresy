@@ -13,7 +13,7 @@ import uwuipy
 
 YOUTUBE_API_KEY = "key"
 
-class VoiceMaster(commands.Cog):
+class VoiceMaster(commands.Cog, description="View commands in VoiceMaster."):
     def __init__(self, bot):
         self.bot = bot
         self.no_context = {}

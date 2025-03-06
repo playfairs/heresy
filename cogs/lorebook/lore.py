@@ -37,7 +37,7 @@ class LoreView(discord.ui.View):
             self.current_page += 1
             await interaction.response.edit_message(embed=self.get_embed())
 
-class Lore(commands.Cog):
+class Lore(commands.Cog, description="View commands in Lore."):
     def __init__(self, bot):
         self.bot = bot
         self.lorebooks_dir = "Lorebooks"

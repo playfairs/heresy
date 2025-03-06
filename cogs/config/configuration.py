@@ -8,7 +8,7 @@ from discord import app_commands
 
 from main import heresy
 
-class Config(Cog):
+class Config(Cog, description="View commands in Config."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.join_log_file = 'join_log_settings.json'

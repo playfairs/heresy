@@ -17,7 +17,7 @@ import time
 import random
 
 
-class Information(Cog):
+class Information(Cog, description="View commands in Information."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.developer_id = 785042666475225109
@@ -627,19 +627,19 @@ class Information(Cog):
 
         embed.add_field(
             name="**Basic**",
-            value=f"**Users**: `{total_members:,}`\n**Servers**: `{total_guilds:,}`\n**Created**: `{bot.user.created_at.strftime('%B %d, %Y')}`",
+            value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`",
             inline=True
         )
 
         embed.add_field(
             name="**Runtime**",
-            value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
+            value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{f'{days}d ' if days > 0 else ''}{f'{hours}h ' if hours > 0 else ''}{f'{minutes}m ' if minutes > 0 else ''}{seconds}s`",
             inline=True
         )
 
         embed.add_field(
             name="**Code**",
-            value=f"**Files**: `{total_files}`\n**Lines**: `{total_lines:,}`\n**Functions**: `{total_functions}`\n**Library**: `discord.py {discord.__version__}`",
+            value=f"**Files**: `{total_files}`\n**Lines**: `{total_lines:,}`\n**Functions**: `{total_functions}`\n**Library**: `d.py {discord.__version__}`",
             inline=True
         )
 

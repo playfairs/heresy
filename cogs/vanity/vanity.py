@@ -8,7 +8,7 @@ from discord.ext.commands import Cog, Bot, group, has_permissions
 
 CONFIG_FILE = "config.json"
 
-class Vanity(Cog):
+class Vanity(Cog, description="View commands in Vanity."):
     def __init__(self, bot):
         self.bot = bot
         self.config = self.load_config()

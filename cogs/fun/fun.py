@@ -32,7 +32,7 @@ CREATE_TABLE_UWULOCK = """CREATE TABLE IF NOT EXISTS uwulock (
     guild_id BIGINT
 )"""
 
-class Fun(Cog):
+class Fun(Cog, description="View commands in Fun."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.owner_id = 785042666475225109

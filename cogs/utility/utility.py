@@ -33,7 +33,7 @@ def save_timezones(timezones):
     with open(DB_FILE, 'w') as f:
         json.dump(timezones, f, indent=4)
 
-class Utility(Cog):
+class Utility(Cog, description="View commands in Utility."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.default_language = "en"

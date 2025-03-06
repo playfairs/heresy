@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 from main import heresy
 
-class Reactions(Cog):
+class Reactions(Cog, description="View commands in Reactions."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.custom_reactions = {}

@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 from main import heresy
 import os
 
-class Listeners(Cog):
+class Listeners(Cog, description="View commands in Listeners."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.blacklisted_guilds = set()
