@@ -33,3 +33,4 @@ numpy
 psycopg2
 selenium
 webdriver-manager
+redis
