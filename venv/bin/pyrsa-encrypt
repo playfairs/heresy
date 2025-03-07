@@ -1,4 +1,4 @@
-#!/Users/playfair/Downloads/hersey-main/venv/bin/python3
+#!/home/user/dev/heresy/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

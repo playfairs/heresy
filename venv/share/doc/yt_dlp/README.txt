@@ -1,7 +1,7 @@
 [YT-DLP]
 
-[Release version] [PyPI] [Donate] [Matrix] [Discord] [Supported Sites]
-[License: Unlicense] [CI Status] [Commits] [Last Commit]
+[Release version] [PyPI] [Donate] [Discord] [Supported Sites] [License:
+Unlicense] [CI Status] [Commits] [Last Commit]
 
 yt-dlp is a feature-rich command-line audio/video downloader with
 support for thousands of sites. The project is a fork of youtube-dl
@@ -1854,7 +1854,8 @@ The available fields are:
 -   hasvid: Gives priority to formats that have a video stream
 -   hasaud: Gives priority to formats that have an audio stream
 -   ie_pref: The format preference
--   lang: The language preference
+-   lang: The language preference as determined by the extractor (e.g.
+    original language preferred over audio description)
 -   quality: The quality of the format
 -   source: The preference of the source
 -   proto: Protocol used for download (https/ftps > http/ftp >
