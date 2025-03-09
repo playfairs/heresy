@@ -21,8 +21,8 @@
     },
     "771149344170180628": {
         "channel_id": 1298870907091157033,
-        "leave_message": "bye",
-        "welcome_message": "hi"
+        "leave_message": "bye {user.mention}",
+        "welcome_message": "hi {user.mention}"
     },
     "1315432208835809310": {
         "channel_id": 1315554324595871754,

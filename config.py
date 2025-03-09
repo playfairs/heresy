@@ -15,7 +15,6 @@ class DISCORD:
         1342432632444813345
     ]
     VERSION: str = "5.1.10"
-    DISCORD_VERSION: str = discord.__version__
     VANITY_TOKEN: str = "MTI5NjIwNzM1NTk0MzQ1Mjc2NA.G4WbwX.SqBBKn0vCqLBXekufXFljmR8UvOTxqWnmL6XUc"
 
 class VANITY:
