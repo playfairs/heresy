@@ -916,3 +916,15 @@ class Fun(Cog, description="View commands in Fun."):
             )
 
         return await ctx.send("Unuwulocked")
+
+class Porn(Cog, description="View commands in Porn."):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @commands.command(name="porn", description="Get some porn.")
+    async def _porn(self, ctx: Context):
+        embed = discord.Embed(
+            color=discord.Color(0xffffff)
+        )
+        embed.description = "||[You horny little shit](https://www.youtube.com/watch?v=dQw4w9WgXcQ)||"
+        await ctx.send(embed=embed)

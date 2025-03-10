@@ -87,16 +87,18 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
         try:
             if role in member.roles:
                 await member.remove_roles(role, reason=f"Role removed by {ctx.author}")
-                embed = discord.Embed(description=f"Removed {role.mention} from {member.mention}.", color=0xADD8E6)
+                embed = discord.Embed(description=f"<:check:1301903971535028314>  Removed {role.mention} from {member.mention}.", color=0xADD8E6)
                 await ctx.send(embed=embed)
             else:
                 await member.add_roles(role, reason=f"Role added by {ctx.author}")
-                embed = discord.Embed(description=f"Gave {role.mention} to {member.mention}.", color=0xADD8E6)
+                embed = discord.Embed(description=f"<:check:1301903971535028314>  Gave {role.mention} to {member.mention}.", color=0xADD8E6)
                 await ctx.send(embed=embed)
         except discord.Forbidden:
-            await ctx.send("I do not have permission to manage this role.")
-        except discord.HTTPException:
-            await ctx.send("An error occurred while managing the role.")
+            embed = discord.Embed(description="I do not have permission to manage this role or member.", color=0xFF0000)
+            await ctx.send(embed=embed)
+        except discord.HTTPException as e:
+            embed = discord.Embed(description=f"A fucky wucky occurred while managing the role: {str(e)}", color=0xFF0000)
+            await ctx.send(embed=embed)
 
     async def send_embed(self, ctx, message: str):
         embed = discord.Embed(description=message, color=0xADD8E6)
@@ -186,7 +188,7 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
         try:
             if role in member.roles:
                 await member.remove_roles(role, reason=f"Role removed by {ctx.author}")
-                embed = discord.Embed(description=f"🔴 Role {role.mention} has been removed from {member.mention}", color=0x000000)
+                embed = discord.Embed(description=f"<:check:1301903971535028314>  Role {role.mention} has been removed from {member.mention}", color=0x000000)
                 await ctx.send(embed=embed)
             else:
                 await member.add_roles(role, reason=f"Role added by {ctx.author}")
@@ -780,12 +782,14 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
 
         embed = discord.Embed(
             title=f"Message sniped from {sniped_message.author}",
-            description=sniped_message.content,
             color=discord.Color.green()
         )
 
-        if sniped_message.attachments:
+        if sniped_message.attachments and sniped_message.attachments[0].url.endswith(".gif"):
+            embed.description = ""
             embed.set_image(url=sniped_message.attachments[0].url)
+        else:
+            embed.description = sniped_message.content
 
         embed.set_footer(text=f"Message sniped {number}/{len(sniped_messages)}", icon_url=ctx.author.avatar.url)
         await ctx.send(embed=embed)
@@ -800,7 +804,7 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
             before, after = sniped_edit
             embed = discord.Embed(
                 title=f"Edited message by {before.author}",
-                description=f"**Before:**\n```-{before.content}```\n\n**After:**\n```+{after.content}```"
+                description=f"**Before:**\n```{before.content}```\n\n**After:**\n```{after.content}```"
             )
             embed.set_footer(text=f"Original message ID: {before.id}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
@@ -813,7 +817,7 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
         """Clear the snipe history."""
         if ctx.channel.id in self.sniped_messages:
             self.sniped_messages[ctx.channel.id].clear()
-            await ctx.message.add_reaction("✅")
+            await ctx.message.add_reaction("<:check:1301903971535028314>")
         else:
             await ctx.message.add_reaction("‼️")
 
@@ -823,7 +827,7 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
         """Clear the edit snipe history."""
         if ctx.channel.id in self.edited_messages:
             del self.edited_messages[ctx.channel.id]
-            await ctx.message.add_reaction("✅")
+            await ctx.message.add_reaction("<:check:1301903971535028314>")
         else:
             await ctx.message.add_reaction("‼️")
 

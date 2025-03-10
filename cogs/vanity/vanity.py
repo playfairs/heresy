@@ -112,28 +112,31 @@ class Vanity(Cog, description="View commands in Vanity."):
                     vanity in str(activity.name or "")
                     for activity in member.activities
                 )
-
-                try:
-                    if has_vanity and role not in member.roles:
+                if has_vanity and role not in member.roles:
+                    try:
                         await member.add_roles(role)
                         embed = discord.Embed(
                             title="Vanity Update",
                             description=f"Gave pic perms to {member.mention}, user has `{vanity}` in status.",
-                            color=discord.Color.green(),
+                            color=discord.Color(0xFFFFFF),
                         )
+                        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
                         await log_channel.send(embed=embed)
+                    except Exception as e:
+                        print(f"Error adding role for {member.name}: {e}")
 
-                    elif not has_vanity and role in member.roles:
+                elif not has_vanity and role in member.roles:
+                    try:
                         await member.remove_roles(role)
                         embed = discord.Embed(
                             title="Vanity Update", 
                             description=f"Removed pic perms from {member.mention}, user no longer has `{vanity}` in status.",
-                            color=discord.Color.red(),
+                            color=discord.Color(0xFFFFFF),
                         )
+                        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
                         await log_channel.send(embed=embed)
-
-                except Exception as e:
-                    print(f"Error in vanity status check for {member.name}: {e}")
+                    except Exception as e:
+                        print(f"Error removing role for {member.name}: {e}")
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -156,7 +159,7 @@ class Vanity(Cog, description="View commands in Vanity."):
                 server_config = config.get("servers", {}).get(guild_id, {})
                 vanity = server_config.get("vanity", "/vanity")
                 
-                await message.channel.send(f"rep `{vanity}` 4 pic perms ||and maybe some spicy pics >_<||")
+                await message.channel.send(f"rep `{vanity}` 4 pic perms.")
             except Exception as e:
                 print(f"Error getting vanity for guild {guild_id}: {e}")
 

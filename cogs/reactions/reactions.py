@@ -145,6 +145,9 @@ class Reactions(Cog, description="View commands in Reactions."):
             ],
             "oh yea": [
                 "https://tenor.com/view/oh-yeah-oh-yeah-gif-oh-yeah-meme-kool-aid-kool-aid-man-gif-18211119326397565445"
+            ],
+            "im cold": [
+                "https://playfairs.cc/mommy.png"
             ]
         }
 
