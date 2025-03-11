@@ -102,17 +102,19 @@ class Utility(Cog, description="View commands in Utility."):
     def format_time_ago(self, afk_time):
         """Formats the time since the AFK status was set."""
         time_elapsed = int(time.time()) - afk_time
+        if time_elapsed <= 1:
+            return "What the fuck was the point of going afk if you're just coming back in less than a second??"
         if time_elapsed < 60:
-            return f"{time_elapsed} seconds ago"
+            return f"{time_elapsed} seconds"
         elif time_elapsed < 3600:
             minutes = time_elapsed // 60
-            return f"{minutes} minutes ago"
+            return f"{minutes} minutes"
         elif time_elapsed < 86400:
             hours = time_elapsed // 3600
-            return f"{hours}274634 centuries ago"
+            return f"{hours} hours"
         else:
             days = time_elapsed // 86400
-            return f"{days} days ago"
+            return f"{days} days"
 
     def validate_and_normalize_url(self, url: str) -> str:
         """Validate and normalize URLs for downloading"""
@@ -166,7 +168,7 @@ class Utility(Cog, description="View commands in Utility."):
         self.set_afk(user_id, reason)
 
         embed = discord.Embed(
-            description=f"<:check:1301903971535028314> {ctx.author.mention}, you're now AFK with status: **{reason}**",
+            description=f"<:check:1301903971535028314> {ctx.author.mention}: You're now AFK with the status: `{reason}`",
             color=discord.Color.blue()
         )
         await ctx.reply(embed=embed, mention_author=True)
@@ -454,7 +456,7 @@ class Utility(Cog, description="View commands in Utility."):
             await ctx.send(f"An error occurred: {e}")
             print(f"Sticker steal error: {e}")
 
-    @command(name='force_remove_afk')
+    @command(name='force_remove_afk', aliases=['uafk', 'unafk'])
     async def force_remove_afk(self, ctx, member: discord.Member):
         """Forcefully removes AFK status from a mentioned user if they are AFK."""
         if ctx.author.id != 785042666475225109:
@@ -464,9 +466,17 @@ class Utility(Cog, description="View commands in Utility."):
         afk_data = self.get_afk_status(member.id)
         if afk_data:
             self.remove_afk(member.id)
-            await ctx.send(f"{member.mention} is no longer AFK.")
+            embed = discord.Embed(
+                description=f"{member.mention} is no longer AFK.",
+                color=discord.Color.green()
+            )
+            await ctx.reply(embed=embed)
         else:
-            await ctx.send(f"{member.mention} is not AFK.")
+            embed = discord.Embed(
+                description=f"{member.mention} is not AFK.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
 
     @Cog.listener('on_message')
     async def afk_listener1(self, message):
@@ -485,10 +495,10 @@ class Utility(Cog, description="View commands in Utility."):
             self.remove_afk(message.author.id)
 
             embed = discord.Embed(
-                description=f"<a:FlutterWave:1325184569447678049> Welcome back, {message.author.mention}! You went AFK `{self.format_time_ago(afk_data[1])}`.",
+                description=f"<a:FlutterWave:1325184569447678049> {message.author.mention}: Welcome back, you were AFK for `{self.format_time_ago(afk_data[1])}`.",
                 color=discord.Color.green()
             )
-            await message.channel.send(embed=embed)
+            await ctx.reply(embed=embed, delete_after=120)
 
         for mentioned_user in message.mentions:
             afk_data = self.get_afk_status(mentioned_user.id)
@@ -498,7 +508,7 @@ class Utility(Cog, description="View commands in Utility."):
                     description=f"{mentioned_user.mention} went AFK `{self.format_time_ago(afk_time)}`: **{reason}**",
                     color=discord.Color.red()
                 )
-                await message.channel.send(embed=embed)
+                await ctx.reply(embed=embed)
 
     @Cog.listener('on_message_edit')
     async def afk_listener2(self, before, after):

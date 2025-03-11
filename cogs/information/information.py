@@ -415,15 +415,50 @@ class Information(Cog, description="View commands in Information."):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def member_count(self, ctx):
         guild = ctx.guild
-        bots = sum(1 for member in guild.members if member.bot)
-        humans = guild.member_count - bots
-        total = guild.member_count
+        online_users = [member for member in guild.members if member.status != discord.Status.offline]
+        offline_users = [member for member in guild.members if member.status == discord.Status.offline]
 
+        online_bots = sum(1 for member in online_users if member.bot)
+        online_humans = len(online_users) - online_bots
+        online_total = len(online_users)
+
+        offline_bots = sum(1 for member in offline_users if member.bot)
+        offline_humans = len(offline_users) - offline_bots
+        offline_total = len(offline_users)
+
+        total_bots = sum(1 for member in guild.members if member.bot)
+        total_humans = guild.member_count - total_bots
+        total_total = guild.member_count
         embed = discord.Embed(
             title=f"Member Count for {guild}",
-            description=f"> **Humans**: {humans}\n> **Bots**: {bots}\n> **Total**: {total}",
-            color=discord.Color.red()
+            color=discord.Color(0xffffff)
         )
+
+        embed.add_field(
+            name="**Online**",
+            value=f"> **Total**: {online_total}\n"
+                  f"> **Humans**: {online_humans}\n"
+                  f"> **Bots**: {online_bots}",
+            inline=True
+        )
+
+        embed.add_field(
+            name="**Offline**",
+            value=f"> **Total**: {offline_total}\n"
+                  f"> **Humans**: {offline_humans}\n"
+                  f"> **Bots**: {offline_bots}",
+            inline=True
+        )
+
+        embed.add_field(
+            name="**Total**",
+            value=f"> **Total**: {total_total}\n"
+                  f"> **Humans**: {total_humans}\n"
+                  f"> **Bots**: {total_bots}",
+            inline=True
+        )
+        if guild.icon:
+            embed.set_thumbnail(url=guild.icon.url)
         await ctx.send(embed=embed)
 
     @commands.command(name="serverbanner")
