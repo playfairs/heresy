@@ -41,5 +41,8 @@
         "welcome_message": "hi {user.mention} rep /camup 4 pic",
         "channel_id": 1342158784113672295,
         "leave_message": "bye {user.mention}"
+    },
+    "1348904062384476182": {
+        "welcome_message": "wlc"
     }
 }

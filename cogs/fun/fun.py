@@ -718,10 +718,26 @@ class Fun(Cog, description="View commands in Fun."):
         msg = await ctx.send("california.")
         await msg.add_reaction("🔥")
 
-    @commands.command(name="ochra")
+    @commands.command(name="ochra", aliases=["hershey"])
     async def ochra(self, ctx):
         """Responds with a specific message."""
-        await ctx.send("<:pov_ochra:1317632496636002344>")
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/ochra.png")
+        await ctx.send(embed=embed)
+
+    @commands.command(name="fish", aliases=["leo"])
+    async def fish(self, ctx):
+        """Responds with a specific message."""
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/fish.gif")
+        await ctx.send(embed=embed)
+
+    @commands.command(name="nova")
+    async def nova(self, ctx):
+        """Responds with a specific message."""
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/nova.png")
+        await ctx.send(embed=embed)
 
     @commands.group(name="confess", invoke_without_command=True)
     async def confess(self, ctx, *, message: str = None):
@@ -821,7 +837,7 @@ class Fun(Cog, description="View commands in Fun."):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @e.command(name="dance")
+    @e.command(name="dance", aliases=["lina"])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _dance(self, ctx):
         embed = discord.Embed()
@@ -835,14 +851,14 @@ class Fun(Cog, description="View commands in Fun."):
         embed.set_image(url="https://playfairs.cc/mouse.gif")
         await ctx.send(embed=embed)
 
-    @e.command(name="fox")
+    @e.command(name="fox", aliases=["shiggy", "vinny", "vencord"])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _fox(self, ctx):
         embed = discord.Embed()
         embed.set_image(url="https://playfairs.cc/fox.gif")
         await ctx.send(embed=embed)
 
-    @e.command(name="ochra")
+    @e.command(name="ochra", aliases=["hershey"])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _ochra(self, ctx):
         embed = discord.Embed()
@@ -875,6 +891,13 @@ class Fun(Cog, description="View commands in Fun."):
     async def _rape(self, ctx):
         embed = discord.Embed()
         embed.set_image(url="https://media.discordapp.net/attachments/1221242977830043668/1224110120020082830/caption.gif?ex=67c96ca3&is=67c81b23&hm=8ce660c0acb2187c044b620819508c914a7053e4553c742a769a52c5c70e830c&size=1000x1000&hl=en&fr=t2w")
+        await ctx.send(embed=embed)
+
+    @e.command(name="fish", aliases=["leo"])
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def _fish(self, ctx):
+        embed = discord.Embed()
+        embed.set_image(url="https://playfairs.cc/fish.gif")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -926,5 +949,5 @@ class Porn(Cog, description="View commands in Porn."):
         embed = discord.Embed(
             color=discord.Color(0xffffff)
         )
-        embed.description = "||[You horny little shit](https://www.youtube.com/watch?v=dQw4w9WgXcQ)||"
+        embed.description = "||[You horny little shit](https://only-fans.uk/heresy)||"
         await ctx.send(embed=embed)

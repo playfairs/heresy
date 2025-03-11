@@ -155,50 +155,6 @@ class Owner(
         os.remove(issue_file)
         await ctx.send(f"Issue `{case_number}` has been patched and removed from the reports.")
 
-    @command(name="sname")
-    async def change_server_name(self, ctx, *args):
-        """Change the name of a server.
-        
-        Usage:
-        - In a server: ,sname <new_name>
-        - For a specific server: ,sname <guild_id> <new_name>
-        """
-        if len(args) < 1:
-            return await ctx.send("Please provide a new server name.")
-        
-        if len(args) >= 2:
-            try:
-                guild_id = int(args[0])
-                new_name = " ".join(args[1:])
-                guild = self.bot.get_guild(guild_id)
-            except ValueError:
-                new_name = " ".join(args)
-                guild = ctx.guild
-        else:
-            new_name = args[0]
-            guild = ctx.guild
-        
-        if not guild:
-            return await ctx.send(f"Could not find a server with ID {guild_id}.")
-        
-        if not guild.me.guild_permissions.manage_guild:
-            return await ctx.send("I do not have permission to change the server name.")
-        
-        try:
-            await guild.edit(name=new_name)
-            
-            embed = discord.Embed(
-                title="Server Name Changed",
-                description=f"Server name for **{guild.name}** has been changed to **{new_name}**",
-                color=discord.Color.green()
-            )
-            await ctx.send(embed=embed)
-        
-        except discord.Forbidden:
-            await ctx.send("I do not have permission to change the server name.")
-        except discord.HTTPException as e:
-            await ctx.send(f"Failed to change server name. Error: {e}")
-
     @command(name="prefix")
     async def change_prefix(self, ctx: Context, new_prefix: str):
         """Changes the bot's global prefix."""
@@ -615,7 +571,7 @@ class Owner(
     @commands.command(name="terminal", aliases=["term", "cmd", "kitty"])
     async def terminal(self, ctx: Context):
         """Opens Kitty Terminal"""
-        await ctx.send("Opening Kitty Terminal.")
+        await ctx.send("I like playing with my kitty.. ngh~ >_<")
         os.system("open -na kitty")
 
     @commands.command(name="open", aliases=["openapp"])

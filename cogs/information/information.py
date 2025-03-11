@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from discord import Embed, Color
 from discord import app_commands
 from main import heresy
+from info import WHOAMI
 from typing import Union
 import time
 import random
@@ -46,7 +47,9 @@ class Information(Cog, description="View commands in Information."):
     @app_commands.choices(
         option=[
             app_commands.Choice(name="Playfair", value="playfair"),
+            app_commands.Choice(name="Playfair", value="Playfair"),
             app_commands.Choice(name="Heresy", value="heresy"),
+            app_commands.Choice(name="Heresy", value="Heresy"),
         ]
     )
     async def about(self, interaction: discord.Interaction, option: app_commands.Choice[str]):
@@ -54,26 +57,85 @@ class Information(Cog, description="View commands in Information."):
         option_value = option.value.lower()
         if option_value == 'playfair':
             embed = discord.Embed(
-                title="About Playfair",
-                description="Developer of heresy and other Discord Bots.",
-                color=discord.Color.pink()
+                description=f"{WHOAMI.USERNAME} - Developer",
+                color=discord.Color(0xffffff)
             )
-            embed.add_field(name="Description", value="Playfairs, or Playfair, is the Bot Developer of this and many other bots, also being the owner of /heresy, that is all.", inline=False)
-            embed.add_field(name="Useful Links", value="[Website](https://playfairs.cc)", inline=False)
-            embed.set_footer(text="Requested by: {}".format(interaction.user.name))
+            embed.add_field(name="Description", value=f"{WHOAMI.BIOGRAPHY}", inline=False)
+            links = ' | '.join([f"[{key}]({value})" for key, value in WHOAMI.PERSONAL_LINKS.items()])
+            embed.add_field(name="Useful Links", value=links, inline=False)
+            victim = await self.bot.fetch_user(785042666475225109)
+            embed.set_thumbnail(url=victim.avatar.url)
+            embed.set_footer(text=f"Requested by {interaction.user}", icon_url=interaction.user.avatar.url)
+
+            await interaction.response.send_message(embed=embed)
 
         elif option_value == 'heresy':
-            embed = discord.Embed(
-                title="About Heresy",
-                description="An all-in-one Discord Bot meant to enhance your Discord Server. Developed and Maintained by Playfair.",
-                color=discord.Color.green()
-            )
-            embed.add_field(name="Developer", value="Playfair", inline=False)
-            embed.add_field(name="Description", value="heresy, originally heresy, is a all-in-one Discord Bot created by Playfair, built for versatility", inline=False)
-            embed.add_field(name="Useful Links", value="[Server](https://discord.gg/heresy) | [Website](https://playfairs.cc) | [Invite](https://discord.com/oauth2/authorize?client_id=1284037026672279635&permissions=8&integration_type=0&scope=bot)", inline=False)
-            embed.set_footer(text="For more information, DM Playfair, or check ,help for more info.")
+            bot = self.bot
 
-        await interaction.response.send_message(embed=embed)
+            total_members = sum(guild.member_count for guild in bot.guilds)
+            total_guilds = len(bot.guilds)
+            total_commands = len(bot.commands)
+            total_modules = len(list(bot.extensions.keys()))
+
+            if platform.system() == "Darwin":
+                host = "MacOS " + platform.mac_ver()[0]
+            else:
+                host = platform.system() + " " + platform.release()
+
+            jishaku = self.bot.get_cog('Jishaku')
+            if jishaku:
+                uptime = datetime.now(timezone.utc) - jishaku.load_time
+                days = uptime.days
+                hours, remainder = divmod(uptime.seconds, 3600)
+                minutes, seconds = divmod(remainder, 60)
+                uptime_str = f"{days}d {hours}h {minutes}m {seconds}s"
+            else:
+                uptime_str = "Unable to calculate"
+
+            total_lines = 0
+            total_files = 0
+            total_imports = 0
+            total_functions = 0
+
+            for root, _, files in os.walk("cogs"):
+                for file in files:
+                    if file.endswith('.py'):
+                        total_files += 1
+                        with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
+                            content = f.read()
+
+                        total_lines += len(content.splitlines())
+                        total_imports += len([line for line in content.splitlines() if line.strip().startswith(('import ', 'from '))])
+                        total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
+
+            embed = discord.Embed(
+                description=f"Owned and Maintained by **[playfairs]({WHOAMI.USER_LINK})**\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
+                color=discord.Color(0xffffff)
+            )
+
+            embed.add_field(
+                name="**Basic**",
+                value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`\n**Members**: `{self.bot.get_guild(961097369817071626).member_count:,}`",
+                inline=True
+            )
+
+            embed.add_field(
+                name="**Runtime**",
+                value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
+                inline=True
+            )
+
+            embed.add_field(
+                name="**Code**",
+                value=f"**Files**: `{total_files}`\n**Lines**: `{total_lines:,}`\n**Functions**: `{total_functions}`\n**Library**: `d.py {discord.__version__}`",
+                inline=True
+            )
+
+            current_time = datetime.now().strftime("%I:%M %p")
+            embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
+            embed.set_footer(text=f"Requested by {interaction.user} • Today at {current_time}", icon_url=interaction.user.avatar.url)
+
+            await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="links", description="Displays useful links.")
     async def links(self, interaction: discord.Interaction):
@@ -112,7 +174,8 @@ class Information(Cog, description="View commands in Information."):
 
         embed = discord.Embed(title=f"{member.name}'s Avatar", color=discord.Color.blue())
         embed.set_image(url=member.avatar.url)
-        embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url if ctx.author.avatar else self.bot.user.avatar.url)
+        current_time = datetime.now().strftime("%I:%M %p")
+        embed.set_footer(text=f"Requested by {ctx.author} • Today at {current_time}", icon_url=ctx.author.avatar.url if ctx.author.avatar else self.bot.user.avatar.url)
         await ctx.send(embed=embed)
 
     @commands.command(name="banner", description="Show your banner.")
@@ -620,7 +683,6 @@ class Information(Cog, description="View commands in Information."):
         total_members = sum(guild.member_count for guild in bot.guilds)
         total_guilds = len(bot.guilds)
         total_commands = len(bot.commands)
-        # total_cogs = len(bot.cogs)
         total_modules = len(list(bot.extensions.keys()))
 
         if platform.system() == "Darwin":
@@ -655,20 +717,19 @@ class Information(Cog, description="View commands in Information."):
                     total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
 
         embed = discord.Embed(
-            description=f"Developed and maintained by <@{self.developer_id}>\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
-            color=discord.Color.purple(),
-            timestamp=datetime.utcnow()
+            description=f"Owned and Maintained by **[playfairs]({WHOAMI.USER_LINK})**\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
+            color=discord.Color(0xffffff)
         )
 
         embed.add_field(
             name="**Basic**",
-            value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`",
+            value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`\n**Members**: `{self.bot.get_guild(961097369817071626).member_count:,}`",
             inline=True
         )
 
         embed.add_field(
             name="**Runtime**",
-            value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{f'{days}d ' if days > 0 else ''}{f'{hours}h ' if hours > 0 else ''}{f'{minutes}m ' if minutes > 0 else ''}{seconds}s`",
+            value=f"**OS**: `{host}`\n**CPU**: `{psutil.cpu_percent()}%`\n**Memory**: `{psutil.Process().memory_info().rss / 1024 / 1024:.2f} MB`\n**Uptime**: `{uptime_str}`",
             inline=True
         )
 
@@ -679,7 +740,8 @@ class Information(Cog, description="View commands in Information."):
         )
 
         embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
-        embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+        current_time = datetime.now().strftime("%I:%M %p")
+        embed.set_footer(text=f"Requested by {ctx.author} • Today at {current_time}", icon_url=ctx.author.avatar.url) 
 
         await ctx.send(embed=embed)
 
@@ -916,3 +978,23 @@ class Information(Cog, description="View commands in Information."):
     async def heresy(self, ctx: commands.Context):
         """Completely useless command, just here to show off the bot's name."""
         await ctx.message.add_reaction("😭")
+
+    @commands.command(name="class:whoami")
+    async def whoami(self, ctx: commands.Context):
+        """Shows some information about the bot's author."""
+        embed = discord.Embed(
+            title=f"{WHOAMI.USERNAME}",
+            description=WHOAMI.BIOGRAPHY,
+            color=discord.Color.from_rgb(255, 255, 255),
+            url=WHOAMI.PERSONAL_LINKS.get("Website"),
+        )
+        embed.set_author(name=WHOAMI.USERNAME, url=WHOAMI.PERSONAL_LINKS.get("GitHub"))
+        embed.set_thumbnail(url=ctx.author.avatar.url)
+        embed.add_field(name="Developer", value=WHOAMI.DEVELOPER, inline=True)
+        embed.add_field(
+            name="Main Operating System",
+            value=WHOAMI.MAIN_OPERATING_SYSTEM,
+            inline=True,
+        )
+        embed.add_field(name="Linux Distrobutions", value="\n".join(WHOAMI.LINUX_DISTROBUTIONS), inline=False)
+        await ctx.send(embed=embed)
