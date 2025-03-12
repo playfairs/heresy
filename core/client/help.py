@@ -362,6 +362,21 @@ class HerseyHelp(MinimalHelpCommand):
                         inline=False
                     )
 
+            cmd_aliases = ", ".join(f"`{a}`" for a in cmd.aliases) if cmd.aliases else "None"
+            cmd_embed.add_field(
+                name="Aliases",
+                value=cmd_aliases,
+                inline=True
+            )
+
+            # Permissions section
+            if permissions and permissions.lower() != "none":
+                cmd_embed.add_field(
+                    name="Required Permissions",
+                    value=permissions,
+                    inline=True
+                )
+
             cmd_embed.set_footer(
                 text=f"Module: {group.cog_name} • Page {i + 1}/{len(group.commands) + 1}",
                 icon_url="https://playfairs.cc/heresy.png"

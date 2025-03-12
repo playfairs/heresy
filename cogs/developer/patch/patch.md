@@ -1,32 +1,28 @@
 ## What's New?
-- LastFM: Updated `plays` commands such as `sp`, `ap` and `plays`, this is now a command group, running just `plays` runs the normal plays command, invoking with `track` or `artist` shows plays for those artists or songs.
-- bp: This command purges messages sent by the bot in DM's, this can only be ran by the owner.
-- e: Added a new gif to the `e` command group.
-- Invite: Allows users to now add they bot to a server by sending `invite`, this was available on the website, but found it much easier this way.
-- `cogs.owner`: Added new commands to the `cogs.owner` cog, `sudo`, `screenshot`, `open`, `ball`.
+- Updated the owners command to include contributors.
+- Updated the `/about` command, to both fix the issue with missing Heresy option, and reworked the Embed.
+- Updated the `mc` command to be more detailed, or informative.
 
 
 ## Playfairs.cc
-- 2 New images have been added; `nochra.png` and `nova.png`.
+- 1 new gif has been added, and tailwindcss has been updated.
+- Changed from using just react to React with Remix.
+
+Will be changing more to the website as its branch is also being updated just like Heresy, these changes wont be noticable until its ready.
 
 
 ## Improvements
-- on_guild_join: Updated the embed the Bot sends to a User when they add the Bot to a server.
-- abt: Removed the original `abt` commmand and added the alias to `botinfo`.
-- Buttons: Updated the message the bot sends when pressing a button your not allowed to press.
-- Updated the Help Interface.
-- Jail: Updted the `jail` command, and created a group with it.
-- Server Info: Updated the `serverinfo` Embed to include server creation date and emotes, along with the Server Level.
-- Gate: Updated the gate command, is now a group, and can configure it more freely.
-
+- AFK: Updated both the AFK command and embeds, and listeners, so they look a small bit different.
+- Fixed SOME of the commands which show the time, the time now shows the CLIENT time, not the time of the ctx.author (The person who sent the command).
+- Updated Branch, is still HEAD:main, but both branches are up to date, this does not affect the current state of the bot.
 
 
 ## Known Issues
-- The Heresy option for the `/about` command seems to not be working, currently unsure why, may remove the command later on.
+- No known issues, report any issues to <@785042666475225109>.
 
 
 ## Coming Soon
-- Antinuke, and Automod, not sure when this will be added, but it's on the to-do list.
+- Nothing new coming apart from what was previously mentioned.
 
 
--# Report any bugs to @playfairs or @uxju
+-# Report any bugs to <@785042666475225109>.

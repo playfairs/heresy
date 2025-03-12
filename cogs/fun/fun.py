@@ -722,21 +722,21 @@ class Fun(Cog, description="View commands in Fun."):
     async def ochra(self, ctx):
         """Responds with a specific message."""
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/ochra.png")
+        embed.set_image(url="https://playfairs.cc/images/ochra.png")
         await ctx.send(embed=embed)
 
     @commands.command(name="fish", aliases=["leo"])
     async def fish(self, ctx):
         """Responds with a specific message."""
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/fish.gif")
+        embed.set_image(url="https://playfairs.cc/images/fish.gif")
         await ctx.send(embed=embed)
 
     @commands.command(name="nova")
     async def nova(self, ctx):
         """Responds with a specific message."""
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/nova.png")
+        embed.set_image(url="https://playfairs.cc/images/nova.png")
         await ctx.send(embed=embed)
 
     @commands.group(name="confess", invoke_without_command=True)
@@ -848,21 +848,21 @@ class Fun(Cog, description="View commands in Fun."):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _mouse(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/mouse.gif")
+        embed.set_image(url="https://playfairs.cc/images/mouse.gif")
         await ctx.send(embed=embed)
 
     @e.command(name="fox", aliases=["shiggy", "vinny", "vencord"])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _fox(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/fox.gif")
+        embed.set_image(url="https://playfairs.cc/images/fox.gif")
         await ctx.send(embed=embed)
 
     @e.command(name="ochra", aliases=["hershey"])
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _ochra(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/ochra.png")
+        embed.set_image(url="https://playfairs.cc/images/ochra.png")
         await ctx.send(embed=embed)
 
     @e.command(name="yippee", aliases=["yipie", "yippe"], help="Replacement for yippee autoresponse.")
@@ -876,14 +876,14 @@ class Fun(Cog, description="View commands in Fun."):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _nova(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/nova.png")
+        embed.set_image(url="https://playfairs.cc/images/nova.png")
         await ctx.send(embed=embed)
 
     @e.command(name="nochra")
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _nochra(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/nochra.png")
+        embed.set_image(url="https://playfairs.cc/images/nochra.png")
         await ctx.send(embed=embed)
 
     @e.command(name="rape")
@@ -897,7 +897,7 @@ class Fun(Cog, description="View commands in Fun."):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _fish(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/fish.gif")
+        embed.set_image(url="https://playfairs.cc/images/fish.gif")
         await ctx.send(embed=embed)
 
     @commands.command()

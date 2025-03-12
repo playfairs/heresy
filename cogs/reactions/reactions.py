@@ -147,7 +147,7 @@ class Reactions(Cog, description="View commands in Reactions."):
                 "https://tenor.com/view/oh-yeah-oh-yeah-gif-oh-yeah-meme-kool-aid-kool-aid-man-gif-18211119326397565445"
             ],
             "im cold": [
-                "https://playfairs.cc/mommy.png"
+                "https://playfairs.cc/images/mommy.png"
             ]
         }
 
@@ -587,14 +587,14 @@ class Reactions(Cog, description="View commands in Reactions."):
     async def fox(self, ctx):
         """Shows a fox gif"""
         embed = discord.Embed(color=discord.Color.orange())
-        embed.set_image(url="https://playfairs.cc/fox.gif")
+        embed.set_image(url="https://playfairs.cc/images/fox.gif")
         await ctx.send(embed=embed)
 
     @commands.command(name="mouse")
     async def mouse(self, ctx):
         """Shows a mouse gif"""
         embed = discord.Embed(color=discord.Color.from_rgb(255, 255, 255))
-        embed.set_image(url="https://playfairs.cc/mouse.gif")
+        embed.set_image(url="https://playfairs.cc/images/mouse.gif")
         await ctx.send(embed=embed)
 
     def add_bot_responder(self, triggers, responses):

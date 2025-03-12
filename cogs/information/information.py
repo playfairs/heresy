@@ -57,13 +57,13 @@ class Information(Cog, description="View commands in Information."):
         option_value = option.value.lower()
         if option_value == 'playfair':
             embed = discord.Embed(
-                description=f"{WHOAMI.USERNAME} - Developer",
-                color=discord.Color(0xffffff)
+                description=f"<@{WHOAMI.USER_ID}>",
+                color=discord.Color(0x000000)
             )
             embed.add_field(name="Description", value=f"{WHOAMI.BIOGRAPHY}", inline=False)
             links = ' | '.join([f"[{key}]({value})" for key, value in WHOAMI.PERSONAL_LINKS.items()])
             embed.add_field(name="Useful Links", value=links, inline=False)
-            victim = await self.bot.fetch_user(785042666475225109)
+            victim = await self.bot.fetch_user(WHOAMI.USER_ID)
             embed.set_thumbnail(url=victim.avatar.url)
             embed.set_footer(text=f"Requested by {interaction.user}", icon_url=interaction.user.avatar.url)
 
@@ -109,7 +109,7 @@ class Information(Cog, description="View commands in Information."):
                         total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
 
             embed = discord.Embed(
-                description=f"Owned and Maintained by **[playfairs]({WHOAMI.USER_LINK})**\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
+                description=f"Owned and Maintained by {self.bot.get_user(WHOAMI.USER_ID).mention}\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
                 color=discord.Color(0xffffff)
             )
 
@@ -172,7 +172,7 @@ class Information(Cog, description="View commands in Information."):
             await ctx.send(f"{member.mention} doesn't have an avatar, man, who runs around discord without an avatar.")
             return
 
-        embed = discord.Embed(title=f"{member.name}'s Avatar", color=discord.Color.blue())
+        embed = discord.Embed(title=f"{member.name}'s Avatar", color=discord.Color(0xffffff))
         embed.set_image(url=member.avatar.url)
         current_time = datetime.now().strftime("%I:%M %p")
         embed.set_footer(text=f"Requested by {ctx.author} • Today at {current_time}", icon_url=ctx.author.avatar.url if ctx.author.avatar else self.bot.user.avatar.url)
@@ -185,7 +185,7 @@ class Information(Cog, description="View commands in Information."):
         user = await self.bot.fetch_user(member.id)
 
         if user.banner:
-            embed = discord.Embed(title=f"{user.name}'s Banner", color=discord.Color.blue())
+            embed = discord.Embed(title=f"{user.name}'s Banner", color=discord.Color(0xffffff))
             embed.set_image(url=user.banner.url)
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
@@ -199,7 +199,7 @@ class Information(Cog, description="View commands in Information."):
         user = await self.bot.fetch_user(member.id)
 
         if member.guild_banner:
-            embed = discord.Embed(title=f"{user.name}'s Server Banner", color=discord.Color.blue())
+            embed = discord.Embed(title=f"{user.name}'s Server Banner", color=discord.Color(0xffffff))
             embed.set_image(url=member.guild_banner.url)
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
@@ -213,7 +213,7 @@ class Information(Cog, description="View commands in Information."):
         user = await self.bot.fetch_user(member.id)
 
         if member.guild_avatar:
-            embed = discord.Embed(title=f"{user.name}'s Server Avatar", color=discord.Color.blue())
+            embed = discord.Embed(title=f"{user.name}'s Server Avatar", color=discord.Color(0xffffff))
             embed.set_image(url=member.guild_avatar.url)
             embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
             await ctx.send(embed=embed)
@@ -246,7 +246,7 @@ class Information(Cog, description="View commands in Information."):
             embed = discord.Embed(
                 title=f"{user.name}#{user.discriminator}",
                 description=f"**User ID:** `{user.id}`\n**Created At:** {created_at}",
-                color=discord.Color.blue()
+                color=discord.Color(0xffffff)
             )
             if user.avatar:
                 embed.set_thumbnail(url=user.avatar.url)
@@ -529,7 +529,7 @@ class Information(Cog, description="View commands in Information."):
     async def server_banner(self, ctx):
         """Shows the server banner in an embed."""
         if ctx.guild.banner:
-            embed = discord.Embed(title=f"{ctx.guild.name} Server Banner", color=discord.Color.blurple())
+            embed = discord.Embed(title=f"{ctx.guild.name} Server Banner", color=discord.Color(0xffffff))
             embed.set_image(url=ctx.guild.banner.url)
             await ctx.send(embed=embed)
         else:
@@ -540,7 +540,7 @@ class Information(Cog, description="View commands in Information."):
     async def server_icon(self, ctx):
         """Shows the server icon in an embed."""
         if ctx.guild.icon:
-            embed = discord.Embed(title=f"{ctx.guild.name} Server Icon", color=discord.Color.blurple())
+            embed = discord.Embed(title=f"{ctx.guild.name} Server Icon", color=discord.Color(0xffffff))
             embed.set_image(url=ctx.guild.icon.url)
             await ctx.send(embed=embed)
         else:
@@ -551,7 +551,7 @@ class Information(Cog, description="View commands in Information."):
     async def server_splash(self, ctx):
         """Shows the server splash (invite banner) in an embed."""
         if ctx.guild.splash:
-            embed = discord.Embed(title=f"{ctx.guild.name} Server Splash", color=discord.Color.blurple())
+            embed = discord.Embed(title=f"{ctx.guild.name} Server Splash", color=discord.Color(0xffffff))
             embed.set_image(url=ctx.guild.splash.url)
             await ctx.send(embed=embed)
         else:
@@ -582,14 +582,14 @@ class Information(Cog, description="View commands in Information."):
         Displays an embed of the owners of heresy.
         """
         embed = Embed(
-        title="Owners of heresy",
-        description=(
-            f"<@785042666475225109> | 785042666475225109\n"
-            f"<@1268333988376739931> | 1268333988376739931\n"
-            f"<@608450597347262472> | 608450597347262472\n"
-            f"<@488590546873483276> | 488590546873483276\n"
-            f"<@598125772754124823> | 598125772754124823\n"),
-        color=Color.purple())
+            title="Owners of **Heresy**",
+            description=(
+                "\n".join(f"{ctx.bot.get_user(owner_id).mention} | {owner_id}" for owner_id in WHOAMI.OWNER_IDS) +
+                "\n\n**Contributors**\n" +
+                "\n".join(f"{ctx.bot.get_user(contributor_id).mention} | {contributor_id}" for contributor_id in WHOAMI.CONTRIBUTORS)
+            ),
+            color=discord.Color(0xffffff)
+        )
         await ctx.send(embed=embed)
 
     @commands.command(name="ri", aliases=["roleinfo"])
@@ -717,7 +717,7 @@ class Information(Cog, description="View commands in Information."):
                     total_functions += len([line for line in content.splitlines() if line.strip().startswith(('def ', 'async def '))])
 
         embed = discord.Embed(
-            description=f"Owned and Maintained by **[playfairs]({WHOAMI.USER_LINK})**\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
+            description=f"Owned and Maintained by {self.bot.get_user(WHOAMI.USER_ID).mention}\n`{total_commands}` commands | `{total_imports}` imports | `{total_modules}` modules",
             color=discord.Color(0xffffff)
         )
 

@@ -9,7 +9,7 @@ from platform import python_version
 class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.version = "v5.1.10"
+        self.version = "v5.1.11"
         self.discord_version = discord.__version__
         self.jishaku_version = jishaku.__version__
         self.python_version = python_version()
@@ -42,7 +42,7 @@ class Developer(commands.Cog):
         embed.set_footer(
             text=f"heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version} • Python {self.python_version}"
         )
-        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
+        embed.set_thumbnail(url="https://playfairs.cc/images/images/heresy.png")
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()
@@ -80,7 +80,7 @@ class Developer(commands.Cog):
         embed.set_footer(
             text=f"heresy {self.version} • discord.py {self.discord_version} • Jishaku {self.jishaku_version}"
         )
-        embed.set_thumbnail(url="https://playfairs.cc/heresy.png")
+        embed.set_thumbnail(url="https://playfairs.cc/images/images/heresy.png")
 
         await ctx.send(content=role.mention, embed=embed, allowed_mentions=discord.AllowedMentions(roles=True))
         await ctx.message.delete()

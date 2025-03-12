@@ -111,8 +111,8 @@ class Misc(Cog, description="View commands in Misc."):
 #        )
 
 #        embed.description = rules_text
-#        embed.add_field(name="", value="[GitHub](https://github.com/playfairs-cc) • [Website](https://playfairs.cc/heresy) • [Server](https://discord.gg/heresy)", inline=False)
-#        embed.set_thumbnail(url="https://playfairs.cc/heresy.jpg?size=1024")
+#        embed.add_field(name="", value="[GitHub](https://github.com/playfairs-cc) • [Website](https://playfairs.cc/images/images/heresy.png) • [Server](https://discord.gg/heresy)", inline=False)
+#        embed.set_thumbnail(url="https://playfairs.cc/images/images/heresy.png.jpg?size=1024")
 #        await ctx.send(embed=embed)
 
 #    @command(name="modrules")

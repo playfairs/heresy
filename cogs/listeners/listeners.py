@@ -46,7 +46,7 @@ class Listeners(Cog, description="View commands in Listeners."):
             name="Resources",
             value="**[invite](https://discordapp.com/oauth2/authorize?client_id=1284037026672279635&scope=bot+applications.commands&permissions=8)**  • "
             "**[server](https://discord.gg/heresy)**  • "
-            "**[website](https://playfairs.cc/heresy)**  ",
+            "**[website](https://playfairs.cc/images/images/heresy.png)**  ",
             inline=False,
         )
         embed.set_footer(text="Please note that Heresy is still in developement, and may have some minor issues, or lack commands.")
