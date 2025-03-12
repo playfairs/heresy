@@ -116,7 +116,7 @@ class Information(Cog, description="View commands in Information."):
 
             embed.add_field(
                 name="**Basic**",
-                value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`\n**Members**: `{interaction.bot.get_guild(961097369817071626).member_count:,}`",
+                value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`\n**Members**: `{self.bot.get_guild(961097369817071626).member_count:,}`",
                 inline=True
             )
 
@@ -142,15 +142,14 @@ class Information(Cog, description="View commands in Information."):
     async def links(self, interaction: discord.Interaction):
         """Displays useful links in an embed."""
         embed = discord.Embed(
-            title="Useful Links",
-            description="Hi",
-            color=discord.Color.blurple()
+            title="nghh~ >_<",
+            color=discord.Color(0xffffff)
         )
-        embed.add_field(name="Guns.lol", value="[playfair](https://guns.lol/playfair)", inline=False)
-        embed.add_field(name="Wanted.lol", value="[suicideboys](https://wanted.lol/suicideboys)", inline=False)
-        embed.add_field(name="About.me", value="[creepfully](https://about.me/creepfully)", inline=False)
-        embed.add_field(name="TikTok", value="[playfairs](https://tiktok.com/playfairs)", inline=False)
-        embed.set_footer(text="More details can be found in the about.me")
+        for key, value in WHOAMI.PERSONAL_LINKS.items():
+            embed.add_field(name=key, value=f"[{key}]({value})", inline=True)
+        embed.set_footer(text="you nosey ass nigga.")
+        user = await self.bot.fetch_user(WHOAMI.USER_ID)
+        embed.set_thumbnail(url=user.avatar.url)
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="userinfo", description="Get information about a user")
@@ -724,7 +723,7 @@ class Information(Cog, description="View commands in Information."):
 
         embed.add_field(
             name="**Basic**",
-            value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`\n**Members**: `{ctx.bot.get_guild(961097369817071626).member_count:,}`",
+            value=f"**Users**: `{total_members:,}`\n**Guilds**: `{total_guilds:,}`\n**Created**: `{self.bot.user.created_at.strftime('%m/%d/%y')}`\n**Members**: `{self.bot.get_guild(961097369817071626).member_count:,}`",
             inline=True
         )
 
