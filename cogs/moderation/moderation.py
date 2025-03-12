@@ -831,7 +831,7 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
         else:
             await ctx.message.add_reaction("‼️")
 
-    @command(name="nuke", aliases=['arab', 'twintowers', 'hiroshima', 'nagasaki', 'japan1945', 'ww2', 'boomboom'])
+    @command(name="nuke", aliases=['arab', 'twintowers', 'hiroshima', 'nagasaki', 'japan1945', 'ww2', 'boomboom', 'no_witnesses'])
     @has_permissions(administrator=True)
     async def nuke(self, ctx):
         """Nukes the current channel with confirmation."""

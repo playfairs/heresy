@@ -204,45 +204,42 @@ class Config(Cog, description="View commands in Config."):
     async def set_modlog_channel(self, ctx: Context, channel: discord.TextChannel):
         self.log_channels[str(ctx.guild.id)] = channel.id
         self.save_log_channels()
+
         await ctx.send(f"Mod logs channel has been set to {channel.mention}")
 
-    @Cog.listener()
-    async def on_member_update(self, before, after):
-        if before.nick != after.nick:
-            embed = discord.Embed(title="**Member Update**", color=discord.Color.blue())
-            embed.add_field(name="**Responsible:**", value=f"{after.guild.me.mention} ({after.guild.me.id})")
-            embed.add_field(name="**Target:**", value=f"{after.mention} ({after.id})")
-            embed.add_field(name="*Time:*", value="*{0}*".format(after.joined_at.strftime('%A, %b %d, %Y %I:%M %p')))
-            embed.add_field(name="**Changes**", value=f"> **Nick:** \n> {before.nick or 'None'} --> {after.nick or 'None'}", inline=False)
-            await self.send_log(after.guild.id, embed)
+    # @Cog.listener()
+    # async def on_member_update(self, before, after):
+    #     if before.nick != after.nick:
+    #         embed = discord.Embed(title="**Member Update**", color=discord.Color.blue())
+    #         embed.add_field(name="**Responsible:**", value=f"{after.guild.me.mention} ({after.guild.me.id})")
+    #         embed.add_field(name="**Target:**", value=f"{after.mention} ({after.id})")
+    #         embed.add_field(name="*Time:*", value="*{0}*".format(after.joined_at.strftime('%A, %b %d, %Y %I:%M %p')))
+    #         embed.add_field(name="**Changes**", value=f"> **Nick:** \n> {before.nick or 'None'} --> {after.nick or 'None'}", inline=False)
+    #         await self.send_log(after.guild.id, embed)
 
-        if before.roles != after.roles:
-            added_roles = [role for role in after.roles if role not in before.roles]
-            removed_roles = [role for role in before.roles if role not in after.roles]
+    #     if before.roles != after.roles:
+    #         added_roles = [role for role in after.roles if role not in before.roles]
+    #         removed_roles = [role for role in before.roles if role not in after.roles]
 
-            if added_roles or removed_roles:
-                async for entry in after.guild.audit_logs(limit=1, action=discord.AuditLogAction.member_role_update):
-                    if entry.target.id == after.id:
-                        responsible_user = entry.user
-                        break
-                else:
-                    responsible_user = after.guild.me
+    #         if added_roles or removed_roles:
+    #             entry = await after.guild.audit_logs(limit=1, action=discord.AuditLogAction.member_role_update).find(lambda e: e.target.id == after.id)
+    #             responsible_user = entry.user if entry else after.guild.me
 
-                embed = discord.Embed(title="**Member Role Update**", color=discord.Color.green())
-                embed.add_field(name="**Responsible:**", value=f"{responsible_user.mention} ({responsible_user.id})", inline=True)
-                embed.add_field(name="**Target:**", value=f"{after.mention} ({after.id})", inline=True)
-                embed.add_field(name="", value=f"*{discord.utils.utcnow().strftime('%A, %B %d, %Y at %I:%M %p')}*", inline=False)
+    #             embed = discord.Embed(title="**Member Role Update**", color=discord.Color.green())
+    #             embed.add_field(name="**Responsible:**", value=f"{responsible_user.mention} ({responsible_user.id})", inline=True)
+    #             embed.add_field(name="**Target:**", value=f"{after.mention} ({after.id})", inline=True)
+    #             embed.add_field(name="", value=f"*{discord.utils.utcnow().strftime('%A, %B %d, %Y at %I:%M %p')}*", inline=False)
                 
-                changes = ""
-                if added_roles:
-                    changes += "**Additions:**\n" + "\n".join([f"<:right:1307448399624405134> {role.mention}" for role in added_roles])
-                if removed_roles:
-                    if added_roles:
-                        changes += "\n\n"
-                    changes += "**Removals:**\n" + "\n".join([f"<:right:1307448399624405134> {role.mention}" for role in removed_roles])
+    #             changes = ""
+    #             if added_roles:
+    #                 changes += "**Additions:**\n" + "\n".join([f"<:right:1307448399624405134> {role.mention}" for role in added_roles])
+    #             if removed_roles:
+    #                 if added_roles:
+    #                     changes += "\n\n"
+    #                 changes += "**Removals:**\n" + "\n".join([f"<:right:1307448399624405134> {role.mention}" for role in removed_roles])
                 
-                embed.add_field(name="Changes", value=changes, inline=False)
-                await self.send_log(after.guild.id, embed)
+    #             embed.add_field(name="Changes", value=changes, inline=False)
+    #             await self.send_log(after.guild.id, embed)
 
     @Cog.listener()
     async def on_message_delete(self, message):
