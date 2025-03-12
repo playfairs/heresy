@@ -11,11 +11,13 @@ from main import heresy
 class Config(Cog, description="View commands in Config."):
     def __init__(self, bot: heresy):
         self.bot = bot
-        self.join_log_file = 'join_log_settings.json'
-        self.join_log_settings = self.load_join_log_settings()
+        self.join_log_file = 'join_logs.json'
+        self.boost_log_file = 'boost_logs.json'
+        self.join_logs = self.load_join_logs()
         self.log_channels = {}
         self.load_log_channels()
         self.ad_path = "cogs/config/ad.txt"
+        self.boost_logs = self.load_boost_logs()
 
     def get_ad_message(self):
         """
@@ -45,16 +47,27 @@ class Config(Cog, description="View commands in Config."):
             if log_channel:
                 await log_channel.send(embed=embed)
 
-    def load_join_log_settings(self):
+    def load_join_logs(self):
         if os.path.exists(self.join_log_file):
             with open(self.join_log_file, 'r') as f:
                 return json.load(f)
         else:
             return {}
 
-    def save_join_log_settings(self):
+    def save_join_logs(self):
         with open(self.join_log_file, 'w') as f:
-            json.dump(self.join_log_settings, f, indent=4)
+            json.dump(self.join_logs, f, indent=4)
+
+    def load_boost_logs(self):
+        if os.path.exists(self.boost_log_file):
+            with open(self.boost_log_file, 'r') as f:
+                return json.load(f)
+        else:
+            return {}
+
+    def save_boost_logs(self):
+        with open(self.boost_log_file, 'w') as f:
+            json.dump(self.boost_logs, f, indent=4)
 
     @group(name="gate", invoke_without_command=True)
     async def gate(self, ctx: Context):
@@ -65,18 +78,23 @@ class Config(Cog, description="View commands in Config."):
     @has_permissions(administrator=True)
     async def set_join_logs(self, ctx: Context, channel: discord.TextChannel = None):
         """Sets the join log channel for the current server."""
+        server_id = str(ctx.guild.id)
+        
+        # Check if the server_id exists in join_logs
+        if server_id not in self.join_logs:
+            self.join_logs[server_id] = {'channel_id': None}  # Initialize with default values
+
         if channel is None:
-            await ctx.send(f"Current gate is set to <#{self.join_log_settings[str(ctx.guild.id)].get('channel_id')}>.")
+            current_channel_id = self.join_logs[server_id].get('channel_id')
+            await ctx.send(f"Current gate is set to <#{current_channel_id}>." if current_channel_id else "No gate set.")
             return
-        if channel.id == self.join_log_settings[str(ctx.guild.id)].get('channel_id'):
+
+        if channel.id == self.join_logs[server_id].get('channel_id'):
             await ctx.send(f"Gate is already set to <#{channel.id}>.")
             return
-        server_id = str(ctx.guild.id)
-        if server_id not in self.join_log_settings:
-            self.join_log_settings[server_id] = {}
-        
-        self.join_log_settings[server_id]["channel_id"] = channel.id
-        self.save_join_log_settings()
+
+        self.join_logs[server_id]["channel_id"] = channel.id
+        self.save_join_logs()  # Save the updated settings
         await ctx.send(f"Join logs have been set to {channel.mention} for this server.")
 
     @gate.command(name="join", aliases= ["joinmsg", "welcmsg", "joinmessage", "welcomemessage", "welcmessage", "welc"])
@@ -84,11 +102,11 @@ class Config(Cog, description="View commands in Config."):
     async def set_join_message(self, ctx: Context, *, message: str):
         """Sets a custom welcome message for the server and displays it in an embed."""
         server_id = str(ctx.guild.id)
-        if server_id not in self.join_log_settings:
-            self.join_log_settings[server_id] = {}
+        if server_id not in self.join_logs:
+            self.join_logs[server_id] = {}
         
-        self.join_log_settings[server_id]["welcome_message"] = message
-        self.save_join_log_settings()
+        self.join_logs[server_id]["welcome_message"] = message
+        self.save_join_logs()
 
         message = message.replace("{user.mention}", "")
         embed = discord.Embed(
@@ -103,11 +121,11 @@ class Config(Cog, description="View commands in Config."):
     async def set_leave_message(self, ctx: Context, *, message: str):
         """Sets a custom leave message for the server and displays it in an embed."""
         server_id = str(ctx.guild.id)
-        if server_id not in self.join_log_settings:
-            self.join_log_settings[server_id] = {}
+        if server_id not in self.join_logs:
+            self.join_logs[server_id] = {}
         
-        self.join_log_settings[server_id]["leave_message"] = message
-        self.save_join_log_settings()
+        self.join_logs[server_id]["leave_message"] = message
+        self.save_join_logs()
 
         message = message.replace("{user.mention}", "")
         embed = discord.Embed(
@@ -116,12 +134,13 @@ class Config(Cog, description="View commands in Config."):
             color=discord.Color.red()
         )
         await ctx.send("Custom leave message has been set.", embed=embed)
+
     @Cog.listener()
     async def on_member_join(self, member):
         server_id = str(member.guild.id)
-        if server_id in self.join_log_settings:
-            channel_id = self.join_log_settings[server_id].get("channel_id")
-            welcome_message = self.join_log_settings[server_id].get(
+        if server_id in self.join_logs:
+            channel_id = self.join_logs[server_id].get("channel_id")
+            welcome_message = self.join_logs[server_id].get(
                 "welcome_message",
                 f"hi",
             )
@@ -133,9 +152,9 @@ class Config(Cog, description="View commands in Config."):
     @Cog.listener()
     async def on_member_remove(self, member):
         server_id = str(member.guild.id)
-        if server_id in self.join_log_settings:
-            channel_id = self.join_log_settings[server_id].get("channel_id")
-            leave_message = self.join_log_settings[server_id].get(
+        if server_id in self.join_logs:
+            channel_id = self.join_logs[server_id].get("channel_id")
+            leave_message = self.join_logs[server_id].get(
                 "leave_message",
                 f"damn, they prolly wont be back",
             )
@@ -155,25 +174,25 @@ class Config(Cog, description="View commands in Config."):
     async def test_message(self, interaction: discord.Interaction, message_type: app_commands.Choice[str]):
         """Tests the join or leave message using the command author as the member."""
         server_id = str(interaction.guild_id)
-        if server_id not in self.join_log_settings:
+        if server_id not in self.join_logs:
             await interaction.response.send_message("Join log settings are not configured for this server.", ephemeral=True)
             return
 
-        channel_id = self.join_log_settings[server_id].get("channel_id")
+        channel_id = self.join_logs[server_id].get("channel_id")
         channel = self.bot.get_channel(channel_id)
         if not channel:
             await interaction.response.send_message("The join log channel is not set or accessible.", ephemeral=True)
             return
 
         if message_type.value == "join":
-            welcome_message = self.join_log_settings[server_id].get(
+            welcome_message = self.join_logs[server_id].get(
                 "welcome_message",
                 "hi",
             )
             await channel.send(f"{welcome_message} {interaction.user.mention}")
             await interaction.response.send_message("Join message tested.", ephemeral=True)
         elif message_type.value == "leave":
-            leave_message = self.join_log_settings[server_id].get(
+            leave_message = self.join_logs[server_id].get(
                 "leave_message",
                 "bye",
             )
@@ -372,3 +391,75 @@ class Config(Cog, description="View commands in Config."):
         if changes:
             embed.add_field(name="**Changes**", value="\n".join(changes), inline=False)
             await self.send_log(after.id, embed)
+
+    @group(name="boost", invoke_without_command=True)
+    async def boost(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @boost.command(name="logs")
+    @has_permissions(administrator=True)
+    async def set_boost_logs(self, ctx: Context, channel: discord.TextChannel = None):
+        """Sets the boost log channel for the current server."""
+        server_id = str(ctx.guild.id)
+        
+        if server_id not in self.boost_logs:
+            self.boost_logs[server_id] = {'channel_id': None}
+
+        if channel is None:
+            current_channel_id = self.boost_logs[server_id].get('channel_id')
+            await ctx.send(f"Current boost logs are set to <#{current_channel_id}>." if current_channel_id else "No boost logs set.")
+            return
+
+        if channel.id == self.boost_logs[server_id].get('channel_id'):
+            await ctx.send(f"Boost logs are already set to <#{channel.id}>.")
+            return
+
+        self.boost_logs[server_id]["channel_id"] = channel.id
+        self.save_boost_logs()
+        await ctx.send(f"Boost logs have been set to {channel.mention} for this server.")
+
+    def save_boost_logs(self):
+        with open(self.boost_log_file, 'w') as f:
+            json.dump(self.boost_logs, f, indent=4)
+
+    @boost.command(name="message", aliases=["msg"])
+    @has_permissions(administrator=True)
+    async def set_boost_message(self, ctx: Context, *, message: str):
+        """Sets a custom boost message for the server and displays it in an embed."""
+        server_id = str(ctx.guild.id)
+        if server_id not in self.boost_logs:
+            self.boost_logs[server_id] = {}
+        
+        self.boost_logs[server_id]["message"] = message
+        self.save_boost_logs()
+        
+        message = message.replace("{user.mention}", "")
+        embed = discord.Embed(
+            title="Boost Message Set",
+            description=message,
+            color=discord.Color(0xfcc8fe)
+        )
+        await ctx.send("Custom boost message has been set.", embed=embed)
+
+    @Cog.listener(name="on_member_update")
+    async def on_member_update(self, before: discord.Member, after: discord.Member):
+        if before.premium_since is None and after.premium_since is not None:
+            server_id = str(after.guild.id)
+            if server_id not in self.boost_logs:
+                return
+
+            channel_id = self.boost_logs[server_id].get('channel_id')
+            if channel_id is None:
+                return
+
+            channel = after.guild.get_channel(channel_id)
+            if channel is None:
+                return
+
+            message = self.boost_logs[server_id].get('message', None)
+            if message is None:
+                message = "Thanks for boosting the server, {user.mention}!"
+
+            message = message.replace("{user.mention}", after.mention)
+            await channel.send(message)

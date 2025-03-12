@@ -44,5 +44,10 @@
     },
     "1348904062384476182": {
         "welcome_message": "wlc"
+    },
+    "1347077019455983626": {
+        "channel_id": 1348189556335444030,
+        "welcome_message": "hi {user.mention}",
+        "leave_message": "bye {user.mention}"
     }
 }

@@ -1665,21 +1665,8 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
     @commands.has_permissions(manage_channels=True)
     async def channel_group(self, ctx):
         """Channel management command group"""
-        embed = discord.Embed(
-            title="Channel Management Commands",
-            description=(
-                "Available commands:\n"
-                "- `,channel create <name>` - Create a new text channel\n"
-                "- `,channel delete <name>` - Delete a channel\n"
-                "- `,channel rename <new_name>` - Rename current channel\n"
-                "- `,channel private <name>` - Create a private channel\n"
-                "- `,channel topic <new_topic>` - Set channel topic\n"
-                "- `,channel clone` - Clone current channel\n"
-                "- `,channel sync <category>` - Sync channel permissions with a category"
-            ),
-            color=discord.Color.blue()
-        )
-        await ctx.send(embed=embed)
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
 
     @channel_group.command(name="create")
     @commands.has_permissions(manage_channels=True)
