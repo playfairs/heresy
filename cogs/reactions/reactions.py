@@ -79,7 +79,6 @@ class Reactions(Cog, description="View commands in Reactions."):
                 "i keep a baby glock i aint fightin w no random, period 😭✌️"
             ],
             "get back to work": [
-                "Slavery is the practice of owning another person as property, usually for their labor. People who are enslaved are called slaves or enslaved people. They are treated as property with few or no rights, and are often forced to work",
                 "this isn't the fucking 18th century, fym get back to work"
             ],
             "playlist:suicideboys": [
@@ -103,18 +102,6 @@ class Reactions(Cog, description="View commands in Reactions."):
             "fuck you heresy": [
                 "why is bro sayin fuck you to a bot",
                 "what did i do"
-            ], 
-            "im playfairs": [
-                "no your not."
-            ],
-            "im playfair": [
-                "no your not."
-            ],
-            "i am playfair": [
-                "no your not."
-            ],
-            "i am playfairs": [
-                "no your not."
             ],
             "shit type": [
                 "oh ok"
@@ -148,8 +135,17 @@ class Reactions(Cog, description="View commands in Reactions."):
             ],
             "im cold": [
                 "https://playfairs.cc/images/mommy.png"
+            ],
+            "hi nova": [
+                "NOVA'S HERE? WHERE"
             ]
         }
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.id != self.developer_id:
+            if message.content.lower() in ["im playfairs", "im playfair", "i am playfair", "i am playfairs"]:
+                await message.channel.send("no you're not")
 
         self.conversation_context = {}
 

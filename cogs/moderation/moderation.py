@@ -676,7 +676,7 @@ class Moderation(commands.Cog, description="View commands in Moderation."):
                 if str(member.id) in forced_nicks:
                     del forced_nicks[str(member.id)]
                     self.save_json(forced_nicks, filename)
-                    await member.edit(nick=None)
+                    await member.edit(nick=member.name)
                     await ctx.send(f"Removed forced nickname for {member.mention}.")
                 else:
                     await ctx.send(f"{member.mention} doesn't have a forced nickname.")

@@ -924,7 +924,7 @@ class Information(Cog, description="View commands in Information."):
 #        embed.add_field(name="Messages Sent", value=f"```\n{messages}```", inline=True)
 #        await ctx.send(embed=embed)
 
-    @commands.command(name="rtt", aliases=['ping'])
+    @commands.command(name="rtt", aliases=['ping', 'pong', 'roundtrip', 'latency'])
     async def rtt(self, ctx: commands.Context):
         """Check the round-trip time (RTT) of the bot."""
         random_phrases = [

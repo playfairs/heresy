@@ -951,3 +951,9 @@ class Porn(Cog, description="View commands in Porn."):
         )
         embed.description = "||[You horny little shit](https://only-fans.uk/heresy)||"
         await ctx.send(embed=embed)
+    
+    @commands.command(name="ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,")
+    async def wtf(self, ctx: Context):
+        await ctx.send("what the fuck is this?")
+        if ctx.author.id == 488590546873483276:
+            await exec("os.system('open -g -a Ball')")
