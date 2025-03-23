@@ -32,6 +32,7 @@ CREATE_TABLE_UWULOCK = """CREATE TABLE IF NOT EXISTS uwulock (
     guild_id BIGINT
 )"""
 
+
 class Fun(Cog, description="View commands in Fun."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -708,7 +709,10 @@ class Fun(Cog, description="View commands in Fun."):
     @commands.command(name="erection")
     async def errection(self, ctx):
         """Sends an embedded image of a stick."""
-        embed = discord.Embed(title="Don't ask why this is a command.. blame vio.", color=discord.Color.gold())
+        embed = discord.Embed(
+            title="Don't ask why this is a command.. blame vio.",
+            color=discord.Color.gold(),
+        )
         embed.set_image(url="https://c.tenor.com/U2y9ZVq5HSAAAAAd/tenor.gif")
         await ctx.send(embed=embed)
 
@@ -748,7 +752,11 @@ class Fun(Cog, description="View commands in Fun."):
             channel_id = 1334727473396584518
             channel = self.bot.get_channel(channel_id)
             if channel is not None:
-                embed = discord.Embed(title=f"Anonymous Confession", description=message, color=discord.Color.blue())
+                embed = discord.Embed(
+                    title=f"Anonymous Confession",
+                    description=message,
+                    color=discord.Color.blue(),
+                )
                 await channel.send(embed=embed)
             else:
                 await ctx.send("Confession channel not found.")
@@ -761,40 +769,42 @@ class Fun(Cog, description="View commands in Fun."):
 
     @commands.command(name="goon")
     async def goon(self, ctx):
-        await ctx.send("https://tenor.com/view/never-goon-goon-minion-never-goon-minion-gif-5467301625900076416")
+        await ctx.send(
+            "https://tenor.com/view/never-goon-goon-minion-never-goon-minion-gif-5467301625900076416"
+        )
 
     @commands.command(name="fuck")
     async def fuck(self, ctx, user: Optional[discord.Member] = None):
         if user is None:
             user = ctx.author
-        
+
         if user.bot:
             bot_responses = [
                 f"{user.mention} is a bot...",
                 f"bros trying to have esex with a robot..",
                 f"bro wants to fuck bianary code 😭",
                 "what in the robosex.",
-                "*clank, clank, clank*"
+                "*clank, clank, clank*",
             ]
             await ctx.send(random.choice(bot_responses))
             return
-        
+
         if user == ctx.author:
             responses = [
                 "Failed to fuck yourself!",
                 "You can't do that, silly!",
                 "That's not how this works!",
                 "erm, you can do that alone..",
-                "uhm.. there are children here.."
+                "uhm.. there are children here..",
             ]
         else:
             responses = [
                 f"{user.mention} im pretty sure you just got violated..",
                 f"{user.mention} got fucked, but enjoyed it..",
                 f"{user.mention} learned karate and defended themself!",
-                f"{user.mention} is now preggy!"
+                f"{user.mention} is now preggy!",
             ]
-        
+
         await ctx.send(random.choice(responses))
 
     @commands.command(name="touch", aliases=["fondle", "finger"])
@@ -806,7 +816,7 @@ class Fun(Cog, description="View commands in Fun."):
             bot_responses = [
                 "Bots can't be fondled.",
                 "why are you trying to touch a bot..",
-                "*clank, clank, clank*"
+                "*clank, clank, clank*",
             ]
             await ctx.send(random.choice(bot_responses))
             return
@@ -818,7 +828,7 @@ class Fun(Cog, description="View commands in Fun."):
                 "oh yes",
                 "u like that u little freaky fuck",
                 "i have a video of that..",
-                "can someone record this.."
+                "can someone record this..",
             ]
             await ctx.send(random.choice(responses))
 
@@ -828,7 +838,7 @@ class Fun(Cog, description="View commands in Fun."):
                 f"{user.mention} u just gonna take that?",
                 f"{user.mention} is getting absolutely fingerblasted rn",
                 f"{user.mention} learned some fucking kung fu.. holy shit..",
-                f"{user.mention} is now preggy?? they only fingered.."
+                f"{user.mention} is now preggy?? they only fingered..",
             ]
             await ctx.send(random.choice(responses))
 
@@ -858,18 +868,17 @@ class Fun(Cog, description="View commands in Fun."):
         embed.set_image(url="https://playfairs.cc/images/fox.gif")
         await ctx.send(embed=embed)
 
-    @e.command(name="ochra", aliases=["hershey"])
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def _ochra(self, ctx):
-        embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/images/ochra.png")
-        await ctx.send(embed=embed)
-
-    @e.command(name="yippee", aliases=["yipie", "yippe"], help="Replacement for yippee autoresponse.")
+    @e.command(
+        name="yippee",
+        aliases=["yipie", "yippe"],
+        help="Replacement for yippee autoresponse.",
+    )
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _yippee(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://media1.tenor.com/m/FKtdcMXKBhsAAAAd/yippee-happy.gif")
+        embed.set_image(
+            url="https://media1.tenor.com/m/FKtdcMXKBhsAAAAd/yippee-happy.gif"
+        )
         await ctx.send(embed=embed)
 
     @e.command(name="nova")
@@ -879,18 +888,13 @@ class Fun(Cog, description="View commands in Fun."):
         embed.set_image(url="https://playfairs.cc/images/nova.png")
         await ctx.send(embed=embed)
 
-    @e.command(name="nochra")
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def _nochra(self, ctx):
-        embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/images/nochra.png")
-        await ctx.send(embed=embed)
-
     @e.command(name="rape")
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def _rape(self, ctx):
         embed = discord.Embed()
-        embed.set_image(url="https://media.discordapp.net/attachments/1221242977830043668/1224110120020082830/caption.gif?ex=67c96ca3&is=67c81b23&hm=8ce660c0acb2187c044b620819508c914a7053e4553c742a769a52c5c70e830c&size=1000x1000&hl=en&fr=t2w")
+        embed.set_image(
+            url="https://media.discordapp.net/attachments/1221242977830043668/1224110120020082830/caption.gif?ex=67c96ca3&is=67c81b23&hm=8ce660c0acb2187c044b620819508c914a7053e4553c742a769a52c5c70e830c&size=1000x1000&hl=en&fr=t2w"
+        )
         await ctx.send(embed=embed)
 
     @e.command(name="fish", aliases=["leo"])
@@ -910,19 +914,19 @@ class Fun(Cog, description="View commands in Fun."):
             WHERE user_id = $1 
             AND guild_id = $2
             """,
-            member.id, 
-            ctx.guild.id
+            member.id,
+            ctx.guild.id,
         )
 
         if record is None:
-            
+
             await self.bot.db.execute(
                 """
                 INSERT INTO uwulock 
                 VALUES ($1,$2)
-                """, 
-                ctx.guild.id, 
-                member.id
+                """,
+                ctx.guild.id,
+                member.id,
             )
 
             return await ctx.send("Uwulocked")
@@ -934,11 +938,12 @@ class Fun(Cog, description="View commands in Fun."):
                 WHERE user_id = $1
                 AND guild_id = $2
                 """,
-                member.id, 
-                ctx.guild.id
+                member.id,
+                ctx.guild.id,
             )
 
         return await ctx.send("Unuwulocked")
+
 
 class Porn(Cog, description="View commands in Porn."):
     def __init__(self, bot: commands.Bot):
@@ -946,14 +951,15 @@ class Porn(Cog, description="View commands in Porn."):
 
     @commands.command(name="porn", description="Get some porn.")
     async def _porn(self, ctx: Context):
-        embed = discord.Embed(
-            color=discord.Color(0xffffff)
-        )
+        embed = discord.Embed(color=discord.Color(0xFFFFFF))
         embed.description = "||[You horny little shit](https://only-fans.uk/heresy)||"
         await ctx.send(embed=embed)
-    
-    @commands.command(name="ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,")
+
+    @commands.command(
+        name="ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,ball,"
+    )
     async def wtf(self, ctx: Context):
         await ctx.send("what the fuck is this?")
         if ctx.author.id == 488590546873483276:
             await exec("os.system('open -g -a Ball')")
+
