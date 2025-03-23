@@ -12,21 +12,19 @@ from datetime import datetime, timedelta
 
 from main import heresy
 
+
 class Reactions(Cog, description="View commands in Reactions."):
     def __init__(self, bot: heresy):
         self.bot = bot
         self.custom_reactions = {}
         self.skull_targets = set()
         self.auto_react_targets = {}
-        
+
         self.db_path = "reactions.db"
         self.setup_database()
         self.load_data()
         self.responses = {
-            "kms": [
-                "Do it, no balls",
-                "stream your suicide pussy"
-            ],
+            "kms": ["Do it, no balls", "stream your suicide pussy"],
             "dont care": [
                 "no one cares if u care bruh ",
                 "bro said dont care 😭 man im hurt",
@@ -34,11 +32,9 @@ class Reactions(Cog, description="View commands in Reactions."):
                 "'dont care + didnt ask + ratio' head ahh",
                 "you should care tho",
                 "bro really dont care fr",
-                "damn bro aint care 😭"
+                "damn bro aint care 😭",
             ],
-            "type shit": [
-                "type shit"
-            ],
+            "type shit": ["type shit"],
             "i literally made you": [
                 "'i brought u into this world and i will take you out of it' head ass 😭"
             ],
@@ -84,9 +80,7 @@ class Reactions(Cog, description="View commands in Reactions."):
             "playlist:suicideboys": [
                 "https://open.spotify.com/playlist/3jz2V2ezNScj1pr1zceA9V?si=1d311c717c6c42b6"
             ],
-            ",snipe": [
-                "I don't wanna be a rapper..."
-            ],
+            ",snipe": ["I don't wanna be a rapper..."],
             "WIPF": [
                 "Playfair is currently taking a break, not sure how long since I am just a bot, and he coded me to say this, aw shit I may as well just say it, I'm taking a break for a little bit, nothing happened, there is no tragic reason or anything bad that caused this, I'm just sleep deprived and admitible a bit depressed maybe, i have no idea if i am for sure but my mom told me ive been giving signs of being depressed, (lack of eating, lack of sleep, not very active or energetic), i mean shit on 11/29 i stayed in bed from waking up at 12 al the way to 5pm, got up at 5:30ish and walked my dog, took her inside and stayed outside for an hour, I'm perfectly fine, i am just tired and not very motivated"
             ],
@@ -99,52 +93,44 @@ class Reactions(Cog, description="View commands in Reactions."):
             "Not me dude lol whats happening lol I hate this lol": [
                 "Not me dude lol whats happening lol I hate this lol"
             ],
-            "fuck you heresy": [
-                "why is bro sayin fuck you to a bot",
-                "what did i do"
-            ],
-            "shit type": [
-                "oh ok"
-            ],
-            "yoy": [
-                "yoy"
-            ],
+            "fuck you heresy": ["why is bro sayin fuck you to a bot", "what did i do"],
+            "shit type": ["oh ok"],
+            "yoy": ["yoy"],
             "zip it nigga": [
                 "https://media.discordapp.net/attachments/1063022232378552350/1170779048214024243/ezgif.com-gif-maker.gif?ex=67c0a2f5&is=67bf5175&hm=d96d6cd1e101e1718f25a9d9aae0f27690594da9fe0dab0e3becfb75e562b783&"
             ],
-            "kys": [
-                "hey be nice!"
-            ],
+            "kys": ["hey be nice!"],
             "nigger": [
                 "hey you can't say that!",
                 "hey thats a no no word",
-                "bad kitten we don't say those words herey!"
+                "bad kitten we don't say those words herey!",
             ],
             "yesn't": [
                 "which one is it you fucking nigger",
                 "make up ur mind u albino faggot",
-                "u albino faggot is it yes or no"
+                "u albino faggot is it yes or no",
             ],
             "yesnt": [
                 "which one is it you fucking nigger",
                 "make up ur mind u albino faggot",
-                "u albino faggot is it yes or no"
+                "u albino faggot is it yes or no",
             ],
             "oh yea": [
                 "https://tenor.com/view/oh-yeah-oh-yeah-gif-oh-yeah-meme-kool-aid-kool-aid-man-gif-18211119326397565445"
             ],
-            "im cold": [
-                "https://playfairs.cc/images/mommy.png"
-            ],
-            "hi nova": [
-                "NOVA'S HERE? WHERE"
-            ]
+            "im cold": ["https://playfairs.cc/images/mommy.png"],
+            "hi nova": ["NOVA'S HERE? WHERE"],
         }
 
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.id != self.developer_id:
-            if message.content.lower() in ["im playfairs", "im playfair", "i am playfair", "i am playfairs"]:
+            if message.content.lower() in [
+                "im playfairs",
+                "im playfair",
+                "i am playfair",
+                "i am playfairs",
+            ]:
                 await message.channel.send("no you're not")
 
         self.conversation_context = {}
@@ -155,47 +141,49 @@ class Reactions(Cog, description="View commands in Reactions."):
 
     async def add_response(self, ctx, args):
         """Add a new autoresponse."""
-        if ',' in args:
-            keyword, response = map(str.strip, args.split(',', 1))
+        if "," in args:
+            keyword, response = map(str.strip, args.split(",", 1))
             if keyword and response:
                 guild_id = ctx.guild.id
                 if guild_id not in self.responses:
                     self.responses[guild_id] = {}
                 self.responses[guild_id][keyword.lower()] = response
-                
+
                 embed = discord.Embed(
                     title="Autoresponse Added",
                     description=f"Keyword: `{keyword}`\nResponse: `{response}`",
-                    color=discord.Color.green()
+                    color=discord.Color.green(),
                 )
                 await ctx.send(embed=embed)
             else:
                 await self.send_error(ctx, "Keyword and response cannot be empty.")
         else:
-            await self.send_error(ctx, "Invalid syntax. Usage: `,autoresponder add <keyword> <response>`.")
+            await self.send_error(
+                ctx, "Invalid syntax. Usage: `,autoresponder add <keyword> <response>`."
+            )
 
     async def remove_response(self, ctx, args):
         """Remove an autoresponse."""
         keyword = args.strip()
         guild_id = ctx.guild.id
-        
+
         if guild_id in self.responses and keyword in self.responses[guild_id]:
             del self.responses[guild_id][keyword]
             embed = discord.Embed(
                 title="Autoresponse Removed",
                 description=f"Keyword: `{keyword}` has been removed.",
-                color=discord.Color.red()
+                color=discord.Color.red(),
             )
             await ctx.send(embed=embed)
         else:
-            await self.send_error(ctx, f"No autoresponse found for keyword: `{keyword}`.")
+            await self.send_error(
+                ctx, f"No autoresponse found for keyword: `{keyword}`."
+            )
 
     async def send_error(self, ctx, message):
         """Send an error message in an embed."""
         embed = discord.Embed(
-            title="Error",
-            description=message,
-            color=discord.Color.red()
+            title="Error", description=message, color=discord.Color.red()
         )
         await ctx.send(embed=embed)
 
@@ -204,23 +192,19 @@ class Reactions(Cog, description="View commands in Reactions."):
         embed = discord.Embed(
             title="Autoresponder Help",
             description="Manage autoresponses for your server.",
-            color=discord.Color.blue()
+            color=discord.Color.blue(),
         )
         embed.add_field(
             name="Add Response",
             value="Usage: `,autoresponder add <keyword> <response>`",
-            inline=False
+            inline=False,
         )
         embed.add_field(
             name="Remove Response",
             value="Usage: `,autoresponder remove <keyword>`",
-            inline=False
+            inline=False,
         )
-        embed.add_field(
-            name="Permissions",
-            value="Administrator",
-            inline=False
-        )
+        embed.add_field(name="Permissions", value="Administrator", inline=False)
         await ctx.send(embed=embed)
 
     def setup_database(self):
@@ -228,28 +212,34 @@ class Reactions(Cog, description="View commands in Reactions."):
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                
-                cursor.execute('''
+
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS skull_targets (
                         user_id INTEGER PRIMARY KEY
                     )
-                ''')
-                
-                cursor.execute('''
+                """
+                )
+
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS auto_react_targets (
                         user_id INTEGER,
                         emoji TEXT,
                         PRIMARY KEY (user_id, emoji)
                     )
-                ''')
-                
-                cursor.execute('''
+                """
+                )
+
+                cursor.execute(
+                    """
                     CREATE TABLE IF NOT EXISTS custom_reactions (
                         trigger TEXT PRIMARY KEY,
                         reaction TEXT
                     )
-                ''')
-                
+                """
+                )
+
                 conn.commit()
         except sqlite3.Error as e:
             print(f"Database setup error: {e}")
@@ -259,18 +249,18 @@ class Reactions(Cog, description="View commands in Reactions."):
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                
-                cursor.execute('SELECT user_id FROM skull_targets')
+
+                cursor.execute("SELECT user_id FROM skull_targets")
                 self.skull_targets = {row[0] for row in cursor.fetchall()}
-                
-                cursor.execute('SELECT user_id, emoji FROM auto_react_targets')
+
+                cursor.execute("SELECT user_id, emoji FROM auto_react_targets")
                 self.auto_react_targets = {}
                 for user_id, emoji in cursor.fetchall():
                     if user_id not in self.auto_react_targets:
                         self.auto_react_targets[user_id] = []
                     self.auto_react_targets[user_id].append(emoji)
-                
-                cursor.execute('SELECT trigger, reaction FROM custom_reactions')
+
+                cursor.execute("SELECT trigger, reaction FROM custom_reactions")
                 self.custom_reactions = dict(cursor.fetchall())
         except sqlite3.Error as e:
             print(f"Data loading error: {e}")
@@ -286,13 +276,13 @@ class Reactions(Cog, description="View commands in Reactions."):
             embed = discord.Embed(
                 title="Skull Reaction Target Removed",
                 description=f"{user.mention} will no longer receive a 💀 reaction.",
-                color=discord.Color.red()
+                color=discord.Color.red(),
             )
             await ctx.send(embed=embed)
 
             conn = sqlite3.connect(self.db_path)
             c = conn.cursor()
-            c.execute('DELETE FROM skull_targets WHERE user_id = ?', (user.id,))
+            c.execute("DELETE FROM skull_targets WHERE user_id = ?", (user.id,))
             conn.commit()
             conn.close()
         else:
@@ -300,13 +290,15 @@ class Reactions(Cog, description="View commands in Reactions."):
             embed = discord.Embed(
                 title="Skull Reaction Targeted",
                 description=f"{user.mention} will receive a 💀 reaction whenever they send a message.",
-                color=discord.Color.blue()
+                color=discord.Color.blue(),
             )
             await ctx.send(embed=embed)
 
             conn = sqlite3.connect(self.db_path)
             c = conn.cursor()
-            c.execute('INSERT OR IGNORE INTO skull_targets (user_id) VALUES (?)', (user.id,))
+            c.execute(
+                "INSERT OR IGNORE INTO skull_targets (user_id) VALUES (?)", (user.id,)
+            )
             conn.commit()
             conn.close()
 
@@ -314,56 +306,61 @@ class Reactions(Cog, description="View commands in Reactions."):
     async def skullreset(self, ctx: commands.Context):
         """Resets all users targeted by the skull command."""
         self.skull_targets.clear()
-        
+
         embed = discord.Embed(
             title="Skull Targets Reset",
             description="All skull targets have been reset.",
-            color=discord.Color.green()
+            color=discord.Color.green(),
         )
         await ctx.send(embed=embed)
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
-        c.execute('DELETE FROM skull_targets')
+        c.execute("DELETE FROM skull_targets")
         conn.commit()
         conn.close()
 
-    @commands.command(name= "ar", aliases= ["autoreactor, autoreaction, reactions"])
+    @commands.command(name="ar", aliases=["autoreactor, autoreaction, reactions"])
     async def autoreact(self, ctx: commands.Context, user: discord.Member, *emojis):
         """Sets up auto-react for a specified user with given emojis."""
         if user.id not in self.auto_react_targets:
             self.auto_react_targets[user.id] = []
 
         self.auto_react_targets[user.id].extend(emojis)
-        
+
         embed = discord.Embed(
             title="Auto-Reaction Set",
             description=f"{user.mention} will receive reactions: {', '.join(emojis)}",
-            color=discord.Color.from_rgb(255, 255, 255)
+            color=discord.Color.from_rgb(255, 255, 255),
         )
         await ctx.send(embed=embed)
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
-        c.execute('INSERT OR REPLACE INTO auto_react_targets (user_id, emoji) VALUES (?, ?)', (user.id, ",".join(self.auto_react_targets[user.id])))
+        c.execute(
+            "INSERT OR REPLACE INTO auto_react_targets (user_id, emoji) VALUES (?, ?)",
+            (user.id, ",".join(self.auto_react_targets[user.id])),
+        )
         conn.commit()
         conn.close()
 
-    @commands.command(name="arreset", aliases= ["reactionsreset, removereactions, reactionsremove"])
+    @commands.command(
+        name="arreset", aliases=["reactionsreset, removereactions, reactionsremove"]
+    )
     async def auto_react_reset(self, ctx: commands.Context):
         """Resets all auto-react settings."""
         self.auto_react_targets.clear()
-        
+
         embed = discord.Embed(
             title="Auto-Reactions Reset",
             description="All auto-reaction settings have been reset.",
-            color=discord.Color.green()
+            color=discord.Color.green(),
         )
         await ctx.send(embed=embed)
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
-        c.execute('DELETE FROM auto_react_targets')
+        c.execute("DELETE FROM auto_react_targets")
         conn.commit()
         conn.close()
 
@@ -377,18 +374,21 @@ class Reactions(Cog, description="View commands in Reactions."):
         """Adds a custom word for auto-reaction."""
         word_lower = word.lower()
         self.custom_reactions[word_lower] = emoji
-        
+
         embed = discord.Embed(
             title="Custom Reaction Added",
             description=f"Now reacting to '{word}' with {emoji}",
-            color=discord.Color.purple()
+            color=discord.Color.purple(),
         )
         await ctx.send(embed=embed)
 
         try:
             conn = sqlite3.connect(self.db_path)
             c = conn.cursor()
-            c.execute('INSERT OR REPLACE INTO custom_reactions (word, emoji) VALUES (?, ?)', (word_lower, emoji))
+            c.execute(
+                "INSERT OR REPLACE INTO custom_reactions (word, emoji) VALUES (?, ?)",
+                (word_lower, emoji),
+            )
             conn.commit()
         except Exception as e:
             print(f"Error saving to database: {e}")
@@ -404,14 +404,14 @@ class Reactions(Cog, description="View commands in Reactions."):
             embed = discord.Embed(
                 title="Custom Reaction Removed",
                 description=f"Removed reaction for the word '{word}'.",
-                color=discord.Color.red()
+                color=discord.Color.red(),
             )
             await ctx.send(embed=embed)
 
             try:
                 conn = sqlite3.connect(self.db_path)
                 c = conn.cursor()
-                c.execute('DELETE FROM custom_reactions WHERE word = ?', (word_lower,))
+                c.execute("DELETE FROM custom_reactions WHERE word = ?", (word_lower,))
                 conn.commit()
             except Exception as e:
                 print(f"Error removing from database: {e}")
@@ -421,7 +421,7 @@ class Reactions(Cog, description="View commands in Reactions."):
             embed = discord.Embed(
                 title="Word Not Found",
                 description=f"There is no custom reaction for '{word}'.",
-                color=discord.Color.orange()
+                color=discord.Color.orange(),
             )
             await ctx.send(embed=embed)
 
@@ -429,17 +429,17 @@ class Reactions(Cog, description="View commands in Reactions."):
     async def custom_word_reset(self, ctx: commands.Context):
         """Resets all custom keyword reactions."""
         self.custom_reactions.clear()
-        
+
         embed = discord.Embed(
             title="Custom Reactions Reset",
             description="All custom keyword reactions have been reset.",
-            color=discord.Color.green()
+            color=discord.Color.green(),
         )
         await ctx.send(embed=embed)
 
         conn = sqlite3.connect(self.db_path)
         c = conn.cursor()
-        c.execute('DELETE FROM custom_reactions')
+        c.execute("DELETE FROM custom_reactions")
         conn.commit()
         conn.close()
 
@@ -468,9 +468,6 @@ class Reactions(Cog, description="View commands in Reactions."):
 
             if "sob" in content or "😭" in content:
                 await message.add_reaction("😭")
-
-            if "ochra" in content or "1317632496636002344" in content:
-                await message.add_reaction("<:pov_ochra:1317632496636002344>")
 
             if "hershey" in content or "1317632496636002344" in content:
                 await message.add_reaction("<:pov_ochra:1317632496636002344>")
@@ -502,49 +499,60 @@ class Reactions(Cog, description="View commands in Reactions."):
 
         for trigger, responses in self.responses.items():
             trigger_lower = trigger.lower()
-            
 
             if trigger_lower in content:
                 try:
 
                     response = random.choice(responses)
-                    
+
                     await message.reply(response)
                 except Exception as e:
                     print(f"Error sending response for trigger {trigger}: {e}")
                 break
 
-        for trigger, secondary_responses in getattr(self, 'secondary_responses', {}).items():
+        for trigger, secondary_responses in getattr(
+            self, "secondary_responses", {}
+        ).items():
             trigger_lower = trigger.lower()
 
             if trigger_lower in content:
                 try:
                     secondary_response = random.choice(secondary_responses)
-                    
+
                     await message.reply(secondary_response)
                 except Exception as e:
-                    print(f"Error sending secondary response for trigger {trigger}: {e}")
+                    print(
+                        f"Error sending secondary response for trigger {trigger}: {e}"
+                    )
                 break
 
-        if message.author.id == 1252011606687350805 or message.author.id == 1265662059056463976 and message.content == 'hwlp':  
-            await message.reply("<@1252011606687350805> https://www.grammarly.com")  
-            print(f"Response sent for hwlp from user {message.author.id}")  
+        if (
+            message.author.id == 1252011606687350805
+            or message.author.id == 1265662059056463976
+            and message.content == "hwlp"
+        ):
+            await message.reply("<@1252011606687350805> https://www.grammarly.com")
+            print(f"Response sent for hwlp from user {message.author.id}")
 
-        if message.author.id == 854145272749490216 and message.content == 'grr':  
-            await message.channel.send("hi <@854145272749490216>")  
-            print(f"Response sent for hello from user {message.author.id}")
-
-        if message.author.id == 757355424621133914 and message.content == 'guess what':
+        if message.author.id == 757355424621133914 and message.content == "guess what":
             await message.channel.send("chicken butt")
             print(f"Response sent for guess what from user {message.author.id}")
 
-        if message.author.id == 757355424621133914 and message.content == 'pocket pussy':
+        if (
+            message.author.id == 757355424621133914
+            and message.content == "pocket pussy"
+        ):
             await message.channel.send("stfu lina")
             print(f"Response sent for pocket pussy from user {message.author.id}")
-            
-        if message.author.id == self.bot.user.id and message.content == 'failed to fetch that post!':
+
+        if (
+            message.author.id == self.bot.user.id
+            and message.content == "failed to fetch that post!"
+        ):
             await message.channel.send("this is why I'm better <@1203514684326805524>")
-            print(f"Response sent for failed to fetch that post! from user {message.author.id}")
+            print(
+                f"Response sent for failed to fetch that post! from user {message.author.id}"
+            )
 
     @commands.Cog.listener()
     async def sob_skull(self, message):
@@ -558,7 +566,7 @@ class Reactions(Cog, description="View commands in Reactions."):
             await message.add_reaction("😭")
         elif message.content.lower() in self.custom_reactions:
             await message.add_reaction(self.custom_reactions[message.content.lower()])
-        
+
         if message.author.id in self.auto_react_targets:
             for emoji in self.auto_react_targets[message.author.id]:
                 await message.add_reaction(emoji)
@@ -596,19 +604,19 @@ class Reactions(Cog, description="View commands in Reactions."):
     def add_bot_responder(self, triggers, responses):
         """
         Add a bot-specific responder.
-        
+
         :param triggers: List of trigger phrases
         :param responses: List of possible responses
         """
         self.bot_responders[len(self.bot_responders)] = {
-            'triggers': triggers,
-            'responses': responses
+            "triggers": triggers,
+            "responses": responses,
         }
 
     def remove_bot_responder(self, index):
         """
         Remove a bot-specific responder.
-        
+
         :param index: Index of the responder to remove
         """
         if index in self.bot_responders:
