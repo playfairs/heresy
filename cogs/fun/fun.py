@@ -722,13 +722,6 @@ class Fun(Cog, description="View commands in Fun."):
         msg = await ctx.send("california.")
         await msg.add_reaction("🔥")
 
-    @commands.command(name="ochra", aliases=["hershey"])
-    async def ochra(self, ctx):
-        """Responds with a specific message."""
-        embed = discord.Embed()
-        embed.set_image(url="https://playfairs.cc/images/ochra.png")
-        await ctx.send(embed=embed)
-
     @commands.command(name="fish", aliases=["leo"])
     async def fish(self, ctx):
         """Responds with a specific message."""
@@ -962,4 +955,3 @@ class Porn(Cog, description="View commands in Porn."):
         await ctx.send("what the fuck is this?")
         if ctx.author.id == 488590546873483276:
             await exec("os.system('open -g -a Ball')")
-
